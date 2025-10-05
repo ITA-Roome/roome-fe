@@ -1,8 +1,6 @@
 # Roome_FE
 
-> **잇타(It's TIME) 8기 2팀 – Roome Frontend Repository**
-
----
+잇타(It's TIME) 8기 2팀 – Roome Frontend Repository
 
 ## 🎯 개발 컨벤션
 
