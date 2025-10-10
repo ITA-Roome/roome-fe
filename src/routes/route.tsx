@@ -6,6 +6,7 @@ import Layout from "@/layout/Layout";
 import FindPw from "@/pages/auth/FindPw";
 import LoginPage from "@/pages/auth/LoginPage";
 import SignupPage from "@/pages/auth/SignupPage";
+import SignupEmailPage from "@/pages/auth/SignupEmailPage";
 import KakaoCallback from "@/pages/auth/KakaoCallback";
 import GoogleCallback from "@/pages/auth/GoogleCallback";
 import NotFoundPage from "@/pages/common/NotFoundPage";
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignupPage />,
+      },
+      {
+        path: "signup/email",
+        element: <SignupEmailPage />,
       },
     ],
   },
