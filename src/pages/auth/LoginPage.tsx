@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { setAuthToken } from "../../lib/apiClient";
+import { AuthApi } from "../../api/auth";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type LoginErrorResponse = {
   message?: string;
@@ -9,6 +13,7 @@ type LoginErrorResponse = {
 export default function LoginPage() {
   // 상태 정의
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,12 +22,28 @@ export default function LoginPage() {
 
   // 입력 초기화 함수
   const handleClear = (field: "email" | "password") => {
-    if (field === "email") setEmail("");
-    if (field === "password") setPassword("");
+    if (field === "email") {
+      setEmail("");
+      setEmailError("");
+    }
+    if (field === "password") {
+      setPassword("");
+    }
   };
 
   // 로그인 유효성 검사
-  const isFormValid = email.trim() !== "" && password.trim() !== "";
+  const isEmailValid = EMAIL_REGEX.test(email.trim());
+  const isFormValid = isEmailValid && password.trim() !== "";
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    setEmailError(
+      value.length === 0 || EMAIL_REGEX.test(value)
+        ? ""
+        : "올바른 이메일 주소를 입력해주세요.",
+    );
+  };
 
   // 로그인 로직
   const handleLogin = async (e: React.FormEvent) => {
@@ -30,25 +51,30 @@ export default function LoginPage() {
     setError(""); // 에러 초기화
     setLoading(true); // 로딩 시작
 
+    setAuthToken(null); // 이전 토큰 제거
+    localStorage.removeItem("refreshToken");
+
     try {
       // 로그인 요청 (백엔드 URL은 실제 API 주소로 변경)
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/login`,
-        { email, password },
-      );
+      const response = await AuthApi.login({
+        email,
+        password,
+      });
+      const payload = response.data;
 
-      // 로그인 성공 시
-      if (response.status === 200 && response.data?.token) {
-        const { token, user } = response.data;
-
-        // 토큰 저장 (localStorage 또는 sessionStorage)
-        localStorage.setItem("token", token);
-
-        // 로그인 성공 피드백
-        console.log("로그인 성공:", user);
-        // React Router로 페이지 이동 (전체 새로고침 x)
-        navigate("/home");
+      if (!payload.isSuccess || !payload.data?.accessToken) {
+        setError(
+          payload.message ?? "로그인에 실패했습니다. 다시 시도해주세요.",
+        );
+        return;
       }
+
+      const { accessToken, refreshToken, userInfo } = payload.data;
+
+      setAuthToken(accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      console.log("로그인 성공:", userInfo);
+      navigate("/home");
     } catch (error) {
       if (axios.isAxiosError<LoginErrorResponse>(error)) {
         const { status, data } = error.response ?? {};
@@ -67,19 +93,36 @@ export default function LoginPage() {
     }
   };
 
-  const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID;
-  const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
-  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
+  const handleGoogleLogin = async () => {
+    try {
+      const { data } = await AuthApi.getGoogleLoginUrl();
+      const authorizeUri = data.data.authorizeUri;
 
-  const handleKakaoLogin = () => {
-    const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
-    window.location.href = kakaoURL;
+      if (!authorizeUri) {
+        throw new Error("구글 로그인 URL이 비어 있습니다.");
+      }
+
+      window.location.href = authorizeUri;
+    } catch (error) {
+      console.error("구글 로그인 URL 조회 실패", error);
+      alert("구글 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    }
   };
 
-  const handleGoogleLogin = () => {
-    const googleURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=openid%20email%20profile`;
-    window.location.href = googleURL;
+  const handleKakaoLogin = async () => {
+    try {
+      const { data } = await AuthApi.getKakaoLoginUrl();
+      const authorizeUri = data.data.authorizeUri;
+
+      if (!authorizeUri) {
+        throw new Error("카카오 로그인 URL이 비어 있습니다.");
+      }
+
+      window.location.href = authorizeUri;
+    } catch (error) {
+      console.error("카카오 로그인 URL 조회 실패", error);
+      alert("카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    }
   };
 
   return (
@@ -101,10 +144,17 @@ export default function LoginPage() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               placeholder="이메일 입력"
-              className="w-full h-[50px] p-3 pr-10 bg-white border border-[#5D3C28] rounded-md focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
+              className={`w-full h-[50px] p-3 pr-10 bg-white border rounded-md focus:outline-none focus:ring-2 ${
+                emailError
+                  ? "border-red-500 focus:ring-red-400"
+                  : "border-[#5D3C28] focus:ring-[#5D3C28]"
+              } placeholder-[#8D7569]`}
             />
+            {emailError && (
+              <p className="text-red-500 text-xs mt-1">{emailError}</p>
+            )}
             {/* 입력값이 있을 때만 X 버튼 보이기 */}
             {email && (
               <button

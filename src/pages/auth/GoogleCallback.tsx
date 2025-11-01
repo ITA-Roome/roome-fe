@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { setAuthToken } from "../../lib/apiClient";
+import { AuthApi } from "../../api/auth";
 
 export default function GoogleCallback() {
   const navigate = useNavigate();
@@ -8,19 +9,25 @@ export default function GoogleCallback() {
   useEffect(() => {
     const code = new URL(window.location.href).searchParams.get("code");
 
-    if (code) {
-      axios
-        .post(`${import.meta.env.VITE_API_URL}/auth/google`, { code })
-        .then((res) => {
-          const token = res.data.token;
-          localStorage.setItem("token", token);
-          navigate("/home");
-        })
-        .catch(() => {
-          alert("구글 로그인 실패");
-          navigate("/login");
-        });
+    if (!code) {
+      return;
     }
+
+    const handleGoogleAuth = async () => {
+      try {
+        const { data } = await AuthApi.loginWithGoogle({ code });
+        const { accessToken } = data.data;
+
+        setAuthToken(accessToken);
+        navigate("/home");
+      } catch (error) {
+        console.error("구글 로그인 실패", error);
+        alert("구글 로그인 실패");
+        navigate("/login");
+      }
+    };
+
+    void handleGoogleAuth();
   }, [navigate]);
 
   return (

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { setAuthToken } from "../../lib/apiClient";
+import { AuthApi } from "../../api/auth";
 
 export default function KakaoCallback() {
   const navigate = useNavigate();
@@ -8,19 +9,25 @@ export default function KakaoCallback() {
   useEffect(() => {
     const code = new URL(window.location.href).searchParams.get("code");
 
-    if (code) {
-      axios
-        .post(`${import.meta.env.VITE_API_URL}/auth/kakao`, { code })
-        .then((res) => {
-          const token = res.data.token;
-          localStorage.setItem("token", token);
-          navigate("/home");
-        })
-        .catch(() => {
-          alert("카카오 로그인 실패");
-          navigate("/login");
-        });
+    if (!code) {
+      return;
     }
+
+    const handleKakaoAuth = async () => {
+      try {
+        const { data } = await AuthApi.loginWithKakao({ code });
+        const { accessToken } = data.data;
+
+        setAuthToken(accessToken);
+        navigate("/home");
+      } catch (error) {
+        console.error("카카오 로그인 실패", error);
+        alert("카카오 로그인 실패");
+        navigate("/login");
+      }
+    };
+
+    void handleKakaoAuth();
   }, [navigate]);
 
   return (
