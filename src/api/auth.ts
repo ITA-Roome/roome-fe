@@ -52,6 +52,18 @@ type OAuthLoginResponse = {
   success: boolean;
 };
 
+type CommonResponse<T = undefined> = {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  data?: T;
+  success: boolean;
+};
+
+type NicknameCheckResponse = CommonResponse<{ duplicated: boolean }>;
+type EmailVerificationRequest = { email: string };
+type EmailVerificationConfirmRequest = { email: string; code: string };
+
 export const AuthApi = {
   login: (payload: LoginRequest) =>
     apiClient.post<LoginResponse>("/api/auth/login", payload),
@@ -63,4 +75,15 @@ export const AuthApi = {
     apiClient.get<SocialAuthUrlResponse>("/api/auth/google/authorize-uri"),
   getKakaoLoginUrl: () =>
     apiClient.get<SocialAuthUrlResponse>("/api/auth/kakao/authorize-uri"),
+  checkNickname: (nickname: string) =>
+    apiClient.get<NicknameCheckResponse>("/api/auth/check-nickname", {
+      params: { nickname },
+    }),
+  requestEmailVerification: (payload: EmailVerificationRequest) =>
+    apiClient.post<CommonResponse>("/api/auth/email-verification", payload),
+  confirmEmailVerification: (payload: EmailVerificationConfirmRequest) =>
+    apiClient.post<CommonResponse>(
+      "/api/auth/email-verification/confirm",
+      payload,
+    ),
 };
