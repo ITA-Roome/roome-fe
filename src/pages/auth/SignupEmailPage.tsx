@@ -1,149 +1,178 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
-export default function SignupPage() {
+export default function SignupEmailPage() {
   const [nickname, setNickname] = useState("");
-  const [nicknameChecked, setNicknameChecked] = useState(false);
-
   const [email, setEmail] = useState("");
-  const [emailVerified, setEmailVerified] = useState(false);
-
-  const [code, setCode] = useState("");
-  const [codeChecked, setCodeChecked] = useState(false);
-
+  const [verifyCode, setVerifyCode] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [isMatch, setIsMatch] = useState(true);
 
-  // 예시용 (닉네임 중복확인)
-  const handleCheckNickname = () => {
-    if (nickname.trim() === "") return alert("닉네임을 입력해주세요.");
-    // TODO: 서버에 중복확인 요청
-    setNicknameChecked(true);
+  const handleConfirmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPasswordConfirm(value);
+    setIsMatch(value === password);
   };
 
-  const handleSendEmail = () => {
-    if (!nicknameChecked) return alert("닉네임 중복 확인을 먼저 해주세요.");
-    if (!email.includes("@"))
-      return alert("올바른 이메일 주소를 입력해주세요.");
-    alert("인증 메일을 발송했습니다!");
-    setEmailVerified(true); // ✅ 버튼 누르면 이게 true로 변경됨
-  };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const handleVerifyCode = () => {
-    if (code === "1234") {
-      alert("인증 성공!");
-      setCodeChecked(true);
-    } else {
-      alert("인증번호가 올바르지 않습니다.");
+    if (!isMatch) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
     }
+
+    alert("회원가입 완료!");
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-[#FFFDF4] py-10">
-      <div className="w-full max-w-sm">
-        <h2 className="text-[#5D3C28] text-xl font-bold mb-6 text-center">
-          회원가입
-        </h2>
+    <div className="flex justify-center items-center h-screen bg-[#FFFDF4]">
+      {/* 회원가입 카드 컨테이너 */}
+      <div className="text-center w-full max-w-sm">
+        {/* 회원가입 폼 */}
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4 px-[10px] text-left"
+        >
+          {/* 닉네임 */}
+          <div className="relative">
+            <label className="block text-[#5D3C28] text-sm mb-1">닉네임</label>
+            <div className="relative">
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="닉네임을 입력해주세요"
+                className="w-full h-[50px] pl-3 pr-24 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded"
+              >
+                중복 확인
+              </button>
+            </div>
+          </div>
 
-        {/* 닉네임 */}
-        <label className="block text-sm font-medium mb-1">닉네임</label>
-        <div className="mb-4 relative">
-          <input
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            placeholder="닉네임을 입력해주세요"
-            className="w-full border rounded px-3 py-2 pr-20" // ✅ 오른쪽 버튼 공간 확보 (pr-20)
-          />
-          <button
-            onClick={handleCheckNickname}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D6E63] text-white text-sm px-3 py-1 rounded"
-          >
-            중복 확인
-          </button>
-        </div>
-
-        {/* 이메일 (닉네임 확인 후 표시) */}
-        {nicknameChecked && (
-          <>
-            <label className="block text-sm font-medium mb-1">이메일</label>
-            <div className="mb-4 relative">
+          {/* 이메일 */}
+          <div className="relative">
+            <label className="block text-[#5D3C28] text-sm mb-1">
+              이메일 주소
+            </label>
+            <div className="relative">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ID@example.com"
-                className="w-full border rounded px-3 py-2 pr-20" // ✅ 버튼 공간 확보
+                className="w-full h-[50px] pl-3 pr-24 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
               />
               <button
-                onClick={handleSendEmail}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D6E63] text-white text-sm px-3 py-1 rounded"
+                type="button"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded"
               >
                 인증하기
               </button>
             </div>
-          </>
-        )}
+          </div>
 
-        {/* 인증번호 입력창: 이메일 인증 버튼을 누른 경우에만 표시 */}
-        {nicknameChecked && emailVerified && !codeChecked && (
-          <>
-            <label className="block text-sm font-medium mb-1">인증번호</label>
-            <div className="flex gap-2 mb-4">
+          {/* 인증번호 */}
+          <div className="relative">
+            <label className="block text-[#5D3C28] text-sm mb-1">
+              인증번호
+            </label>
+            <div className="relative">
               <input
                 type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
+                value={verifyCode}
+                onChange={(e) => setVerifyCode(e.target.value)}
                 placeholder="인증번호 입력"
-                className="flex-1 border rounded px-3 py-2"
+                className="w-full h-[50px] pl-3 pr-20 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
               />
               <button
-                onClick={handleVerifyCode}
-                className="px-4 bg-[#8D6E63] text-white rounded"
+                type="button"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded"
               >
                 확인
               </button>
             </div>
-          </>
-        )}
+          </div>
 
-        {/* 인증 성공 후 하단 폼 표시 */}
-        {codeChecked && (
-          <>
-            <label className="block text-sm font-medium mb-1">전화번호</label>
+          {/* 전화번호 */}
+          <div>
+            <label className="block text-[#5D3C28] text-sm mb-1">
+              전화번호
+            </label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="전화번호"
-              className="w-full border rounded px-3 py-2 mb-4"
+              className="w-full h-[50px] p-3 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
             />
+          </div>
 
-            <label className="block text-sm font-medium mb-1">비밀번호</label>
+          {/* 비밀번호 */}
+          <div>
+            <label className="block text-[#5D3C28] text-sm mb-1">
+              비밀번호{" "}
+              <span className="text-xs">
+                (최소 8자 이상 / 영문, 숫자, 특수문자 포함)
+              </span>
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"
-              className="w-full border rounded px-3 py-2 mb-4"
+              className="w-full h-[50px] p-3 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
             />
+          </div>
 
-            <label className="block text-sm font-medium mb-1">
+          {/* 비밀번호 확인 */}
+          <div>
+            <label className="block text-[#5D3C28] text-sm mb-1">
               비밀번호 확인
             </label>
+            {!isMatch && passwordConfirm.length > 0 && (
+              <p className="text-red-500 text-xs mb-1">
+                비밀번호가 일치하지 않습니다.
+              </p>
+            )}
             <input
               type="password"
               value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
+              onChange={handleConfirmChange}
               placeholder="비밀번호 확인"
-              className="w-full border rounded px-3 py-2 mb-6"
+              className={`w-full h-[50px] p-3 border rounded-md bg-white focus:outline-none focus:ring-2 ${
+                isMatch
+                  ? "border-[#5D3C28] focus:ring-[#5D3C28]"
+                  : "border-red-500 focus:ring-red-400"
+              } placeholder-[#8D7569]`}
             />
+          </div>
 
-            <button className="w-full bg-[#BCAAA4] text-white py-2 rounded">
-              회원가입
-            </button>
-          </>
-        )}
+          {/* 회원가입 버튼 */}
+          <button
+            type="submit"
+            className="w-full h-[50px] mt-2 bg-[#D3C6BC] text-[#5D3C28] font-medium rounded-md"
+          >
+            회원가입
+          </button>
+        </form>
+
+        {/* 로그인 문구 */}
+        <p className="text-center text-sm text-[#5D3C28] mt-4">
+          이미 ROOME 회원이라면?{" "}
+          <Link
+            to="/" // 로그인 페이지로 이동
+            className="text-[#5D3C28] font-semibold hover:underline hover:text-[#3E271B]"
+          >
+            로그인
+          </Link>
+        </p>
       </div>
     </div>
   );
