@@ -1,14 +1,94 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { AuthApi } from "../../api/auth";
 
 export default function SignupEmailPage() {
   const [nickname, setNickname] = useState("");
+  const [nicknameChecked, setNicknameChecked] = useState(false);
+  const [nicknameMessage, setNicknameMessage] = useState("");
+  const [nicknameLoading, setNicknameLoading] = useState(false);
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [verifyCode, setVerifyCode] = useState("");
+  const phonePattern = /^010-\d{4}-\d{4}$/;
   const [phone, setPhone] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isMatch, setIsMatch] = useState(true);
+
+  const handleCheckNickname = async () => {
+    const trimmedNickname = nickname.trim();
+    if (!trimmedNickname) {
+      alert("닉네임을 입력해주세요.");
+      return;
+    }
+
+    setNicknameLoading(true);
+    setNicknameMessage("");
+    setNicknameChecked(false);
+
+    try {
+      const { data } = await AuthApi.checkNickname(trimmedNickname);
+
+      if (!data.isSuccess) {
+        setNicknameMessage(data.message ?? "닉네임 확인에 실패했습니다.");
+        return;
+      }
+
+      if (data.data?.isExist) {
+        setNicknameMessage("이미 사용 중인 닉네임입니다.");
+        return;
+      }
+
+      setNicknameMessage("사용 가능한 닉네임입니다.");
+      setNicknameChecked(true);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setNicknameMessage(
+          error.response?.data?.message ?? "닉네임 확인에 실패했습니다.",
+        );
+      } else {
+        setNicknameMessage("알 수 없는 오류가 발생했습니다.");
+      }
+    } finally {
+      setNicknameLoading(false);
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    setEmailError(
+      value.length === 0 || EMAIL_REGEX.test(value)
+        ? ""
+        : "올바른 이메일 주소를 입력해주세요.",
+    );
+  };
+
+  const handlePhoneChange = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, "").slice(0, 11);
+    let formatted = digitsOnly;
+
+    if (digitsOnly.length > 3 && digitsOnly.length <= 7) {
+      formatted = `${digitsOnly.slice(0, 3)}-${digitsOnly.slice(3)}`;
+    } else if (digitsOnly.length > 7) {
+      formatted = `${digitsOnly.slice(0, 3)}-${digitsOnly.slice(3, 7)}-${digitsOnly.slice(7)}`;
+    }
+
+    setPhone(formatted);
+
+    if (formatted.length === 0) {
+      setPhoneError("");
+    } else if (phonePattern.test(formatted)) {
+      setPhoneError("");
+    } else {
+      setPhoneError(
+        "전화번호가 올바른 형식으로 입력되지 않았습니다. 다시 확인해주세요.",
+      );
+    }
+  };
 
   const handleConfirmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -18,6 +98,18 @@ export default function SignupEmailPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!EMAIL_REGEX.test(email.trim())) {
+      setEmailError("올바른 이메일 주소를 입력해주세요.");
+      return;
+    }
+
+    if (!phonePattern.test(phone)) {
+      setPhoneError(
+        "전화번호가 올바른 형식으로 입력되지 않았습니다. 다시 확인해주세요.",
+      );
+      return;
+    }
 
     if (!isMatch) {
       alert("비밀번호가 일치하지 않습니다.");
@@ -43,18 +135,33 @@ export default function SignupEmailPage() {
               <input
                 type="text"
                 value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
+                onChange={(e) => {
+                  setNickname(e.target.value);
+                  setNicknameChecked(false);
+                  setNicknameMessage("");
+                }}
                 placeholder="닉네임을 입력해주세요"
                 className="w-full h-[50px] pl-3 pr-24 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
               />
               <button
                 type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded"
+                onClick={handleCheckNickname}
+                disabled={nicknameLoading}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded disabled:opacity-60"
               >
-                중복 확인
+                {nicknameLoading ? "확인 중..." : "중복 확인"}
               </button>
             </div>
           </div>
+          {nicknameMessage && (
+            <p
+              className={`text-xs mt-1 ${
+                nicknameChecked ? "text-green-600" : "text-red-500"
+              }`}
+            >
+              {nicknameMessage}
+            </p>
+          )}
 
           {/* 이메일 */}
           <div className="relative">
@@ -65,10 +172,17 @@ export default function SignupEmailPage() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => handleEmailChange(e.target.value)}
                 placeholder="ID@example.com"
-                className="w-full h-[50px] pl-3 pr-24 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
+                className={`w-full h-[50px] pl-3 pr-24 border rounded-md bg-white focus:outline-none focus:ring-2 ${
+                  emailError
+                    ? "border-red-500 focus:ring-red-400"
+                    : "border-[#5D3C28] focus:ring-[#5D3C28]"
+                } placeholder-[#8D7569]`}
               />
+              {emailError && (
+                <p className="text-red-500 text-xs mt-1">{emailError}</p>
+              )}
               <button
                 type="button"
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded"
@@ -108,10 +222,13 @@ export default function SignupEmailPage() {
             <input
               type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => handlePhoneChange(e.target.value)}
               placeholder="전화번호"
               className="w-full h-[50px] p-3 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
             />
+            {phoneError && (
+              <p className="text-red-500 text-xs mt-1">{phoneError}</p>
+            )}
           </div>
 
           {/* 비밀번호 */}

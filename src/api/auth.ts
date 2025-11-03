@@ -60,7 +60,7 @@ type CommonResponse<T = undefined> = {
   success: boolean;
 };
 
-type NicknameCheckResponse = CommonResponse<{ duplicated: boolean }>;
+type NicknameCheckResponse = CommonResponse<{ isExist: boolean }>;
 type EmailVerificationRequest = { email: string };
 type EmailVerificationConfirmRequest = { email: string; code: string };
 
