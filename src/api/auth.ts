@@ -62,7 +62,18 @@ type CommonResponse<T = undefined> = {
 
 type NicknameCheckResponse = CommonResponse<{ isExist: boolean }>;
 type EmailVerificationRequest = { email: string };
-type EmailVerificationConfirmRequest = { email: string; code: string };
+type EmailVerificationConfirmRequest = {
+  email: string;
+  emailVerificationCode: string;
+};
+
+type SignupRequest = {
+  email: string;
+  nickname: string;
+  password: string;
+  phoneNumber: string;
+};
+type SignupResponse = CommonResponse<{ userId: number }>;
 
 export const AuthApi = {
   login: (payload: LoginRequest) =>
@@ -86,4 +97,6 @@ export const AuthApi = {
       "/api/auth/email-verification/confirm",
       payload,
     ),
+  signup: (payload: SignupRequest) =>
+    apiClient.post<SignupResponse>("/api/auth/signup", payload),
 };

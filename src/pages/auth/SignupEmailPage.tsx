@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthApi } from "../../api/auth";
 
 export default function SignupEmailPage() {
+  const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
   const [nicknameChecked, setNicknameChecked] = useState(false);
   const [nicknameMessage, setNicknameMessage] = useState("");
@@ -11,13 +12,21 @@ export default function SignupEmailPage() {
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
   const [verifyCode, setVerifyCode] = useState("");
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [codeMessage, setCodeMessage] = useState("");
+  const [codeLoading, setCodeLoading] = useState(false);
   const phonePattern = /^010-\d{4}-\d{4}$/;
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isMatch, setIsMatch] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [signupLoading, setSignupLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [signupError, setSignupError] = useState("");
 
   const handleCheckNickname = async () => {
     const trimmedNickname = nickname.trim();
@@ -60,6 +69,9 @@ export default function SignupEmailPage() {
 
   const handleEmailChange = (value: string) => {
     setEmail(value);
+    setEmailVerified(false);
+    setCodeMessage("");
+    setVerifyCode("");
     setEmailError(
       value.length === 0 || EMAIL_REGEX.test(value)
         ? ""
@@ -90,17 +102,105 @@ export default function SignupEmailPage() {
     }
   };
 
+  const handleRequestEmailVerification = async () => {
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail || !EMAIL_REGEX.test(trimmedEmail)) {
+      setEmailError("올바른 이메일 주소를 입력해주세요.");
+      return;
+    }
+
+    setEmailLoading(true);
+    setEmailVerified(false);
+    setCodeMessage("");
+    setVerifyCode("");
+
+    try {
+      await AuthApi.requestEmailVerification({ email: trimmedEmail });
+      alert("인증 코드를 보냈습니다.");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        alert(
+          error.response?.data?.message ??
+            "인증 코드 전송 중 오류가 발생했습니다.",
+        );
+      } else {
+        alert("알 수 없는 오류가 발생했습니다.");
+      }
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const handleConfirmVerification = async () => {
+    const trimmedEmail = email.trim();
+    const trimmedCode = verifyCode.trim();
+    if (!trimmedEmail || !EMAIL_REGEX.test(trimmedEmail)) {
+      setEmailError("올바른 이메일 주소를 입력해주세요.");
+      return;
+    }
+    if (!trimmedCode) {
+      setCodeMessage("인증번호를 입력해주세요.");
+      return;
+    }
+    setCodeLoading(true);
+    setCodeMessage("");
+    try {
+      const { data } = await AuthApi.confirmEmailVerification({
+        email: trimmedEmail,
+        emailVerificationCode: trimmedCode,
+      });
+      if (!data.isSuccess) {
+        setCodeMessage(data.message ?? "인증번호가 올바르지 않습니다.");
+        setEmailVerified(false);
+        return;
+      }
+      setCodeMessage("인증이 완료되었습니다.");
+      setEmailVerified(true);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setCodeMessage(
+          error.response?.data?.message ??
+            "인증번호 확인 중 오류가 발생했습니다.",
+        );
+      } else {
+        setCodeMessage("알 수 없는 오류가 발생했습니다.");
+      }
+      setEmailVerified(false);
+    } finally {
+      setCodeLoading(false);
+    }
+  };
+
   const handleConfirmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPasswordConfirm(value);
     setIsMatch(value === password);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!EMAIL_REGEX.test(email.trim())) {
+    const trimmedNickname = nickname.trim();
+    const trimmedEmail = email.trim();
+
+    if (!trimmedNickname) {
+      setNicknameMessage("닉네임을 입력해주세요.");
+      return;
+    }
+
+    if (!nicknameChecked) {
+      setNicknameMessage("닉네임 중복 확인을 완료해주세요.");
+      return;
+    }
+
+    if (!EMAIL_REGEX.test(trimmedEmail)) {
       setEmailError("올바른 이메일 주소를 입력해주세요.");
+      return;
+    }
+
+    if (!emailVerified) {
+      setCodeMessage("이메일 인증을 완료해주세요.");
       return;
     }
 
@@ -111,12 +211,48 @@ export default function SignupEmailPage() {
       return;
     }
 
-    if (!isMatch) {
-      alert("비밀번호가 일치하지 않습니다.");
+    if (!password) {
+      setSignupError("비밀번호를 입력해주세요.");
       return;
     }
 
-    alert("회원가입 완료!");
+    if (!isMatch) {
+      setSignupError("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    setSignupLoading(true);
+    setSignupError("");
+
+    try {
+      const { data } = await AuthApi.signup({
+        email: trimmedEmail,
+        nickname: trimmedNickname,
+        password,
+        phoneNumber: phone,
+      });
+
+      if (!data.isSuccess) {
+        setSignupError(
+          data.message ?? "회원가입에 실패했습니다. 다시 시도해주세요.",
+        );
+        return;
+      }
+
+      alert("회원가입이 완료되었습니다. 로그인해 주세요.");
+      navigate("/");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setSignupError(
+          error.response?.data?.message ??
+            "회원가입에 실패했습니다. 다시 시도해주세요.",
+        );
+      } else {
+        setSignupError("알 수 없는 오류가 발생했습니다.");
+      }
+    } finally {
+      setSignupLoading(false);
+    }
   };
 
   return (
@@ -185,9 +321,11 @@ export default function SignupEmailPage() {
               )}
               <button
                 type="button"
+                onClick={handleRequestEmailVerification}
+                disabled={emailLoading}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded"
               >
-                인증하기
+                {emailLoading ? "발송 중..." : "인증하기"}
               </button>
             </div>
           </div>
@@ -207,11 +345,22 @@ export default function SignupEmailPage() {
               />
               <button
                 type="button"
+                onClick={handleConfirmVerification}
+                disabled={codeLoading}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded"
               >
-                확인
+                {codeLoading ? "확인 중..." : "확인"}
               </button>
             </div>
+            {codeMessage && (
+              <p
+                className={`text-xs mt-1 ${
+                  emailVerified ? "text-green-600" : "text-red-500"
+                }`}
+              >
+                {codeMessage}
+              </p>
+            )}
           </div>
 
           {/* 전화번호 */}
