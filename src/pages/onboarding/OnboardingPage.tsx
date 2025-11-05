@@ -1,7 +1,7 @@
 // 제출부분 API 연동부분 주석처리하고 일단 home으로 넘어가는 것 구현하는중
 import { useState } from "react";
 // import { OnboardingApi, type OnboardingPayload } from "@/api/user";
-import { type OnboardingPayload } from "@/api/user";
+import { type OnboardingPayload, OnboardingApi } from "@/api/user";
 import { useNavigate } from "react-router-dom";
 import Step1Space from "@/components/steps/Step1Space";
 import Step2Mood from "@/components/steps/Step2Mood";
@@ -9,6 +9,39 @@ import Step3Age from "@/components/steps/Step3Age";
 import Step4Gender from "@/components/steps/Step4Gender";
 
 const TOTAL_STEPS = 4;
+
+const AGE_MAP = {
+  "10대": "TEENAGER",
+  "20대": "TWENTIES",
+  "30대": "THIRTIES",
+  "40대": "FORTIES",
+  "50대": "FIFTIES",
+  "60대": "SIXTIES",
+};
+
+const GENDER_MAP = {
+  남성: "MALE",
+  여성: "FEMALE",
+  기타: "NAN",
+};
+
+const SPACE_MAP = {
+  원룸: "ONE_ROOM",
+  침실: "BEDROOM",
+  화장실: "BATHROOM",
+  주방: "KITCHEN",
+  현관: "ENTRANCE",
+  방: "ROOM",
+};
+
+const MOOD_MAP = {
+  포근한: "COZY",
+  심플한: "SIMPLE",
+  아늑한: "SNUG",
+  깔끔한: "NEAT",
+  시크한: "CHIC",
+  귀여운: "CUTE",
+};
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
@@ -28,17 +61,21 @@ export default function OnboardingPage() {
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
-    // try {
-    //   await OnboardingApi.onboardingSubmit(form);
-    //   localStorage.setItem("hasCompletedOnboarding", "true");
-    // 나중에는 localStorage에 저장하는게 아니라 API연동해서 확인하고 할거라 괜춘
-    //   navigate("/home");
-    // } catch (error) {
-    //   console.error("온보딩 저장 실패:", error);
-    // }
+    try {
+      const payload: OnboardingPayload = {
+        ageGroup: AGE_MAP[form.ageGroup as keyof typeof AGE_MAP],
+        gender: GENDER_MAP[form.gender as keyof typeof GENDER_MAP],
+        spaceType: SPACE_MAP[form.spaceType as keyof typeof SPACE_MAP],
+        moodType: MOOD_MAP[form.moodType as keyof typeof MOOD_MAP],
+      };
 
-    localStorage.setItem("hasCompletedOnboarding", "true");
-    navigate("/home");
+      console.log("보낼 payload:", payload);
+      await OnboardingApi.onboardingSubmit(payload);
+      navigate("/home", { replace: true });
+    } catch (error) {
+      console.error("온보딩 저장 실패:", error);
+      alert("온보딩 정보 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    }
   };
 
   return (

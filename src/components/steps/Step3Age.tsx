@@ -24,7 +24,7 @@ export default function Step3Age({
       <h2 className="text-xl font-semibold text-[#5D3C28] mb-10">
         현재 나이대를 선택해주세요
       </h2>
-      <div className="grid grid-cols-3 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
         {AGE_OPTIONS.map((age) => (
           <button
             key={age}
