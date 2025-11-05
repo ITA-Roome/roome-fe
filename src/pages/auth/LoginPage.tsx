@@ -73,8 +73,18 @@ export default function LoginPage() {
 
       setAuthToken(accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+      // 이 부분을 나중에 API를 사용해서
+      // (user_onboarding_table) -> /home
+      // (!user onboarding_table) -> /onboarding
+      const hasCompletedOnboarding =
+        localStorage.getItem("hasCompletedOnboarding") === "false";
+
+      if (!hasCompletedOnboarding) {
+        localStorage.setItem("hasCompletedOnboarding", "false");
+      }
+
       console.log("로그인 성공:", userInfo);
-      navigate("/home");
+      navigate(hasCompletedOnboarding ? "/home" : "/onboarding");
     } catch (error) {
       if (axios.isAxiosError<LoginErrorResponse>(error)) {
         const { status, data } = error.response ?? {};

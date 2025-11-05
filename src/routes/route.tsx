@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
 
 // 각 페이지 import
 import Layout from "@/layout/Layout";
@@ -9,16 +9,29 @@ import SignupPage from "@/pages/auth/SignupPage";
 import SignupEmailPage from "@/pages/auth/SignupEmailPage";
 import KakaoCallback from "@/pages/auth/KakaoCallback";
 import GoogleCallback from "@/pages/auth/GoogleCallback";
+import OnboardingPage from "@/pages/onboarding/OnBoardingPage";
 import NotFoundPage from "@/pages/common/NotFoundPage";
 import HomePage from "@/pages/home/HomePage";
 
 function ProtectedRoute({ children }: PropsWithChildren) {
-  //추후 실제 로그인 여부로 대체 필요
-  const isLoggedIn = true;
+  const token = localStorage.getItem("token");
+  const hasCompletedOnboarding =
+    localStorage.getItem("hasCompletedOnboarding") === "true";
+  const location = useLocation();
 
-  if (!isLoggedIn) {
+  if (!token) {
     return <Navigate to="/" replace />;
   }
+
+  if (!hasCompletedOnboarding && location.pathname !== "/onboarding") {
+    return <Navigate to="/onboarding" replace />;
+  }
+  //추후 실제 로그인 여부로 대체 필요
+  // const isLoggedIn = true;
+
+  // if (!isLoggedIn) {
+  //   return <Navigate to="/" replace />;
+  // }
 
   return children;
 }
@@ -60,6 +73,10 @@ const router = createBrowserRouter([
     ),
     errorElement: <NotFoundPage />,
     children: [
+      {
+        path: "onboarding",
+        element: <OnboardingPage />,
+      },
       {
         path: "home",
         element: <HomePage />,
