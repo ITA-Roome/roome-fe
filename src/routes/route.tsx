@@ -6,8 +6,6 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-// 각 페이지 import
-import Layout from "@/layout/Layout";
 import FindPw from "@/pages/auth/FindPw";
 import LoginPage from "@/pages/auth/LoginPage";
 import SignupPage from "@/pages/auth/SignupPage";
@@ -16,8 +14,13 @@ import KakaoCallback from "@/pages/auth/KakaoCallback";
 import GoogleCallback from "@/pages/auth/GoogleCallback";
 import OnboardingPage from "@/pages/onboarding/OnboardingPage";
 import NotFoundPage from "@/pages/common/NotFoundPage";
-import HomePage from "@/pages/home/HomePage";
 import { OnboardingApi } from "@/api/user";
+import ChatPage from "@/pages/chat/ChatPage";
+import BoardPage from "../pages/board/BoardPage";
+import FeedPage from "../pages/feed/FeedPage";
+import Layout from "@/layout/Layout";
+import ShopPage from "@/pages/shop/ShopPage";
+import AuthLayout from "@/layout/AuthLayout";
 
 function ProtectedRoute({ children }: PropsWithChildren) {
   const token = localStorage.getItem("token");
@@ -79,7 +82,7 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <>
-        <Layout />
+        <AuthLayout />
       </>
     ),
     errorElement: <NotFoundPage />,
@@ -116,10 +119,21 @@ const router = createBrowserRouter([
         element: <OnboardingPage />,
       },
       {
-        path: "home",
-        element: <HomePage />,
+        path: "feed",
+        element: <FeedPage />,
       },
-      // 페이지 만들 시 추가
+      {
+        path: "chat",
+        element: <ChatPage />,
+      },
+      {
+        path: "board",
+        element: <BoardPage />,
+      },
+      {
+        path: "shop",
+        element: <ShopPage />,
+      },
     ],
   },
   {
