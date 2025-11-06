@@ -22,7 +22,7 @@ const AGE_MAP = {
 const GENDER_MAP = {
   남성: "MALE",
   여성: "FEMALE",
-  기타: "NAN",
+  기타: "OTHER",
 };
 
 const SPACE_MAP = {
