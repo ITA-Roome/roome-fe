@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { setAuthToken } from "../../lib/apiClient";
 import { AuthApi } from "../../api/auth";
+import { OnboardingApi } from "@/api/user";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -69,12 +70,24 @@ export default function LoginPage() {
         return;
       }
 
-      const { accessToken, refreshToken, userInfo } = payload.data;
+      const { accessToken, refreshToken } = payload.data;
 
       setAuthToken(accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      console.log("로그인 성공:", userInfo);
-      navigate("/home");
+
+      try {
+        const { data } = await OnboardingApi.checkOnboardingExistence();
+        const alreadyOnboarded =
+          data.data?.isExist ??
+          data.data?.exists ??
+          data.data?.hasOnboardingInformation ??
+          false;
+
+        navigate(alreadyOnboarded ? "/home" : "/onboarding", { replace: true });
+      } catch (existError) {
+        console.error("온보딩 여부 확인 실패:", existError);
+        navigate("/onboarding", { replace: true });
+      }
     } catch (error) {
       if (axios.isAxiosError<LoginErrorResponse>(error)) {
         const { status, data } = error.response ?? {};
