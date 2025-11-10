@@ -28,21 +28,13 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, botReply]);
   };
 
-  // return (
-  //   <div className="flex flex-col h-screen bg-[var(--color-primary-50)]">
-  //     <MessageList messages={messages} />
-  //     <ChatInput onSend={handleSend} />
-  //   </div>
-  // );
   return (
     <div
-      className="flex flex-col bg-primary-50"
-      style={{ minHeight: `calc(100vh - ${HEADER + FOOTER}px)` }}
+      className="flex flex-col bg-primary-50 overflow-hidden"
+      style={{ height: `calc(100vh - ${HEADER + FOOTER}px)` }}
     >
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-        <MessageList messages={messages} />
-      </div>
-      <div className="sticky bottom-0 bg-primary-50">
+      <MessageList messages={messages} />
+      <div className="mt-auto bg-primary-50">
         <ChatInput onSend={handleSend} />
       </div>
     </div>
