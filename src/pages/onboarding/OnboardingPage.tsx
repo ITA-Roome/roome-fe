@@ -71,7 +71,7 @@ export default function OnboardingPage() {
 
       console.log("보낼 payload:", payload);
       await OnboardingApi.onboardingSubmit(payload);
-      navigate("/home", { replace: true });
+      navigate("/feed", { replace: true });
     } catch (error) {
       console.error("온보딩 저장 실패:", error);
       alert("온보딩 정보 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");

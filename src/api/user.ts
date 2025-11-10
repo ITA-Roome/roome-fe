@@ -23,5 +23,7 @@ export const OnboardingApi = {
   onboardingSubmit: (payload: OnboardingPayload) =>
     apiClient.post("/api/user/onboarding", payload),
   checkOnboardingExistence: () =>
-    apiClient.get<OnboardingExistenceResponse>("api/user/onboarding/existence"),
+    apiClient.get<OnboardingExistenceResponse>(
+      "/api/user/onboarding/existence",
+    ),
 };
