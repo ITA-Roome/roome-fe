@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { fetchSuggestMock, getPopularMock, getRecentMock } from "@/api/search";
 import InfiniteScrollGrid from "@/components/feed/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed/grid/PhotoCard";
@@ -11,8 +9,8 @@ import useGetInfiniteProductsList, {
 import { useMemo, useState } from "react";
 
 export default function FeedPage() {
-  const [search, setSearch] = useState("");
-  const [order, setOrder] = useState<ProductOrder>("LATEST");
+  const [search] = useState("");
+  const [order] = useState<ProductOrder>("LATEST");
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetInfiniteProductsList(21, search, order);

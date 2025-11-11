@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { fetchSuggestMock, getPopularMock, getRecentMock } from "@/api/search";
 import useGetInfiniteProductsList, {
   ProductOrder,
@@ -25,7 +24,7 @@ export default function ShopPage() {
 
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
-  const [order, setOrder] = useState<ProductOrder>("LATEST");
+  const [order] = useState<ProductOrder>("LATEST");
   const [sort, setSort] = useState("인기순");
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -37,6 +36,7 @@ export default function ShopPage() {
       prev.includes(label) ? prev.filter((x) => x !== label) : [...prev, label]
     );
   };
+
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-20">
       {/* 검색 */}
