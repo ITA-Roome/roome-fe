@@ -47,7 +47,7 @@ function ProtectedRoute({ children }: PropsWithChildren) {
           false;
 
         if (alreadyOnboarded && location.pathname === "/onboarding") {
-          navigate("/home", { replace: true });
+          navigate("/feed", { replace: true });
           return;
         }
 

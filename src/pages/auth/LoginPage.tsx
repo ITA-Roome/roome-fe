@@ -83,7 +83,7 @@ export default function LoginPage() {
           data.data?.hasOnboardingInformation ??
           false;
 
-        navigate(alreadyOnboarded ? "/home" : "/onboarding", { replace: true });
+        navigate(alreadyOnboarded ? "/feed" : "/onboarding", { replace: true });
       } catch (existError) {
         console.error("온보딩 여부 확인 실패:", existError);
         navigate("/onboarding", { replace: true });
