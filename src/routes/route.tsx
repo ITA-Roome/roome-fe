@@ -21,6 +21,8 @@ import FeedPage from "../pages/feed/FeedPage";
 import Layout from "@/layout/Layout";
 import ShopPage from "@/pages/shop/ShopPage";
 import AuthLayout from "@/layout/AuthLayout";
+import FeedDetailPage from "@/pages/feed/FeedDetailPage";
+import ShopDetailPage from "@/pages/shop/ShopDetailPage";
 
 function ProtectedRoute({ children }: PropsWithChildren) {
   const token = localStorage.getItem("token");
@@ -123,6 +125,10 @@ const router = createBrowserRouter([
         element: <FeedPage />,
       },
       {
+        path: "feed-detail",
+        element: <FeedDetailPage />,
+      },
+      {
         path: "chat",
         element: <ChatPage />,
       },
@@ -133,6 +139,10 @@ const router = createBrowserRouter([
       {
         path: "shop",
         element: <ShopPage />,
+      },
+      {
+        path: "shop-deail",
+        element: <ShopDetailPage />,
       },
     ],
   },

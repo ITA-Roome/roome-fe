@@ -78,6 +78,7 @@ type SignupResponse = CommonResponse<{ userId: number }>;
 export const AuthApi = {
   login: (payload: LoginRequest) =>
     apiClient.post<LoginResponse>("/api/auth/login", payload),
+
   loginWithGoogle: (payload: OAuthCodeRequest) =>
     apiClient.post<OAuthLoginResponse>("/api/auth/google/callback", payload),
   loginWithKakao: (payload: OAuthCodeRequest) =>
@@ -95,7 +96,7 @@ export const AuthApi = {
   confirmEmailVerification: (payload: EmailVerificationConfirmRequest) =>
     apiClient.post<CommonResponse>(
       "/api/auth/email-verification/confirm",
-      payload,
+      payload
     ),
   signup: (payload: SignupRequest) =>
     apiClient.post<SignupResponse>("/api/auth/signup", payload),
