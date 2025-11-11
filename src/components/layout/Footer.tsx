@@ -1,8 +1,8 @@
 import { NavLink } from "react-router-dom";
-import SearchIcon from "@/assets/icons/search.svg?react";
-import HomeIcon from "@/assets/icons/home.svg?react";
-import PersonIcon from "@/assets/icons/person.svg?react";
-import FavoriteIcon from "@/assets/icons/favorite.svg?react";
+import SearchIcon from "@/assets/icons/navBar/search.svg?react";
+import HomeIcon from "@/assets/icons/navBar/home.svg?react";
+import PersonIcon from "@/assets/icons/navBar/person.svg?react";
+import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
 
 export default function Footer() {
   const navItems = [
@@ -13,8 +13,8 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="fixed bottom-3 left-0 right-0 z-50">
-      <nav className="max-w-md mx-auto">
+    <footer className="fixed inset-x-0 bottom-0 z-50 bg-primary-50">
+      <nav className="mx-auto max-w-md px-4">
         <ul className="flex justify-around py-3">
           {navItems.map(({ to, label, Icon }) => (
             <li key={to} className="flex flex-col items-center">
@@ -26,11 +26,22 @@ export default function Footer() {
                   }`
                 }
               >
-                <Icon
-                  className="w-[24px] h-[24px]"
-                  style={{ fill: "currentColor" }}
-                />
-                <span className="font-caption">{label}</span>
+                {({ isActive }) => (
+                  <>
+                    <Icon
+                      className={`w-[24px] h-[24px] ${
+                        isActive ? "text-primary-700" : "text-primary-disabled"
+                      }`}
+                    />
+                    <span
+                      className={`font-caption ${
+                        isActive ? "text-primary-700" : "text-primary-disabled"
+                      }`}
+                    >
+                      {label}
+                    </span>
+                  </>
+                )}
               </NavLink>
             </li>
           ))}
