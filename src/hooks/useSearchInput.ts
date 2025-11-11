@@ -67,7 +67,6 @@ export function useSearchbox({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // 입력에 따라 소스 결정 + 자동완성 호출
   useEffect(() => {
     if (!open) return;
     const q = input.trim();
@@ -110,7 +109,6 @@ export function useSearchbox({
   };
 
   return {
-    // state
     open,
     setOpen,
     input,
@@ -122,7 +120,6 @@ export function useSearchbox({
     highlight,
     composingRef,
 
-    // actions
     move,
     select: (index: number) => items[index]?.text ?? "",
     clear: () => setInput(""),
