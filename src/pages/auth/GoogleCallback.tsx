@@ -19,11 +19,11 @@ export default function GoogleCallback() {
         const { accessToken } = data.data;
 
         setAuthToken(accessToken);
-        navigate("/home");
+        navigate("/feed");
       } catch (error) {
         console.error("구글 로그인 실패", error);
         alert("구글 로그인 실패");
-        navigate("/login");
+        navigate("/");
       }
     };
 
