@@ -79,9 +79,13 @@ export const AuthApi = {
   login: (payload: LoginRequest) =>
     apiClient.post<LoginResponse>("/api/auth/login", payload),
   loginWithGoogle: (payload: OAuthCodeRequest) =>
-    apiClient.post<OAuthLoginResponse>("/api/auth/google/callback", payload),
+    apiClient.get<OAuthLoginResponse>("/api/auth/google/callback", {
+      params: payload,
+    }),
   loginWithKakao: (payload: OAuthCodeRequest) =>
-    apiClient.post<OAuthLoginResponse>("/api/auth/kakao/callback", payload),
+    apiClient.get<OAuthLoginResponse>("/api/auth/kakao/callback", {
+      params: payload,
+    }),
   getGoogleLoginUrl: () =>
     apiClient.get<SocialAuthUrlResponse>("/api/auth/google/authorize-uri"),
   getKakaoLoginUrl: () =>

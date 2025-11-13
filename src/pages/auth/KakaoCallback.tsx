@@ -19,11 +19,11 @@ export default function KakaoCallback() {
         const { accessToken } = data.data;
 
         setAuthToken(accessToken);
-        navigate("/home");
+        navigate("/feed");
       } catch (error) {
         console.error("카카오 로그인 실패", error);
         alert("카카오 로그인 실패");
-        navigate("/login");
+        navigate("/");
       }
     };
 
