@@ -125,7 +125,7 @@ const router = createBrowserRouter([
         element: <FeedPage />,
       },
       {
-        path: "feed-detail",
+        path: "feed-detail/:productId-detail",
         element: <FeedDetailPage />,
       },
       {
@@ -141,7 +141,7 @@ const router = createBrowserRouter([
         element: <ShopPage />,
       },
       {
-        path: "shop-deail",
+        path: "shop-detail/:productId-detail",
         element: <ShopDetailPage />,
       },
     ],
