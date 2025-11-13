@@ -1,16 +1,18 @@
 import { fetchSuggestMock, getPopularMock, getRecentMock } from "@/api/search";
-import InfiniteScrollGrid from "@/components/feed/grid/InfiniteScrollGrid";
-import PhotoCard from "@/components/feed/grid/PhotoCard";
-import SearchInput from "@/components/feed/search/SearchInput";
+import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
+import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
+import SearchInput from "@/components/feed&shop/search/SearchInput";
 import GridSkeleton from "@/components/skeletons/GridSkeleton";
 import useGetInfiniteProductsList, {
   ProductOrder,
 } from "@/hooks/useInfiniteScroll";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function FeedPage() {
   const [search] = useState("");
   const [order] = useState<ProductOrder>("LATEST");
+  const navigate = useNavigate();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetInfiniteProductsList(21, search, order);
@@ -31,7 +33,7 @@ export default function FeedPage() {
         />
       </section>
 
-      <section className="mt-5 px-4 relative -z-10">
+      <section className="mt-3">
         <InfiniteScrollGrid
           items={flat}
           keySelector={(it) => String(it.id)}
@@ -43,7 +45,7 @@ export default function FeedPage() {
               price={it.price}
               subtitle={it.shopName}
               showInfo={false}
-              // onClick={() => navigate(`/products/${it.id}`)} 추후 상세 페이지 연결 예정임
+              onClick={() => navigate(`/feed-detail/${it.id}`)}
             />
           )}
           hasNextPage={!!hasNextPage}

@@ -11,7 +11,7 @@ export const ProductApi = {
     params: ProductListParams
   ): Promise<CommonResponse<ProductListResponse>> => {
     const { data } = await apiClient.get<CommonResponse<ProductListResponse>>(
-      "/products",
+      "api/products",
       {
         params,
       }
@@ -23,7 +23,7 @@ export const ProductApi = {
     productId: number
   ): Promise<CommonResponse<ProductItem>> => {
     const { data } = await apiClient.get<CommonResponse<ProductItem>>(
-      `/products/${productId}`
+      `api/products/${productId}`
     );
     return data;
   },
