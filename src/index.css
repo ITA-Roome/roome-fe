@@ -1,1 +1,99 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Pretendard Variable";
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/woff2/PretendardVariable.woff2")
+    format("woff2-variations");
+  font-display: swap;
+}
+
+@theme {
+  --color-primary-800: #412a1d;
+  --color-primary-700: #5d3c28; /* primary color */
+  --color-primary-600: #764e3a;
+  --color-primary-400: #8d7569;
+  --color-primary-200: #cbbfb3;
+  --color-primary-50: #fffdf4;
+
+  --color-point: #ff5d0c;
+  --color-state-green: #27d11e;
+  --color-state-red: #ff120a;
+
+  --color-primary-disabled: #a09cab;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+}
+
+/* 전체 배경 적용 */
+body {
+  background-color: #fffdf4;
+}
+
+@layer utilities {
+  .font-heading1 {
+    font-size: 20px;
+    font-weight: 700; /* bold */
+    line-height: 25px;
+    letter-spacing: 0.4px;
+  }
+
+  .font-heading2 {
+    font-size: 14px;
+    font-weight: 400; /* Regular */
+    line-height: 25px;
+    letter-spacing: 0.4px;
+  }
+
+  .font-body1 {
+    font-size: 16px;
+    font-weight: 500; /* medium */
+    line-height: 25px;
+    letter-spacing: 0.4px;
+  }
+
+  .font-body2 {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 25px;
+    letter-spacing: 0.4px;
+  }
+
+  .font-body3 {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 25px;
+    letter-spacing: 0.4px;
+  }
+
+  .font-caption {
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 25px;
+    letter-spacing: 0.4px;
+  }
+
+  .font-caption-strong {
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 25px;
+    letter-spacing: 0.4px;
+  }
+
+  /* primary button */
+  .rounding-32 {
+    border-radius: 6px;
+  }
+
+  /* small button */
+  .rounding-16 {
+    border-radius: 4px;
+  }
+
+  /* 검색 패널 그림자 */
+  .shadow {
+    box-shadow: 2px 2px 12px -3px rgba(0, 0, 0, 0.2);
+  }
+}

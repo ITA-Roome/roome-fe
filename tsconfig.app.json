@@ -10,7 +10,6 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vite/client"],
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -27,5 +26,12 @@
     "noUncheckedSideEffectImports": true
   },
   /* TS가 컴파일/타입체크할 파일 범위 설정 */
-  "include": ["src", "src/**/*", "**/*.ts", "**/*.tsx", "tailwind.config.ts"]
+  "include": [
+    "src",
+    "src/**/*",
+    "**/*.ts",
+    "**/*.tsx",
+    "tailwind.config.ts",
+    "svg.d.ts"
+  ]
 }
