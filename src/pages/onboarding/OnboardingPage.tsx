@@ -1,7 +1,6 @@
-// 제출부분 API 연동부분 주석처리하고 일단 home으로 넘어가는 것 구현하는중
 import { useState } from "react";
-// import { OnboardingApi, type OnboardingPayload } from "@/api/user";
-import { type OnboardingPayload, OnboardingApi } from "@/api/user";
+import { UserApi } from "@/api/user";
+import type { OnboardingPayload } from "@/types/user";
 import { useNavigate } from "react-router-dom";
 import Step1Space from "@/components/steps/Step1Space";
 import Step2Mood from "@/components/steps/Step2Mood";
@@ -70,7 +69,7 @@ export default function OnboardingPage() {
       };
 
       console.log("보낼 payload:", payload);
-      await OnboardingApi.onboardingSubmit(payload);
+      await UserApi.onboardingSubmit(payload);
       navigate("/feed", { replace: true });
     } catch (error) {
       console.error("온보딩 저장 실패:", error);

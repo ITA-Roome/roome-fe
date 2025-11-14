@@ -13,7 +13,15 @@ export default function MessageList({ messages }: Props) {
   useEffect(() => {
     const node = listRef.current;
     if (!node) return;
-    node.scrollTop = node.scrollHeight;
+
+    const isOverflowing = node.scrollHeight > node.clientHeight;
+
+    if (isOverflowing) {
+      node.scrollTo({
+        top: node.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, [messages]);
 
   return (

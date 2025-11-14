@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setAuthToken } from "../../lib/apiClient";
 import { AuthApi } from "../../api/auth";
-import { OnboardingApi } from "@/api/user";
+import { UserApi } from "@/api/user";
 
 export default function KakaoCallback() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export default function KakaoCallback() {
         localStorage.setItem("refreshToken", refreshToken);
         try {
           const { data: onboardingData } =
-            await OnboardingApi.checkOnboardingExistence();
+            await UserApi.checkOnboardingExistence();
 
           const alreadyOnboarded =
             onboardingData.data?.isExist ??
