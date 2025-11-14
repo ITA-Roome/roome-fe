@@ -1,10 +1,16 @@
+import { useState } from "react";
 import BookMarkedIcon from "@/assets/icons/bookmark.svg?react";
 import MoveIcon from "@/assets/icons/move.svg?react";
 import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
 import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
-import ArrowDown from "@/assets/icons/arrow-down.svg?react";
+
+import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
+import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
+import clsx from "clsx";
 
 export default function ShopDetailPage() {
+  const [isDescOpen, setIsDescOpen] = useState(false);
+
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
       {/* 메인 이미지 */}
@@ -50,28 +56,57 @@ export default function ShopDetailPage() {
           <div className="w-11 h-11 rounded-full bg-primary-200" />
           <div>
             <p className="font-caption-strong">닉네임</p>
-            <p className="text-sm text-primary-400">간단한 설명</p>
+            <p className="font-body2 text-primary-400">간단한 설명</p>
           </div>
         </div>
       </section>
 
-      {/* 설명 */}
-      <section className="mt-3">
-        <p className="leading-relaxed text-primary-700 line-clamp-3">
+      {/* 기타 설명 */}
+      <section className="mt-6">
+        {/* 설명 텍스트*/}
+        <p
+          className={clsx(
+            "mt-2 font-body2 text-primary-700",
+            isDescOpen ? "" : "line-clamp-2",
+          )}
+        >
           Description text about something on this page that can be long or
           short. It can be pretty long and will be clamped to three lines in
-          preview.
+          preview...
         </p>
-
-        <div className="mt-3 flex justify-center">
+        {/* 토글 */}
+        <div className="flex justify-center">
           <button
             type="button"
-            className="inline-flex items-center gap-1 text-primary-700 font-caption"
-            aria-label="설명 더보기"
+            onClick={() => setIsDescOpen((prev) => !prev)}
+            className="flex items-center gap-x-2 font-caption-strong text-primary-700"
           >
-            <ArrowDown className="w-3 h-3" />
-            설명 더보기
+            {isDescOpen ? (
+              <>
+                <ArrowUpIcon className="w-3 h-3" />
+                <span>설명 접기</span>
+              </>
+            ) : (
+              <>
+                <ArrowDownIcon className="w-3 h-3" />
+                <span>설명 더보기</span>
+              </>
+            )}
           </button>
+        </div>
+      </section>
+
+      {/* 관련 제품 - 레이아웃만 */}
+      <section className="mt-10">
+        <p className="mb-3 font-caption-strong text-primary-600">관련 제품들</p>
+
+        <div className="grid grid-cols-3 gap-3">
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
         </div>
       </section>
 
@@ -82,12 +117,12 @@ export default function ShopDetailPage() {
         </p>
 
         <div className="grid grid-cols-3 gap-3">
-          <div className="aspect-[3/4] rounded-xl bg-primary-200" />
-          <div className="aspect-[3/4] rounded-xl bg-primary-200" />
-          <div className="aspect-[3/4] rounded-xl bg-primary-200" />
-          <div className="aspect-[3/4] rounded-xl bg-primary-200" />
-          <div className="aspect-[3/4] rounded-xl bg-primary-200" />
-          <div className="aspect-[3/4] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
         </div>
       </section>
     </div>
