@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 // import type { UserLikeProduct } from "@/types/user";
 // import { UserApi } from "@/api/user";
 
-import chat1 from "@/assets/icons/bed.png";
-import chat2 from "@/assets/icons/desk.png";
-import chat3 from "@/assets/icons/light.png";
+import chat1 from "@/assets/icons/bed.svg";
+import chat2 from "@/assets/icons/desk.svg";
+import chat3 from "@/assets/icons/light.svg";
 
 interface BoardItem {
   title: string;

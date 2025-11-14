@@ -4,12 +4,12 @@ import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
 import TabMenu from "@/components/board/TabMenu";
 import type { UserLikeProduct } from "@/types/user";
 
-import ref1 from "@/assets/icons/bed.png";
-import ref2 from "@/assets/icons/desk.png";
-import ref3 from "@/assets/icons/light.png";
+import ref1 from "@/assets/icons/bed.svg";
+import ref2 from "@/assets/icons/desk.svg";
+import ref3 from "@/assets/icons/light.svg";
 
 export default function LikeBoardPage() {
-  const [tab, setTab] = useState<"reference" | "product">("product");
+  const [tab, setTab] = useState<"reference" | "product">("reference");
   const [likedProducts, setLikedProducts] = useState<UserLikeProduct[]>([]);
   const [referenceImages] = useState<string[]>([ref1, ref2, ref3]);
 

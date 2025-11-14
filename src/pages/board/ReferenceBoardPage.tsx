@@ -1,9 +1,9 @@
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
 
-import ref1 from "@/assets/icons/bed.png";
-import ref2 from "@/assets/icons/desk.png";
-import ref3 from "@/assets/icons/light.png";
+import ref1 from "@/assets/icons/bed.svg";
+import ref2 from "@/assets/icons/desk.svg";
+import ref3 from "@/assets/icons/light.svg";
 
 export default function ReferenceBoardPage() {
   // 더미 3개

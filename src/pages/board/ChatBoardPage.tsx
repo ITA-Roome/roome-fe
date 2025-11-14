@@ -1,9 +1,9 @@
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import ConsultCard from "@/components/board/ConsultCard";
 
-import img1 from "@/assets/icons/bed.png";
-import img2 from "@/assets/icons/desk.png";
-import img3 from "@/assets/icons/light.png";
+import img1 from "@/assets/icons/bed.svg";
+import img2 from "@/assets/icons/desk.svg";
+import img3 from "@/assets/icons/light.svg";
 
 interface ConsultItem {
   id: number;
