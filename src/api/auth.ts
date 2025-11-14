@@ -100,7 +100,7 @@ export const AuthApi = {
   confirmEmailVerification: (payload: EmailVerificationConfirmRequest) =>
     apiClient.post<CommonResponse>(
       "/api/auth/email-verification/confirm",
-      payload
+      payload,
     ),
   signup: (payload: SignupRequest) =>
     apiClient.post<SignupResponse>("/api/auth/signup", payload),

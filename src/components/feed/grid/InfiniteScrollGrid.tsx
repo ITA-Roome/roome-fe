@@ -47,7 +47,7 @@ export default function InfiniteScrollGrid<T>({
         root: null,
         rootMargin: "200px", // 미리 당겨서 로드
         threshold: 0.01,
-      }
+      },
     );
 
     io.observe(el);

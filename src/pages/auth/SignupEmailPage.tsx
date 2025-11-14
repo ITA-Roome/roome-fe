@@ -421,6 +421,7 @@ export default function SignupEmailPage() {
           {/* 회원가입 버튼 */}
           <button
             type="submit"
+            disabled={signupLoading}
             className="w-full h-[50px] mt-2 bg-[#D3C6BC] text-[#5D3C28] font-medium rounded-md disabled:opacity-60"
           >
             {signupLoading ? "가입 중..." : "회원가입"}

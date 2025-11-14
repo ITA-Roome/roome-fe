@@ -33,7 +33,7 @@ export function useSearchbox({
 
   // 소스 상태
   const [source, setSource] = useState<"recent" | "popular" | "autocomplete">(
-    "recent"
+    "recent",
   );
 
   // 데이터
