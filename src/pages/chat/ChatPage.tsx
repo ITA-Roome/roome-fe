@@ -7,8 +7,8 @@ export type Message = {
   content: string;
 };
 
-const HEADER = 100;
-const FOOTER = 96;
+const HEADER = 64;
+const FOOTER = 80;
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -30,11 +30,20 @@ export default function ChatPage() {
 
   return (
     <div
-      className="flex flex-col bg-primary-50 overflow-hidden"
-      style={{ height: `calc(100vh - ${HEADER + FOOTER}px)` }}
+      className="bg-primary-50 max-w-md mx-auto flex flex-col"
+      style={{
+        // 전체 높이에서 Header + Footer 제거 → ChatPage 영역 확보
+        height: `calc(100vh - ${HEADER + FOOTER}px)`,
+        marginTop: HEADER, // Header가 fixed라서 아래로 밀어주기
+      }}
     >
-      <MessageList messages={messages} />
-      <div className="mt-auto bg-primary-50">
+      {/* 위~입력창 사이가 채팅 영역 */}
+      <div className="flex-1 overflow-hidden flex flex-col">
+        <MessageList messages={messages} />
+      </div>
+
+      {/* 입력창 */}
+      <div className="px-4 py-3 bg-primary-50">
         <ChatInput onSend={handleSend} />
       </div>
     </div>

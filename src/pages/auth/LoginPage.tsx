@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { setAuthToken } from "../../lib/apiClient";
 import { AuthApi } from "../../api/auth";
-import { OnboardingApi } from "@/api/user";
+import { UserApi } from "@/api/user";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -76,7 +76,7 @@ export default function LoginPage() {
       localStorage.setItem("refreshToken", refreshToken);
 
       try {
-        const { data } = await OnboardingApi.checkOnboardingExistence();
+        const { data } = await UserApi.checkOnboardingExistence();
         const alreadyOnboarded =
           data.data?.isExist ??
           data.data?.exists ??
