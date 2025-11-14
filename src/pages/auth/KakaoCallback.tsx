@@ -21,7 +21,6 @@ export default function KakaoCallback() {
 
         setAuthToken(accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        navigate("/feed");
         try {
           const { data: onboardingData } =
             await OnboardingApi.checkOnboardingExistence();
