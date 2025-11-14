@@ -5,6 +5,12 @@ type Props = {
   onSend: (message: string) => void;
 };
 
+/**
+ * Renders a text input and send button that collect a message and invoke a send callback.
+ *
+ * @param onSend - Callback invoked with the current input text when the send button is pressed; the input is cleared after calling this callback.
+ * @returns The chat input element containing a text field and a send button.
+ */
 export default function ChatInput({ onSend }: Props) {
   const [input, setInput] = useState("");
 

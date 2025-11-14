@@ -10,6 +10,13 @@ export type Message = {
 const HEADER = 64;
 const FOOTER = 80;
 
+/**
+ * Render the chat UI that manages a list of messages and processes user input.
+ *
+ * The component maintains local `messages` state and provides `handleSend`, which appends a trimmed user message and a placeholder bot reply to the message list.
+ *
+ * @returns The chat page JSX element containing the message list and input area
+ */
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
 

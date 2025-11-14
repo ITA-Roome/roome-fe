@@ -11,6 +11,13 @@ type LoginErrorResponse = {
   message?: string;
 };
 
+/**
+ * Render the login page UI with email and password inputs, client-side validation, error display, loading state, and optional Google/Kakao OAuth flows.
+ *
+ * Performs authentication with backend APIs, stores access and refresh tokens on successful login, checks onboarding status, and navigates to the feed or onboarding flow accordingly. Shows server- or network-provided error messages when login fails.
+ *
+ * @returns The rendered React element for the login page.
+ */
 export default function LoginPage() {
   // 상태 정의
   const [email, setEmail] = useState("");

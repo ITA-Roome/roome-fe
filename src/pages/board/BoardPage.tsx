@@ -13,6 +13,13 @@ interface BoardItem {
   path: string;
 }
 
+/**
+ * Render the board overview page showing three clickable 2x2 preview cards for Likes, Consultations, and References.
+ *
+ * The component loads preview images on mount, builds three board sections (each limited to four images), and navigates to the corresponding board route when a card is clicked.
+ *
+ * @returns A JSX element containing the board overview with three clickable image-preview cards.
+ */
 export default function BoardPage() {
   const navigate = useNavigate();
 
