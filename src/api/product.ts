@@ -8,22 +8,22 @@ import type {
 
 export const ProductApi = {
   fetchProducts: async (
-    params: ProductListParams
+    params: ProductListParams,
   ): Promise<CommonResponse<ProductListResponse>> => {
     const { data } = await apiClient.get<CommonResponse<ProductListResponse>>(
       "api/products",
       {
         params,
-      }
+      },
     );
     return data;
   },
 
   fetchProductDetails: async (
-    productId: number
+    productId: number,
   ): Promise<CommonResponse<ProductItem>> => {
     const { data } = await apiClient.get<CommonResponse<ProductItem>>(
-      `api/products/${productId}`
+      `api/products/${productId}`,
     );
     return data;
   },

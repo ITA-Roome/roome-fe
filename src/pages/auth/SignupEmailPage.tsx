@@ -23,9 +23,7 @@ export default function SignupEmailPage() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isMatch, setIsMatch] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [signupLoading, setSignupLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [signupError, setSignupError] = useState("");
 
   const handleCheckNickname = async () => {
@@ -423,10 +421,17 @@ export default function SignupEmailPage() {
           {/* 회원가입 버튼 */}
           <button
             type="submit"
-            className="w-full h-[50px] mt-2 bg-[#D3C6BC] text-[#5D3C28] font-medium rounded-md"
+            disabled={signupLoading}
+            className="w-full h-[50px] mt-2 bg-[#D3C6BC] text-[#5D3C28] font-medium rounded-md disabled:opacity-60"
           >
-            회원가입
+            {signupLoading ? "가입 중..." : "회원가입"}
           </button>
+
+          {signupError && (
+            <p className="mt-2 text-center text-sm text-red-500">
+              {signupError}
+            </p>
+          )}
         </form>
 
         {/* 로그인 문구 */}

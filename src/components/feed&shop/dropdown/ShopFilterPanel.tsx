@@ -17,7 +17,7 @@ export default function ShopFilterPanel() {
 
   const toggleKeyword = (label: string) => {
     setSelected((prev) =>
-      prev.includes(label) ? prev.filter((x) => x !== label) : [...prev, label]
+      prev.includes(label) ? prev.filter((x) => x !== label) : [...prev, label],
     );
   };
 

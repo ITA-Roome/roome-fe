@@ -3,7 +3,7 @@ import { useEffect } from "react";
 export function useOnClickOutside(
   ref: React.RefObject<HTMLElement | null>,
   handler: (ev: Event) => void,
-  opts: { enabled?: boolean } = {}
+  opts: { enabled?: boolean } = {},
 ) {
   const { enabled = true } = opts;
 

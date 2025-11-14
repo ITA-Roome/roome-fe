@@ -32,7 +32,7 @@ type SelectedData = {
 export default function useGetInfiniteProductsList(
   limit: number,
   search: string,
-  order: ProductOrder
+  order: ProductOrder,
 ): UseInfiniteQueryResult<SelectedData, unknown> {
   return useInfiniteQuery({
     queryKey: [QUERY_KEY.products, "list", { search, order, limit }],

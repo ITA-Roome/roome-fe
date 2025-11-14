@@ -47,7 +47,7 @@ export default function SearchInput({
   useOnClickOutside(
     rootRef as React.RefObject<HTMLElement>,
     () => setOpen(false),
-    { enabled: open }
+    { enabled: open },
   );
 
   return (

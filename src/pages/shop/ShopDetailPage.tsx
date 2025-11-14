@@ -67,7 +67,7 @@ export default function ShopDetailPage() {
         <p
           className={clsx(
             "mt-2 font-body2 text-primary-700",
-            isDescOpen ? "" : "line-clamp-2"
+            isDescOpen ? "" : "line-clamp-2",
           )}
         >
           Description text about something on this page that can be long or
