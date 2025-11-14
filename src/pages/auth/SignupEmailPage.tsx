@@ -23,6 +23,7 @@ export default function SignupEmailPage() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isMatch, setIsMatch] = useState(true);
+
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState("");
 
@@ -55,7 +56,7 @@ export default function SignupEmailPage() {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setNicknameMessage(
-          error.response?.data?.message ?? "닉네임 확인에 실패했습니다.",
+          error.response?.data?.message ?? "닉네임 확인에 실패했습니다."
         );
       } else {
         setNicknameMessage("알 수 없는 오류가 발생했습니다.");
@@ -73,7 +74,7 @@ export default function SignupEmailPage() {
     setEmailError(
       value.length === 0 || EMAIL_REGEX.test(value)
         ? ""
-        : "올바른 이메일 주소를 입력해주세요.",
+        : "올바른 이메일 주소를 입력해주세요."
     );
   };
 
@@ -95,7 +96,7 @@ export default function SignupEmailPage() {
       setPhoneError("");
     } else {
       setPhoneError(
-        "전화번호가 올바른 형식으로 입력되지 않았습니다. 다시 확인해주세요.",
+        "전화번호가 올바른 형식으로 입력되지 않았습니다. 다시 확인해주세요."
       );
     }
   };
@@ -120,7 +121,7 @@ export default function SignupEmailPage() {
       if (axios.isAxiosError(error)) {
         alert(
           error.response?.data?.message ??
-            "인증 코드 전송 중 오류가 발생했습니다.",
+            "인증 코드 전송 중 오류가 발생했습니다."
         );
       } else {
         alert("알 수 없는 오류가 발생했습니다.");
@@ -159,7 +160,7 @@ export default function SignupEmailPage() {
       if (axios.isAxiosError(error)) {
         setCodeMessage(
           error.response?.data?.message ??
-            "인증번호 확인 중 오류가 발생했습니다.",
+            "인증번호 확인 중 오류가 발생했습니다."
         );
       } else {
         setCodeMessage("알 수 없는 오류가 발생했습니다.");
@@ -204,7 +205,7 @@ export default function SignupEmailPage() {
 
     if (!phonePattern.test(phone)) {
       setPhoneError(
-        "전화번호가 올바른 형식으로 입력되지 않았습니다. 다시 확인해주세요.",
+        "전화번호가 올바른 형식으로 입력되지 않았습니다. 다시 확인해주세요."
       );
       return;
     }
@@ -232,7 +233,7 @@ export default function SignupEmailPage() {
 
       if (!data.isSuccess) {
         setSignupError(
-          data.message ?? "회원가입에 실패했습니다. 다시 시도해주세요.",
+          data.message ?? "회원가입에 실패했습니다. 다시 시도해주세요."
         );
         return;
       }
@@ -243,7 +244,7 @@ export default function SignupEmailPage() {
       if (axios.isAxiosError(error)) {
         setSignupError(
           error.response?.data?.message ??
-            "회원가입에 실패했습니다. 다시 시도해주세요.",
+            "회원가입에 실패했습니다. 다시 시도해주세요."
         );
       } else {
         setSignupError("알 수 없는 오류가 발생했습니다.");
@@ -260,7 +261,7 @@ export default function SignupEmailPage() {
         {/* 회원가입 폼 */}
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 px-[10px] text-left"
+          className="flex flex-col gap-4 px-2.5 text-left"
         >
           {/* 닉네임 */}
           <div className="relative">
