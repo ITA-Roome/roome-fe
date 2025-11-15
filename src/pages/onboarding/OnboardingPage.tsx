@@ -42,6 +42,16 @@ const MOOD_MAP = {
   귀여운: "CUTE",
 };
 
+/**
+ * Displays a four-step onboarding UI for selecting space, mood, age group, and gender,
+ * then submits the mapped onboarding payload and navigates to the feed on success.
+ *
+ * The component tracks the current step and collected answers, maps user-facing labels
+ * to internal IDs, calls UserApi.onboardingSubmit with the mapped payload, and on success
+ * replaces navigation to "/feed". On submission failure an alert is shown.
+ *
+ * @returns The onboarding page React element.
+ */
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);

@@ -12,6 +12,13 @@ interface ConsultItem {
   images: string[];
 }
 
+/**
+ * Renders the chat board page that displays consult items in an infinite-scroll grid.
+ *
+ * Uses a static list of dummy consult items and renders each item as a ConsultCard inside InfiniteScrollGrid.
+ *
+ * @returns The page's JSX element containing the consult list layout.
+ */
 export default function ChatBoardPage() {
   const dummyConsultItems: ConsultItem[] = [
     {

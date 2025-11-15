@@ -8,6 +8,14 @@ import ref1 from "@/assets/icons/bed.svg";
 import ref2 from "@/assets/icons/desk.svg";
 import ref3 from "@/assets/icons/light.svg";
 
+/**
+ * Like-board page that shows either liked reference images or liked products in a tabbed grid.
+ *
+ * Renders a TabMenu to switch between "reference" and "product" views and an InfiniteScrollGrid
+ * populated with either predefined reference images or a static list of liked products.
+ *
+ * @returns The page's JSX element containing the tab menu and the grid for the active tab.
+ */
 export default function LikeBoardPage() {
   const [tab, setTab] = useState<"reference" | "product">("reference");
   const [likedProducts, setLikedProducts] = useState<UserLikeProduct[]>([]);
