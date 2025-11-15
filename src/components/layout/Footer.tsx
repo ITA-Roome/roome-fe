@@ -29,7 +29,7 @@ export default function Footer() {
                 {({ isActive }) => (
                   <>
                     <Icon
-                      className={`w-[24px] h-[24px] ${
+                      className={`w-6 h-6 ${
                         isActive ? "text-primary-700" : "text-primary-disabled"
                       }`}
                     />
