@@ -14,16 +14,27 @@ import KakaoCallback from "@/pages/auth/KakaoCallback";
 import GoogleCallback from "@/pages/auth/GoogleCallback";
 import OnboardingPage from "@/pages/onboarding/OnboardingPage";
 import NotFoundPage from "@/pages/common/NotFoundPage";
-import { OnboardingApi } from "@/api/user";
+import { UserApi } from "@/api/user";
 import ChatPage from "@/pages/chat/ChatPage";
-import BoardPage from "../pages/board/BoardPage";
-import FeedPage from "../pages/feed/FeedPage";
+import BoardPage from "@/pages/board/BoardPage";
+import FeedPage from "@/pages/feed/FeedPage";
 import Layout from "@/layout/Layout";
 import ShopPage from "@/pages/shop/ShopPage";
 import AuthLayout from "@/layout/AuthLayout";
 import FeedDetailPage from "@/pages/feed/FeedDetailPage";
 import ShopDetailPage from "@/pages/shop/ShopDetailPage";
+import ChatBoardPage from "@/pages/board/ChatBoardPage";
+import LikeBoardPage from "@/pages/board/LikeBoardPage";
+import ReferenceBoardPage from "@/pages/board/ReferenceBoardPage";
 
+/**
+ * Guards routes by verifying authentication and onboarding status before rendering children.
+ *
+ * Checks for a stored auth token and uses the server's onboarding existence check to decide
+ * whether to redirect the user to login, onboarding, or allow rendering of the protected children.
+ *
+ * @returns The `children` when access is permitted; otherwise `null` while checks are in progress or a `Navigate` element redirecting to the appropriate route (login or onboarding).
+ */
 function ProtectedRoute({ children }: PropsWithChildren) {
   const token = localStorage.getItem("token");
   const location = useLocation();
@@ -39,7 +50,7 @@ function ProtectedRoute({ children }: PropsWithChildren) {
 
     async function checkOnboarding() {
       try {
-        const { data } = await OnboardingApi.checkOnboardingExistence();
+        const { data } = await UserApi.checkOnboardingExistence();
         const alreadyOnboarded =
           data.data?.isExist ??
           data.data?.exists ??
@@ -135,6 +146,18 @@ const router = createBrowserRouter([
       {
         path: "board",
         element: <BoardPage />,
+      },
+      {
+        path: "board/like",
+        element: <LikeBoardPage />,
+      },
+      {
+        path: "board/chat",
+        element: <ChatBoardPage />,
+      },
+      {
+        path: "board/reference",
+        element: <ReferenceBoardPage />,
       },
       {
         path: "shop",

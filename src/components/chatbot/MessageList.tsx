@@ -7,13 +7,28 @@ type Props = {
   messages: Message[];
 };
 
+/**
+ * Render a vertically scrollable list of chat messages and, when the content overflows,
+ * smoothly scroll to the bottom so the latest message is visible.
+ *
+ * @param messages - Array of chat messages; each message's `role` selects either the user or bot message component and `content` is rendered.
+ * @returns The rendered message list container element.
+ */
 export default function MessageList({ messages }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const node = listRef.current;
     if (!node) return;
-    node.scrollTop = node.scrollHeight;
+
+    const isOverflowing = node.scrollHeight > node.clientHeight;
+
+    if (isOverflowing) {
+      node.scrollTo({
+        top: node.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, [messages]);
 
   return (

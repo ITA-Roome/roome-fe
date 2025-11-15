@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { setAuthToken } from "../../lib/apiClient";
 import { AuthApi } from "../../api/auth";
-import { OnboardingApi } from "@/api/user";
+import { UserApi } from "@/api/user";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -11,6 +11,13 @@ type LoginErrorResponse = {
   message?: string;
 };
 
+/**
+ * Render the login page UI with email and password inputs, client-side validation, error display, loading state, and optional Google/Kakao OAuth flows.
+ *
+ * Performs authentication with backend APIs, stores access and refresh tokens on successful login, checks onboarding status, and navigates to the feed or onboarding flow accordingly. Shows server- or network-provided error messages when login fails.
+ *
+ * @returns The rendered React element for the login page.
+ */
 export default function LoginPage() {
   // 상태 정의
   const [email, setEmail] = useState("");
@@ -76,7 +83,7 @@ export default function LoginPage() {
       localStorage.setItem("refreshToken", refreshToken);
 
       try {
-        const { data } = await OnboardingApi.checkOnboardingExistence();
+        const { data } = await UserApi.checkOnboardingExistence();
         const alreadyOnboarded =
           data.data?.isExist ??
           data.data?.exists ??

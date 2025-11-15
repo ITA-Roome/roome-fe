@@ -15,7 +15,7 @@ export default function FeedDetailPage() {
     <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
       {/* 메인 이미지 */}
       <section>
-        <div className="relative rounded-2xl bg-primary-200 aspect-[4/3] overflow-hidden">
+        <div className="relative rounded-2xl bg-primary-200 aspect-4/3 overflow-hidden">
           {/* 곰 아이콘 */}
           <button
             type="button"
@@ -101,12 +101,12 @@ export default function FeedDetailPage() {
         <p className="mb-3 font-caption-strong text-primary-600">관련 제품들</p>
 
         <div className="grid grid-cols-3 gap-3">
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
         </div>
       </section>
 
@@ -117,12 +117,12 @@ export default function FeedDetailPage() {
         </p>
 
         <div className="grid grid-cols-3 gap-3">
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
-          <div className="aspect-[4/3] rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
+          <div className="aspect-4/3 rounded-xl bg-primary-200" />
         </div>
       </section>
     </div>

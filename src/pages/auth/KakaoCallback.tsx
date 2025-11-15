@@ -2,8 +2,22 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setAuthToken } from "../../lib/apiClient";
 import { AuthApi } from "../../api/auth";
-import { OnboardingApi } from "@/api/user";
+import { UserApi } from "@/api/user";
 
+/**
+ * Handles the Kakao OAuth callback: exchanges the authorization code for tokens, applies authentication state, checks onboarding status, and redirects the user accordingly.
+ *
+ * This component reads the `code` query parameter from the current URL. If present, it exchanges the code for access and refresh tokens, sets the access token for API requests, stores the refresh token in localStorage, queries whether the user has completed onboarding, and navigates to `/feed` if onboarding exists or to `/onboarding` otherwise. If the onboarding check fails it navigates to `/onboarding`. If the login exchange fails it shows an alert and navigates to `/`.
+ *
+ * Side effects:
+ * - Calls authentication and user APIs.
+ * - Calls setAuthToken with the retrieved access token.
+ * - Stores the refresh token in localStorage under `refreshToken`.
+ * - Navigates to `/feed`, `/onboarding`, or `/` depending on outcomes.
+ * - Logs errors to the console and shows an alert on login failure.
+ *
+ * @returns A React element shown while the Kakao callback is being processed.
+ */
 export default function KakaoCallback() {
   const navigate = useNavigate();
 
@@ -23,7 +37,7 @@ export default function KakaoCallback() {
         localStorage.setItem("refreshToken", refreshToken);
         try {
           const { data: onboardingData } =
-            await OnboardingApi.checkOnboardingExistence();
+            await UserApi.checkOnboardingExistence();
 
           const alreadyOnboarded =
             onboardingData.data?.isExist ??
