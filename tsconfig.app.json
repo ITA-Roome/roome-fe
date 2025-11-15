@@ -6,11 +6,17 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+
+    // 경로 alias
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
-    /* Bundler mode */
+
+    // vite + svgr
+    "types": ["vite/client", "vite-plugin-svgr/client"],
+
+    // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
@@ -18,14 +24,18 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Linting */
+    // Linting
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    // project reference 쓸 때 필수
+    "composite": true
   },
-  /* TS가 컴파일/타입체크할 파일 범위 설정 */
+
+  // 실제로 체크할 파일들
   "include": [
     "src",
     "src/**/*",
