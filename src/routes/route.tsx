@@ -26,6 +26,11 @@ import ShopDetailPage from "@/pages/shop/ShopDetailPage";
 import ChatBoardPage from "@/pages/board/ChatBoardPage";
 import LikeBoardPage from "@/pages/board/LikeBoardPage";
 import ReferenceBoardPage from "@/pages/board/ReferenceBoardPage";
+import SettingLayout from "@/layout/SettingLayout";
+import SettingPage from "@/pages/setting/SettingPage";
+import ProfilePage from "@/pages/setting/ProfilePage";
+import AccountPage from "@/pages/setting/AccountPage";
+import ContactPage from "@/pages/setting/ContactPage";
 
 /**
  * Guards routes by verifying authentication and onboarding status before rendering children.
@@ -166,6 +171,33 @@ const router = createBrowserRouter([
       {
         path: "shop-detail/:productId-detail",
         element: <ShopDetailPage />,
+      },
+    ],
+  },
+  {
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <SettingLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <NotFoundPage />,
+    children: [
+      {
+        path: "setting",
+        element: <SettingPage />,
+      },
+      {
+        path: "setting/profile",
+        element: <ProfilePage />,
+      },
+      {
+        path: "setting/account",
+        element: <AccountPage />,
+      },
+      {
+        path: "setting/contact",
+        element: <ContactPage />,
       },
     ],
   },
