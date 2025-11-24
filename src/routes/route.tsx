@@ -27,14 +27,6 @@ import ChatBoardPage from "@/pages/board/ChatBoardPage";
 import LikeBoardPage from "@/pages/board/LikeBoardPage";
 import ReferenceBoardPage from "@/pages/board/ReferenceBoardPage";
 
-/**
- * Guards routes by verifying authentication and onboarding status before rendering children.
- *
- * Checks for a stored auth token and uses the server's onboarding existence check to decide
- * whether to redirect the user to login, onboarding, or allow rendering of the protected children.
- *
- * @returns The `children` when access is permitted; otherwise `null` while checks are in progress or a `Navigate` element redirecting to the appropriate route (login or onboarding).
- */
 function ProtectedRoute({ children }: PropsWithChildren) {
   const token = localStorage.getItem("token");
   const location = useLocation();
@@ -136,7 +128,7 @@ const router = createBrowserRouter([
         element: <FeedPage />,
       },
       {
-        path: "feed-detail/:productId-detail",
+        path: "feed/:productId",
         element: <FeedDetailPage />,
       },
       {
@@ -164,7 +156,7 @@ const router = createBrowserRouter([
         element: <ShopPage />,
       },
       {
-        path: "shop-detail/:productId-detail",
+        path: "shop/:productId",
         element: <ShopDetailPage />,
       },
     ],
