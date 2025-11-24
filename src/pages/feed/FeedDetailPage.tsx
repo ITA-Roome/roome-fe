@@ -143,7 +143,7 @@ export default function FeedDetailPage() {
       {/* TODO - shop 상세 조회*/}
       <section className="mt-10">
         <div className="flex items-center gap-3">
-          {product.thumbnailUrl && (
+          {product.shop.logoUrl && (
             <img
               src={product.shop.logoUrl}
               alt={product.shop.name}
