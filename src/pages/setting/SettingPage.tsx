@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { UserApi } from "@/api/user";
+import { AuthApi } from "@/api/auth";
 
 export default function SettingPage() {
   const navigate = useNavigate();
@@ -18,6 +19,23 @@ export default function SettingPage() {
     }
     fetchProfile();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      const res = await AuthApi.logout();
+
+      if (!res.isSuccess) {
+        alert(res.message || "로그아웃에 실패했습니다.");
+        return;
+      }
+
+      localStorage.removeItem("token");
+
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="min-h-screen relative">
@@ -60,7 +78,10 @@ export default function SettingPage() {
 
       {/* 로그아웃 버튼: 페이지 하단 고정 */}
       <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-full max-w-md px-5">
-        <button className="w-full py-3 rounded-md bg-[#6B4B3A] text-white text-[15px]">
+        <button
+          className="w-full py-3 rounded-md bg-[#6B4B3A] text-white text-[15px]"
+          onClick={handleLogout}
+        >
           로그아웃
         </button>
       </div>
