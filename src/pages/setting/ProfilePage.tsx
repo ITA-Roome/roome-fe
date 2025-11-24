@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 
+import ProfileChangeIcon from "@/assets/icons/imgChange.svg?react";
+
 export default function ProfilePage() {
   const [originalNickname, setOriginalNickname] = useState("");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
@@ -142,9 +144,9 @@ export default function ProfilePage() {
 
             <button
               type="button"
-              className="absolute bottom-4 right-6 w-10 h-10 rounded-xl bg-white border flex items-center justify-center shadow-sm pointer-events-none"
+              className="absolute bottom-4 right-6 w-10 h-10 rounded-xl bg-[var(--color-primary-400)] border flex items-center justify-center shadow-sm pointer-events-none"
             >
-              🖼️
+              <ProfileChangeIcon className="w-6 h-6" />
             </button>
           </div>
 
