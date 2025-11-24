@@ -12,16 +12,42 @@ export type ProductListParams = {
   sort?: string[];
 };
 
+// 상품 이미지 정보 타입
+export type ProductImage = {
+  objectKey: string;
+  sortOrder: number;
+  url: string;
+};
+
+// 상품 태그
+export type ProductTag = {
+  id: number;
+  tagType: string;
+  name: string;
+};
+
+// 상품에 연결된 가게 정보
+export type ProductShop = {
+  id: number;
+  name: string;
+  logoUrl: string;
+};
+
 // 단일 상품 정보 타입
 export type ProductItem = {
   id: number;
   name: string;
   price: number;
+
   category: string;
+  description: string;
+
   productUrl: string;
   thumbnailUrl: string;
-  shopId: number;
-  shopName: string;
+
+  images: ProductImage[];
+  tags: ProductTag[];
+  shop: ProductShop;
 };
 
 // 상품 목록 조회 시 응답 데이터 구조

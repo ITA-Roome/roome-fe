@@ -72,9 +72,8 @@ export default function ShopPage() {
               title={it.name}
               imageUrl={it.thumbnailUrl}
               price={it.price}
-              subtitle={it.shopName}
               showInfo
-              onClick={() => navigate(`/shop-detail/${it.id}`)}
+              onClick={() => navigate(`/shop/${it.id}`)}
             />
           )}
           hasNextPage={!!hasNextPage}

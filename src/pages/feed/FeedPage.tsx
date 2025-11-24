@@ -43,9 +43,8 @@ export default function FeedPage() {
               title={it.name}
               imageUrl={it.thumbnailUrl}
               price={it.price}
-              subtitle={it.shopName}
               showInfo={false}
-              onClick={() => navigate(`/feed-detail/${it.id}`)}
+              onClick={() => navigate(`/feed/${it.id}`)}
             />
           )}
           hasNextPage={!!hasNextPage}
