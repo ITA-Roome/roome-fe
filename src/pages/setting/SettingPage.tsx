@@ -1,15 +1,36 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { UserApi } from "@/api/user";
 
 export default function SettingPage() {
   const navigate = useNavigate();
+
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [nickname, setNickname] = useState<string>("");
+
+  useEffect(() => {
+    async function fetchProfile() {
+      const res = await UserApi.fetchUserProfile();
+      if (!res.isSuccess || !res.data) return;
+
+      setProfileImage(res.data.profileImage);
+      setNickname(res.data.nickname);
+    }
+    fetchProfile();
+  }, []);
 
   return (
     <div className="min-h-screen relative">
       <div className="pt-24 max-w-md mx-auto px-5 pb-40">
         {/* 프로필 영역 */}
         <div className="flex flex-col items-center mt-6">
-          <div className="w-40 h-40 bg-[#D4CFC8] rounded-full" />
-          <p className="mt-4 text-[16px] text-[#5D3C28]">닉네임</p>
+          <div className="w-40 h-40 bg-[#D4CFC8] rounded-full">
+            <img
+              src={profileImage ?? undefined}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <p className="mt-4 text-[16px] text-[#5D3C28]">{nickname}</p>
         </div>
 
         {/* 메뉴 리스트 (닉네임과 로그아웃 사이 가운데 배치) */}
