@@ -30,6 +30,7 @@ import SettingLayout from "@/layout/SettingLayout";
 import SettingPage from "@/pages/setting/SettingPage";
 import ProfilePage from "@/pages/setting/ProfilePage";
 import AccountPage from "@/pages/setting/AccountPage";
+import ChangePasswordPage from "@/pages/setting/ChangePasswordPage";
 import ContactPage from "@/pages/setting/ContactPage";
 
 /**
@@ -194,6 +195,10 @@ const router = createBrowserRouter([
       {
         path: "setting/account",
         element: <AccountPage />,
+      },
+      {
+        path: "setting/account/password",
+        element: <ChangePasswordPage />,
       },
       {
         path: "setting/contact",
