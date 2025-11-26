@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 
+/**
+ * Renders the contact page with an inquiry-type dropdown, message textarea, and submit button.
+ *
+ * Manages selected inquiry type, dropdown visibility (including closing on outside clicks), and message content;
+ * the submit button is enabled only when both a type and content are provided.
+ *
+ * @returns The contact page JSX element.
+ */
 export default function ContactPage() {
   const [selectedType, setSelectedType] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);

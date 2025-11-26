@@ -6,6 +6,13 @@ import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 import type { UserProfile } from "@/types/user";
 
+/**
+ * Displays the account page with the user's profile, membership details, and actions to change password or delete the account.
+ *
+ * Fetches the current user's profile on mount and presents loading and error states while allowing account deletion (which clears local token and navigates to login) and navigation to the password change screen.
+ *
+ * @returns The JSX element representing the account settings page.
+ */
 export default function AccountPage() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserProfile | null>(null);

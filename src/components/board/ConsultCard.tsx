@@ -5,12 +5,12 @@ interface ConsultCardProps {
 }
 
 /**
- * Render a consultation card with a title, a list of detail lines, and up to six images in a 3x2 grid.
+ * Renders a consultation card with a title, a list of detail lines, and up to six images arranged in a 3×2 grid.
  *
- * @param title - The card title text displayed at the top.
+ * @param title - Card title text displayed at the top.
  * @param details - Lines of detail shown as bullet list items.
- * @param images - Image URLs to display; only the first six are rendered in the grid.
- * @returns The rendered React element for the consult card.
+ * @param images - Image URLs to display; only the first six are rendered.
+ * @returns The React element representing the consult card.
  */
 export default function ConsultCard({
   title,

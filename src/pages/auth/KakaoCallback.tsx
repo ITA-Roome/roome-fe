@@ -5,18 +5,11 @@ import { AuthApi } from "../../api/auth";
 import { UserApi } from "@/api/user";
 
 /**
- * Handles the Kakao OAuth callback: exchanges the authorization code for tokens, applies authentication state, checks onboarding status, and redirects the user accordingly.
+ * Processes the Kakao OAuth callback: exchanges the authorization code for tokens, applies the access token, stores the refresh token, checks whether the user has completed onboarding, and redirects the user based on onboarding status.
  *
- * This component reads the `code` query parameter from the current URL. If present, it exchanges the code for access and refresh tokens, sets the access token for API requests, stores the refresh token in localStorage, queries whether the user has completed onboarding, and navigates to `/feed` if onboarding exists or to `/onboarding` otherwise. If the onboarding check fails it navigates to `/onboarding`. If the login exchange fails it shows an alert and navigates to `/`.
+ * Performs network requests and navigation as side effects; on success redirects to `/feed` if onboarding exists or to `/onboarding` otherwise. On token exchange failure it shows an alert and redirects to `/`.
  *
- * Side effects:
- * - Calls authentication and user APIs.
- * - Calls setAuthToken with the retrieved access token.
- * - Stores the refresh token in localStorage under `refreshToken`.
- * - Navigates to `/feed`, `/onboarding`, or `/` depending on outcomes.
- * - Logs errors to the console and shows an alert on login failure.
- *
- * @returns A React element shown while the Kakao callback is being processed.
+ * @returns The React element displayed while the Kakao callback is being processed.
  */
 export default function KakaoCallback() {
   const navigate = useNavigate();

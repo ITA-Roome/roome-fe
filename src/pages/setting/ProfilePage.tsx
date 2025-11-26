@@ -4,6 +4,13 @@ import { AuthApi } from "@/api/auth";
 
 import ProfileChangeIcon from "@/assets/icons/imgChange.svg?react";
 
+/**
+ * Renders the profile editing page and manages loading, editing, validation, preview, and saving of the user's nickname and profile image.
+ *
+ * Fetches the current profile on mount, allows changing the nickname with a duplicate check, supports image selection with a live preview, enables saving only when changes are valid (image change or a nickname change that passed duplication check), and submits updates to the API.
+ *
+ * @returns The profile editing UI as a JSX element.
+ */
 export default function ProfilePage() {
   const [originalNickname, setOriginalNickname] = useState("");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
