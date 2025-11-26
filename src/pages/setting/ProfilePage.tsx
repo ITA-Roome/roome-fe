@@ -19,22 +19,26 @@ export default function ProfilePage() {
   // 초기 데이터 로드
   useEffect(() => {
     async function fetchData() {
-      const res = await UserApi.fetchUserProfile();
+      try {
+        const res = await UserApi.fetchUserProfile();
 
-      if (!res.isSuccess) {
-        console.error("프로필 조회 실패: ", res.message);
-        return;
+        if (!res.isSuccess) {
+          console.error("프로필 조회 실패: ", res.message);
+          return;
+        }
+
+        if (!res.data) return;
+
+        const profile = res.data;
+
+        setOriginalNickname(profile.nickname);
+        setOriginalImage(profile.profileImage);
+
+        setNickname(profile.nickname);
+        setPreviewImage(profile.profileImage);
+      } catch (error) {
+        console.error("프로필 로드 중 오류:", error);
       }
-
-      if (!res.data) return;
-
-      const profile = res.data;
-
-      setOriginalNickname(profile.nickname);
-      setOriginalImage(profile.profileImage);
-
-      setNickname(profile.nickname);
-      setPreviewImage(profile.profileImage);
     }
     fetchData();
   }, []);

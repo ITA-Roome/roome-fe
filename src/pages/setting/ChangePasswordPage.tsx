@@ -30,14 +30,19 @@ export default function ChangePasswordPage() {
     loadUserData();
   }, []);
 
+  // 🔹 정규식: 최소 8자 + 영문 + 숫자 + 특수문자 포함
+  const passwordRegex =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&~^+=-])[A-Za-z\d@$!%*#?&~^+=-]{8,}$/;
+
   const isEmailValid = email === userEmail;
+  const isPasswordValid = passwordRegex.test(newPw);
 
   // 새 비밀번호 === 확인 입력
   const isPwMatch =
     newPw.length > 0 && confirmPw.length > 0 && newPw === confirmPw;
 
-  // 모든 값 입력 + 비밀번호 일치
-  const isChangeEnabled = oldPw && newPw && confirmPw && isPwMatch;
+  // 버튼 활성화 조건 업데이트
+  const isChangeEnabled = oldPw.length > 0 && isPasswordValid && isPwMatch;
 
   const handleEmailSubmit = () => {
     if (!isEmailValid) return;
@@ -117,6 +122,12 @@ export default function ChangePasswordPage() {
               className="w-full mt-2 border border-[#C7B5A1] rounded-[8px] px-4 py-3"
               placeholder="새 비밀번호 입력"
             />
+
+            {newPw && !isPasswordValid && (
+              <p className="text-xs text-red-500 mt-1">
+                최소 8자, 영문, 숫자, 특수문자를 포함해야 합니다.
+              </p>
+            )}
           </div>
 
           {/* 비밀번호 확인 */}
@@ -130,9 +141,9 @@ export default function ChangePasswordPage() {
               placeholder="다시 입력"
             />
 
-            {confirmPw.length > 0 && !isPwMatch && (
+            {confirmPw && !isPwMatch && (
               <p className="text-xs text-red-500 mt-1">
-                ❌ 비밀번호가 일치하지 않습니다.
+                비밀번호가 일치하지 않습니다.
               </p>
             )}
           </div>

@@ -70,7 +70,7 @@ export default function AccountPage() {
       if (res.isSuccess) {
         localStorage.removeItem("token");
         alert("회원 탈퇴가 완료되었습니다.");
-        navigate("/login");
+        navigate("/");
       } else {
         alert(res.message || "회원 탈퇴 실패");
       }
