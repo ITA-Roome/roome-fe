@@ -11,11 +11,15 @@ export default function SettingPage() {
 
   useEffect(() => {
     async function fetchProfile() {
-      const res = await UserApi.fetchUserProfile();
-      if (!res.isSuccess || !res.data) return;
+      try {
+        const res = await UserApi.fetchUserProfile();
+        if (!res.isSuccess || !res.data) return;
 
-      setProfileImage(res.data.profileImage);
-      setNickname(res.data.nickname);
+        setProfileImage(res.data.profileImage);
+        setNickname(res.data.nickname);
+      } catch (error) {
+        console.error("프로필 로드 실패:", error);
+      }
     }
     fetchProfile();
   }, []);

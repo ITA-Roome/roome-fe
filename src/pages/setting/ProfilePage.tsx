@@ -143,6 +143,7 @@ export default function ProfilePage() {
           >
             <img
               src={previewImage ?? undefined}
+              alt="프로필 이미지 미리보기"
               className="w-full h-full object-cover"
             />
 
