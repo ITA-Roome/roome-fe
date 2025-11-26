@@ -51,8 +51,9 @@ export default function ChangePasswordPage() {
 
   const handlePasswordChange = () => {
     if (!isChangeEnabled) return;
-    console.log("🔐 비밀번호 변경 요청:", { oldPw, newPw });
-    alert("비밀번호가 성공적으로 변경되었습니다.");
+    // TODO: Implement API call to change password
+    // await AuthApi.changePassword({ oldPassword: oldPw, newPassword: newPw });
+    alert("비밀번호 변경 API가 아직 연동되지 않았습니다.");
   };
 
   if (loading) return <div className="pt-24 text-center">로딩 중...</div>;

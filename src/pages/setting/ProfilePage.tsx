@@ -79,10 +79,24 @@ export default function ProfilePage() {
     }
   };
 
+  useEffect(() => {
+    // Cleanup function to revoke blob URL when component unmounts or preview changes
+    return () => {
+      if (previewImage && previewImage.startsWith("blob:")) {
+        URL.revokeObjectURL(previewImage);
+      }
+    };
+  }, [previewImage]);
+
   // 이미지 변경
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Revoke previous blob URL before creating new one
+    if (previewImage && previewImage.startsWith("blob:")) {
+      URL.revokeObjectURL(previewImage);
+    }
 
     setProfileImage(file);
     setPreviewImage(URL.createObjectURL(file));
@@ -111,25 +125,30 @@ export default function ProfilePage() {
 
   // 저장 요청
   const handleSave = async () => {
-    const formData = new FormData();
-    formData.append("nickname", nickname);
+    try {
+      const formData = new FormData();
+      formData.append("nickname", nickname);
 
-    if (imageChanged && profileImage instanceof File) {
-      formData.append("profileImage", profileImage);
+      if (imageChanged && profileImage instanceof File) {
+        formData.append("profileImage", profileImage);
+      }
+
+      const res = await UserApi.updateUserProfile(formData);
+
+      if (!res.isSuccess) {
+        alert(res.message);
+        return;
+      }
+
+      setOriginalNickname(nickname);
+      setOriginalImage(previewImage);
+      setProfileImage(null);
+
+      alert("프로필이 저장되었습니다!");
+    } catch (error) {
+      console.error("프로필 저장 실패:", error);
+      alert("프로필 저장 중 오류가 발생했습니다.");
     }
-
-    const res = await UserApi.updateUserProfile(formData);
-
-    if (!res.isSuccess) {
-      alert(res.message);
-      return;
-    }
-
-    setOriginalNickname(nickname);
-    setOriginalImage(previewImage);
-    setProfileImage(null);
-
-    alert("프로필이 저장되었습니다!");
   };
 
   return (

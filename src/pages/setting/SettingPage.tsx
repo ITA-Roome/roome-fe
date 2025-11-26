@@ -46,11 +46,18 @@ export default function SettingPage() {
       <div className="pt-24 max-w-md mx-auto px-5 pb-40">
         {/* 프로필 영역 */}
         <div className="flex flex-col items-center mt-6">
-          <div className="w-40 h-40 bg-[#D4CFC8] rounded-full">
-            <img
-              src={profileImage ?? undefined}
-              className="w-full h-full object-cover"
-            />
+          <div className="w-40 h-40 bg-[#D4CFC8] rounded-full overflow-hidden">
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt={`${nickname}의 프로필 이미지`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[#5D3C28]">
+                프로필 없음
+              </div>
+            )}
           </div>
           <p className="mt-4 text-[16px] text-[#5D3C28]">{nickname}</p>
         </div>
