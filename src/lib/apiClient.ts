@@ -9,6 +9,10 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+
   if (config.url?.includes("/api/auth/login")) {
     return config;
   }

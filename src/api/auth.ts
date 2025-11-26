@@ -104,4 +104,12 @@ export const AuthApi = {
     ),
   signup: (payload: SignupRequest) =>
     apiClient.post<SignupResponse>("/api/auth/signup", payload),
+  logout: async (): Promise<CommonResponse<null>> => {
+    const { data } = await apiClient.post("/api/auth/logout");
+    return data;
+  },
+  withdraw: async (): Promise<CommonResponse<null>> => {
+    const { data } = await apiClient.delete("/api/auth/withdraw");
+    return data;
+  },
 };
