@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import { UserApi } from "@/api/user";
 
+/**
+ * Renders a two-step password change page that verifies the signed-in user's email and lets them set a new password.
+ *
+ * The component loads the current user's email, shows a loading state while fetching, requires the entered email to match
+ * the account email to proceed to the new-password form, and validates that the new password and confirmation match
+ * before enabling the change action.
+ *
+ * @returns The React element for the password change UI.
+ */
 export default function ChangePasswordPage() {
   const [step, setStep] = useState<1 | 2>(1);
 

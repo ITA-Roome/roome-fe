@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 
+/**
+ * Render the settings page that displays the user's profile and provides navigation and logout actions.
+ *
+ * Loads the current user's profile on mount and updates the displayed profile image and nickname. The logout action clears the stored authentication token and navigates to the root path on success.
+ *
+ * @returns The settings page JSX element
+ */
 export default function SettingPage() {
   const navigate = useNavigate();
 
