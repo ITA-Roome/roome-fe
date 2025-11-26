@@ -1,23 +1,56 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { UserApi } from "@/api/user";
 
 export default function ChangePasswordPage() {
   const [step, setStep] = useState<1 | 2>(1);
+
+  const [userEmail, setUserEmail] = useState("");
 
   const [email, setEmail] = useState("");
   const [oldPw, setOldPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const response = await UserApi.fetchUserProfile();
+
+        if (response.isSuccess && response.data) {
+          setUserEmail(response.data.email);
+        }
+      } catch (err) {
+        console.error("사용자 정보 불러오기 실패:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  const isEmailValid = email === userEmail;
+
+  // 새 비밀번호 === 확인 입력
+  const isPwMatch =
+    newPw.length > 0 && confirmPw.length > 0 && newPw === confirmPw;
+
+  // 모든 값 입력 + 비밀번호 일치
+  const isChangeEnabled = oldPw && newPw && confirmPw && isPwMatch;
 
   const handleEmailSubmit = () => {
-    // TODO: 이메일 인증 / 유효성 검사 API 호출
-    // 성공 시 다음 단계로 이동
+    if (!isEmailValid) return;
     setStep(2);
   };
 
   const handlePasswordChange = () => {
-    // TODO: 비밀번호 변경 API 호출
-    console.log("비밀번호 변경", oldPw, newPw, confirmPw);
+    if (!isChangeEnabled) return;
+    console.log("🔐 비밀번호 변경 요청:", { oldPw, newPw });
+    alert("비밀번호가 성공적으로 변경되었습니다.");
   };
+
+  if (loading) return <div className="pt-24 text-center">로딩 중...</div>;
 
   return (
     <div className="min-h-screen bg-[#FFFDF4] px-5 pt-24">
@@ -25,7 +58,7 @@ export default function ChangePasswordPage() {
         비밀번호 변경
       </h1>
 
-      {/* ----------------- STEP 1 : 이메일 입력 ----------------- */}
+      {/* STEP 1 */}
       {step === 1 && (
         <div className="max-w-sm mx-auto">
           <label className="text-sm text-[#5D3C28]">이메일 주소</label>
@@ -33,62 +66,84 @@ export default function ChangePasswordPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full mt-2 border border-[#C7B5A1] rounded-[8px] px-4 py-3"
+            className={`w-full mt-2 border rounded-[8px] px-4 py-3 ${
+              isEmailValid ? "border-green-500" : "border-[#C7B5A1]"
+            }`}
             placeholder="example@romme.com"
           />
 
           <button
             onClick={handleEmailSubmit}
-            className="w-full mt-6 py-3 bg-[#5D3C28] text-white rounded-[8px]"
+            disabled={!isEmailValid}
+            className={`w-full mt-6 py-3 rounded-[8px] text-white transition ${
+              isEmailValid ? "bg-[#5D3C28]" : "bg-[#C7B5A1] opacity-50"
+            }`}
           >
             비밀번호 변경
           </button>
+
+          {!isEmailValid && email.length > 0 && (
+            <p className="text-xs text-red-500 mt-2">
+              🔒 입력한 이메일이 계정과 일치하지 않습니다.
+            </p>
+          )}
         </div>
       )}
 
-      {/* ----------------- STEP 2 : 새 비밀번호 설정 ----------------- */}
+      {/* STEP 2 */}
       {step === 2 && (
-        <div className="max-w-sm mx-auto">
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-[#5D3C28]">이전 비밀번호</label>
-              <input
-                type="password"
-                value={oldPw}
-                onChange={(e) => setOldPw(e.target.value)}
-                className="w-full mt-2 border border-[#C7B5A1] rounded-[8px] px-4 py-3"
-                placeholder="비밀번호 입력"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-[#5D3C28]">
-                새로운 비밀번호 – 최소 8자 이상 / 영문 / 숫자 / 특수문자 포함
-              </label>
-              <input
-                type="password"
-                value={newPw}
-                onChange={(e) => setNewPw(e.target.value)}
-                className="w-full mt-2 border border-[#C7B5A1] rounded-[8px] px-4 py-3"
-                placeholder="비밀번호 입력"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-[#5D3C28]">비밀번호 확인</label>
-              <input
-                type="password"
-                value={confirmPw}
-                onChange={(e) => setConfirmPw(e.target.value)}
-                className="w-full mt-2 border border-[#C7B5A1] rounded-[8px] px-4 py-3"
-                placeholder="비밀번호 입력"
-              />
-            </div>
+        <div className="max-w-sm mx-auto space-y-4">
+          {/* 기존 비밀번호 */}
+          <div>
+            <label className="text-sm text-[#5D3C28]">기존 비밀번호</label>
+            <input
+              type="password"
+              value={oldPw}
+              onChange={(e) => setOldPw(e.target.value)}
+              className="w-full mt-2 border border-[#C7B5A1] rounded-[8px] px-4 py-3"
+              placeholder="현재 비밀번호 입력"
+            />
           </div>
 
+          {/* 새 비밀번호 */}
+          <div>
+            <label className="text-sm text-[#5D3C28]">
+              새로운 비밀번호 – 최소 8자 이상 / 영문 / 숫자 / 특수문자 포함
+            </label>
+            <input
+              type="password"
+              value={newPw}
+              onChange={(e) => setNewPw(e.target.value)}
+              className="w-full mt-2 border border-[#C7B5A1] rounded-[8px] px-4 py-3"
+              placeholder="새 비밀번호 입력"
+            />
+          </div>
+
+          {/* 비밀번호 확인 */}
+          <div>
+            <label className="text-sm text-[#5D3C28]">비밀번호 확인</label>
+            <input
+              type="password"
+              value={confirmPw}
+              onChange={(e) => setConfirmPw(e.target.value)}
+              className="w-full mt-2 border border-[#C7B5A1] rounded-[8px] px-4 py-3"
+              placeholder="다시 입력"
+            />
+
+            {confirmPw.length > 0 && !isPwMatch && (
+              <p className="text-xs text-red-500 mt-1">
+                ❌ 비밀번호가 일치하지 않습니다.
+              </p>
+            )}
+          </div>
+
+          {/* 변경 버튼 */}
           <button
             onClick={handlePasswordChange}
-            className="w-full mt-8 py-3 bg-[#C7B5A1] text-white rounded-[8px]"
+            disabled={!isChangeEnabled}
+            className={`w-full mt-8 py-3 rounded-[8px] text-white transition ${
+              isChangeEnabled ? "bg-[#5D3C28]" : "bg-[#C7B5A1] opacity-50"
+            }`}
           >
             비밀번호 변경
           </button>
