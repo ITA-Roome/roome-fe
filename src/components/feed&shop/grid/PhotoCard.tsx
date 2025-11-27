@@ -8,9 +8,9 @@ type PhotoCardProps = {
   imageUrl: string;
   price: number;
   subtitle?: string;
-  onClick?: () => void; // 추후 상세 이동 구현 예정
+  onClick?: () => void;
   defaultLiked?: boolean;
-  showInfo?: boolean; // 제품 정보 표시 여부
+  showInfo?: boolean;
 };
 
 export default function PhotoCard({
@@ -25,13 +25,12 @@ export default function PhotoCard({
 
   return (
     <div className="w-full">
-      {/* 제품 이미지 */}
       <div
         role="button"
         tabIndex={0}
         onClick={onClick}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick?.()}
-        className="relative rounded-xl aspect-[3/4] overflow-hidden border border-primary-400"
+        className="relative rounded-xl aspect-3/4 overflow-hidden border border-primary-400"
       >
         {imageUrl ? (
           <img
@@ -44,7 +43,6 @@ export default function PhotoCard({
           <div className="w-full h-full" />
         )}
 
-        {/* 하트 */}
         <button
           type="button"
           className="absolute right-2 bottom-2 transition-transform"
@@ -61,7 +59,7 @@ export default function PhotoCard({
           )}
         </button>
       </div>
-      {/* 제품 정보 */}
+
       {showInfo && (
         <div className="mt-1">
           {title && (

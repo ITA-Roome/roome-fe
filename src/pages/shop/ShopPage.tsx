@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
-import SearchInput from "@/components/feed&shop/search/SearchInput";
+import SearchInput from "@/components/search/search/SearchInput";
 import GridSkeleton from "@/components/skeletons/GridSkeleton";
 import Dropdown from "@/components/feed&shop/dropdown/Dropdown";
 import ShopFilterPanel from "../../components/feed&shop/dropdown/ShopFilterPanel";

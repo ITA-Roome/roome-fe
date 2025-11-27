@@ -6,9 +6,9 @@ export type TUseSearchInputOptions = {
   fetchSuggest?: (q: string) => Promise<SuggestItem[]>;
   getRecent?: () => Promise<SuggestItem[]>;
   getPopular?: () => Promise<SuggestItem[]>;
-  minLength?: number; // 자동완성 최소 글자수
-  debounceMs?: number; // 입력 디바운스
-  maxItems?: number; // 패널 최대 항목
+  minLength?: number;
+  debounceMs?: number;
+  maxItems?: number;
 };
 
 export function useSearchbox({
@@ -24,19 +24,16 @@ export function useSearchbox({
   const [highlight, setHighlight] = useState(-1);
   const composingRef = useRef(false);
 
-  // 디바운스
   const [debounced, setDebounced] = useState("");
   useEffect(() => {
     const t = setTimeout(() => setDebounced(input), debounceMs);
     return () => clearTimeout(t);
   }, [input, debounceMs]);
 
-  // 소스 상태
   const [source, setSource] = useState<"recent" | "popular" | "autocomplete">(
     "recent",
   );
 
-  // 데이터
   const [recent, setRecent] = useState<SuggestItem[]>([]);
   const [popular, setPopular] = useState<SuggestItem[]>([]);
   const [suggest, setSuggest] = useState<SuggestItem[]>([]);
@@ -44,7 +41,6 @@ export function useSearchbox({
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  // 포커스 시 미리 로드(UX 빠르게)
   useEffect(() => {
     if (!open) return;
     (async () => {

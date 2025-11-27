@@ -4,13 +4,6 @@ import { AuthApi } from "@/api/auth";
 
 import ProfileChangeIcon from "@/assets/icons/imgChange.svg?react";
 
-/**
- * Renders the profile editing page and manages loading, editing, validation, preview, and saving of the user's nickname and profile image.
- *
- * Fetches the current profile on mount, allows changing the nickname with a duplicate check, supports image selection with a live preview, enables saving only when changes are valid (image change or a nickname change that passed duplication check), and submits updates to the API.
- *
- * @returns The profile editing UI as a JSX element.
- */
 export default function ProfilePage() {
   const [originalNickname, setOriginalNickname] = useState("");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
@@ -23,7 +16,6 @@ export default function ProfilePage() {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  // 초기 데이터 로드
   useEffect(() => {
     async function fetchData() {
       try {
@@ -50,7 +42,6 @@ export default function ProfilePage() {
     fetchData();
   }, []);
 
-  // 닉네임 변경 핸들러
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNickname(value);
@@ -58,12 +49,10 @@ export default function ProfilePage() {
     setNicknameMessage("");
   };
 
-  // 닉네임 중복확인
   const handleCheckNickname = async () => {
     const trimmed = nickname.trim();
     if (!trimmed) return;
 
-    // 기존 닉네임이면 확인 불필요
     if (trimmed === originalNickname) return;
 
     setNicknameLoading(true);
@@ -87,7 +76,6 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    // Cleanup function to revoke blob URL when component unmounts or preview changes
     return () => {
       if (previewImage && previewImage.startsWith("blob:")) {
         URL.revokeObjectURL(previewImage);
@@ -95,12 +83,10 @@ export default function ProfilePage() {
     };
   }, [previewImage]);
 
-  // 이미지 변경
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Revoke previous blob URL before creating new one
     if (previewImage && previewImage.startsWith("blob:")) {
       URL.revokeObjectURL(previewImage);
     }
@@ -175,7 +161,7 @@ export default function ProfilePage() {
 
             <button
               type="button"
-              className="absolute bottom-4 right-6 w-10 h-10 rounded-xl bg-[var(--color-primary-400)] border flex items-center justify-center shadow-sm pointer-events-none"
+              className="absolute bottom-4 right-6 w-10 h-10 rounded-xl bg-primary-400 border flex items-center justify-center shadow-sm pointer-events-none"
             >
               <ProfileChangeIcon className="w-6 h-6" />
             </button>
