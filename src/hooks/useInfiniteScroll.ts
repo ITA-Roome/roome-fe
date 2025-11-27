@@ -7,7 +7,6 @@ import type { CommonResponse } from "@/types/common";
 import type { ProductItem, ProductListResponse } from "@/types/product";
 import { QUERY_KEY } from "@/constants/key";
 
-// 정렬 순서
 export type ProductOrder = "LATEST" | "PRICE_ASC" | "PRICE_DESC" | "POPULAR";
 const orderToSort = (order: ProductOrder): string[] => {
   switch (order) {

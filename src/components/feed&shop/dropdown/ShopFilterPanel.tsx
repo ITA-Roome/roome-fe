@@ -34,7 +34,7 @@ export default function ShopFilterPanel() {
                 type="button"
                 onClick={() => toggleKeyword(label)}
                 className={[
-                  "px-3 py-1 rounded-[4px] font-caption text-center transition-all",
+                  "px-3 py-1 rounded-sm font-caption text-center transition-all",
                   on
                     ? "bg-primary-400 text-white"
                     : "bg-primary-700 text-primary-50",
@@ -58,7 +58,7 @@ export default function ShopFilterPanel() {
                 type="button"
                 onClick={() => setSort(label)}
                 className={[
-                  "px-4 py-1 rounded-[6px] font-caption text-center transition-all",
+                  "px-4 py-1 rounded-md font-caption text-center transition-all",
                   on
                     ? "bg-primary-400 text-primary-50"
                     : "bg-primary-700 text-primary-50",

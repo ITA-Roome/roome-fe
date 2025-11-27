@@ -6,13 +6,6 @@ import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 import type { UserProfile } from "@/types/user";
 
-/**
- * Displays the account page with the user's profile, membership details, and actions to change password or delete the account.
- *
- * Fetches the current user's profile on mount and presents loading and error states while allowing account deletion (which clears local token and navigates to login) and navigation to the password change screen.
- *
- * @returns The JSX element representing the account settings page.
- */
 export default function AccountPage() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserProfile | null>(null);
@@ -100,9 +93,7 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen relative">
       <div className="pt-24 max-w-md mx-auto px-5 pb-40">
-        {/* 메인 콘텐츠 */}
         <main className="flex-1 flex flex-col items-center px-8">
-          {/* 프로필 이미지 영역 */}
           <div className="flex flex-col items-center">
             <div className="w-[180px] h-[180px] rounded-full bg-[#D7C7B5] overflow-hidden flex items-center justify-center">
               {userInfo?.profileImage ? (
@@ -123,7 +114,6 @@ export default function AccountPage() {
             ) : null}
           </div>
 
-          {/* 계정 상세 정보 */}
           <section className="w-full max-w-sm mt-10 space-y-4 text-[14px] text-[#5D3C28]">
             {detailItems.map((item) => (
               <div
@@ -136,19 +126,18 @@ export default function AccountPage() {
             ))}
           </section>
 
-          {/* 버튼 영역 */}
           <section className="w-full max-w-sm mt-10 mb-10 space-y-3">
             <button
               type="button"
               onClick={handleDeleteAccount}
-              className="w-full py-3 rounded-[8px] bg-[#5D3C28] text-[#FFFDF4] text-[14px]"
+              className="w-full py-3 rounded-lg bg-[#5D3C28] text-[#FFFDF4] text-[14px]"
             >
               회원 탈퇴
             </button>
             <button
               type="button"
               onClick={handleChangePassword}
-              className="w-full py-3 rounded-[8px] bg-[#5D3C28] text-[#FFFDF4] text-[14px]"
+              className="w-full py-3 rounded-lg bg-[#5D3C28] text-[#FFFDF4] text-[14px]"
             >
               비밀번호 변경
             </button>

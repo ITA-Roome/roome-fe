@@ -36,11 +36,9 @@ export default function SearchInput({
     clear,
   } = useSearchbox(opts);
 
-  // 제어형/비제어형 다 지원
   const isControlled = typeof value === "string";
   const v = isControlled ? value! : input;
 
-  // refs
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -52,7 +50,6 @@ export default function SearchInput({
 
   return (
     <div ref={rootRef} className={`relative w-full ${className}`}>
-      {/* Input */}
       <div
         className="flex items-center gap-2 h-9 px-4 rounded-full max-w-[320px] mx-auto w-full bg-primary-50 border border-primary-700"
         onClick={() => {
@@ -105,7 +102,6 @@ export default function SearchInput({
             }
           }}
         />
-        {/* X */}
         {v && (
           <button
             type="button"
@@ -125,7 +121,6 @@ export default function SearchInput({
         )}
       </div>
 
-      {/* Panel */}
       {open && (
         <div className="absolute left-0 right-0 -z-100 top-full -mt-13 rounded-2xl bg-primary-50 shadow px-4 pt-3 pb-3 max-h-[55vh] overflow-auto">
           <div className="flex items-center justify-between mb-2">

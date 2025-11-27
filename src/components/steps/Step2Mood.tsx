@@ -42,10 +42,8 @@ export default function Step2Mood({
                 : "bg-[#E5DCC7] text-[#5D3C28]"
             }`}
           >
-            {/* 텍스트 — 중앙보다 살짝 위쪽 */}
             <span className="mt-2 mb-1 text-base font-semibold">{mood}</span>
 
-            {/* 아래 이미지 (예시용, 실제 경로에 맞게 변경) */}
             <img
               src={`/images/onboarding/${mood}.png`}
               alt={mood}

@@ -1,7 +1,7 @@
 import { fetchSuggestMock, getPopularMock, getRecentMock } from "@/api/search";
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
-import SearchInput from "@/components/feed&shop/search/SearchInput";
+import SearchInput from "@/components/search/search/SearchInput";
 import GridSkeleton from "@/components/skeletons/GridSkeleton";
 import useGetInfiniteProductsList, {
   ProductOrder,
