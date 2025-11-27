@@ -2,21 +2,22 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import clsx from "clsx";
-
 import BookMarkedIcon from "@/assets/icons/bookmark.svg?react";
 import MoveIcon from "@/assets/icons/move.svg?react";
 import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
 import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
-
-import type { ProductItem } from "@/types/product";
+import type { ProductItem, RelatedProductList } from "@/types/product";
 import type { CommonResponse } from "@/types/common";
 import { ProductApi } from "@/api/product";
 
 export default function FeedDetailPage() {
   const { productId } = useParams<{ productId: string }>();
 
+  const [relatedProducts, setRelatedProducts] = useState<RelatedProductList[]>(
+    [],
+  );
   const [product, setProduct] = useState<ProductItem | null>(null);
   const [isDescOpen, setIsDescOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -45,7 +46,7 @@ export default function FeedDetailPage() {
       try {
         const detailPayload: CommonResponse<ProductItem> =
           await ProductApi.fetchProductDetails(id);
-        // console.log(detailPayload);
+        console.log("detailPayload:", detailPayload);
 
         if (!detailPayload.success || !detailPayload.data) {
           if (!cancelled) {
@@ -59,6 +60,7 @@ export default function FeedDetailPage() {
 
         if (!cancelled) {
           setProduct(detailPayload.data);
+          setRelatedProducts(detailPayload.data.relatedProductList ?? []);
           setLoading(false);
         }
       } catch (err) {
@@ -121,7 +123,6 @@ export default function FeedDetailPage() {
         </div>
       </section>
 
-      {/* 제목 / 가격 / 액션 */}
       <section className="mt-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
@@ -192,32 +193,55 @@ export default function FeedDetailPage() {
         </div>
       </section>
 
-      {/* TODO: API 연결*/}
       <section className="mt-10">
         <p className="mb-3 font-body3 text-primary-700">관련 제품들</p>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-        </div>
+        {relatedProducts.length === 0 ? (
+          <p className="font-caption text-primary-400">관련 상품이 없습니다.</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-3">
+            {relatedProducts.slice(0, 6).map((item) => (
+              <div
+                key={item.id}
+                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200 border border-primary-400"
+              >
+                {item.imageUrl && (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* TODO: API 연결*/}
       <section className="mt-10">
-        <p className="mb-3 font-body3 text-primary-700">관련 레퍼런스들</p>
+        <p className="mb-3 font-body3 text-primary-700">관련 제품들</p>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-        </div>
+        {/* {relatedReferences.length === 0 ? (
+          <p className="font-caption text-primary-400">관련 상품이 없습니다.</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-3">
+            {relatedReferences.slice(0, 6).map((item) => (
+              <div
+                key={item.id}
+                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200 border border-primary-400"
+              >
+                {item.imageUrl && (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )} */}
       </section>
     </div>
   );

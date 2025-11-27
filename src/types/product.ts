@@ -48,6 +48,19 @@ export type ProductItem = {
   images: ProductImage[];
   tags: ProductTag[];
   shop: ProductShop;
+
+  relatedProductList?: RelatedProductList[];
+};
+
+export type RelatedProductList = {
+  id: number;
+  name: string;
+
+  category: string;
+  description: string;
+
+  price: number;
+  imageUrl: string;
 };
 
 // 상품 목록 조회 시 응답 데이터 구조
