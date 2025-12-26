@@ -14,19 +14,27 @@ import ShopFilterPanel from "../../components/feed&shop/dropdown/ShopFilterPanel
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
 import { useNavigate } from "react-router-dom";
+import { useToggleProductLike } from "@/hooks/useToggleProductLike";
 
 export default function ShopPage() {
   const [search, setSearch] = useState("");
   const [order] = useState<ProductOrder>("LATEST");
   const navigate = useNavigate();
+  const limit = 21;
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetInfiniteProductsList(21, search, order);
+    useGetInfiniteProductsList(limit, search, order);
+
   const flat = useMemo(() => data?.items ?? [], [data]);
+
+  const { mutate: toggleLike } = useToggleProductLike({
+    search,
+    order,
+    limit,
+  });
 
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-5">
-      {/* 검색 */}
       <section className="relative z-30">
         <SearchInput
           value={search}
@@ -41,7 +49,6 @@ export default function ShopPage() {
         />
       </section>
 
-      {/* 드롭다운 */}
       <section>
         <Dropdown
           wrapperClassName="w-full"
@@ -61,7 +68,6 @@ export default function ShopPage() {
         </Dropdown>
       </section>
 
-      {/* 제품 */}
       <section className="mt-3">
         <InfiniteScrollGrid
           items={flat}
@@ -72,6 +78,8 @@ export default function ShopPage() {
               title={it.name}
               imageUrl={it.thumbnailUrl}
               price={it.price}
+              liked={it.liked}
+              onToggleLike={() => toggleLike(it.id)}
               showInfo
               onClick={() => navigate(`/shop/${it.id}`)}
             />

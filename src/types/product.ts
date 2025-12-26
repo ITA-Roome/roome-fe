@@ -38,6 +38,7 @@ export type ProductItem = {
   id: number;
   name: string;
   price: number;
+  liked: boolean;
 
   category: string;
   description: string;
@@ -53,12 +54,11 @@ export type ProductItem = {
 };
 
 export type RelatedProductList = {
-  id: number;
+  id?: number;
+  productId?: number;
   name: string;
-
   category: string;
   description: string;
-
   price: number;
   imageUrl: string;
 };
@@ -73,4 +73,9 @@ export type ProductListResponse = {
   first: boolean;
   last: boolean;
   numberOfElements: number;
+};
+
+// 상품 좋아요 토글 응답 타입
+export type ToggleLikeResponse = {
+  liked: boolean;
 };

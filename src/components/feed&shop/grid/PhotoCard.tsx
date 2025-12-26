@@ -1,6 +1,5 @@
 import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
 import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
-import { useState } from "react";
 
 type PhotoCardProps = {
   id: number;
@@ -9,20 +8,22 @@ type PhotoCardProps = {
   price: number;
   subtitle?: string;
   onClick?: () => void;
-  defaultLiked?: boolean;
+  liked: boolean; // 좋아요 상태
+  onToggleLike?: (id: number) => void;
+
   showInfo?: boolean;
 };
 
 export default function PhotoCard({
+  id,
   title,
   price,
   imageUrl,
   onClick,
-  defaultLiked = false,
+  liked,
+  onToggleLike,
   showInfo = true,
 }: PhotoCardProps) {
-  const [liked, setLiked] = useState(defaultLiked);
-
   return (
     <div className="w-full">
       <div
@@ -49,7 +50,7 @@ export default function PhotoCard({
           aria-label={liked ? "unlike" : "like"}
           onClick={(e) => {
             e.stopPropagation();
-            setLiked((p) => !p);
+            onToggleLike?.(id);
           }}
         >
           {liked ? (

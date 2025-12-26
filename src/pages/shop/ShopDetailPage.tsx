@@ -1,90 +1,42 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import clsx from "clsx";
+
 import BookMarkedIcon from "@/assets/icons/bookmark.svg?react";
 import MoveIcon from "@/assets/icons/move.svg?react";
 import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
+import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
 import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
-import type { ProductItem, RelatedProductList } from "@/types/product";
-import type { CommonResponse } from "@/types/common";
-import { ProductApi } from "@/api/product";
 
-export default function FeedDetailPage() {
+import { useToggleProductLike } from "@/hooks/useToggleProductLike";
+import type { ProductOrder } from "@/hooks/useInfiniteScroll";
+import { useProductDetail } from "@/hooks/useProductDetail";
+
+export default function ShopDetailPage() {
   const { productId } = useParams<{ productId: string }>();
 
-  const [relatedProducts, setRelatedProducts] = useState<RelatedProductList[]>(
-    [],
-  );
-  const [product, setProduct] = useState<ProductItem | null>(null);
-  const [isDescOpen, setIsDescOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!productId) {
-      setError("상품 ID가 없습니다.");
-      setLoading(false);
-      return;
-    }
-
-    const id = Number(productId);
-    if (Number.isNaN(id)) {
-      setError("유효하지 않은 상품 ID입니다.");
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-
-    const fetchDetail = async () => {
-      setLoading(true);
-      setError("");
-
-      try {
-        const detailPayload: CommonResponse<ProductItem> =
-          await ProductApi.fetchProductDetails(id);
-        console.log("detailPayload:", detailPayload);
-
-        if (!detailPayload.success || !detailPayload.data) {
-          if (!cancelled) {
-            setError(
-              detailPayload.message ?? "상품 정보를 불러오지 못했습니다.",
-            );
-            setLoading(false);
-          }
-          return;
-        }
-
-        if (!cancelled) {
-          setProduct(detailPayload.data);
-          setRelatedProducts(detailPayload.data.relatedProductList ?? []);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("상품 상세 조회 실패:", err);
-        if (!cancelled) {
-          if (axios.isAxiosError(err)) {
-            console.error("detail error response:", err.response?.data);
-            setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
-          } else {
-            setError("알 수 없는 오류가 발생했습니다.");
-          }
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchDetail();
-
-    return () => {
-      cancelled = true;
-    };
+  const id = useMemo(() => {
+    const n = Number(productId);
+    return Number.isFinite(n) ? n : null;
   }, [productId]);
 
-  if (loading) {
+  const [isDescOpen, setIsDescOpen] = useState(false);
+
+  const search = "";
+  const order: ProductOrder = "LATEST";
+  const limit = 21;
+
+  const { data: product, isLoading, error } = useProductDetail(id);
+
+  const { mutate: toggleLike, isPending: isToggling } = useToggleProductLike({
+    search,
+    order,
+    limit,
+  });
+
+  if (isLoading) {
     return (
       <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
         <p className="font-body2">상품 정보를 불러오는 중입니다...</p>
@@ -95,15 +47,17 @@ export default function FeedDetailPage() {
   if (error || !product) {
     return (
       <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
-        <p className="font-body2">{error || "상품 정보를 찾을 수 없습니다."}</p>
+        <p className="font-body2">상품 정보를 찾을 수 없습니다.</p>
       </div>
     );
   }
 
   const formattedPrice = `₩${product.price.toLocaleString("ko-KR")}`;
+  const relatedProducts = product.relatedProductList || [];
 
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
+      {/* 제품 이미지 */}
       <section>
         <div className="relative rounded-2xl aspect-4/3 overflow-hidden border border-primary-400">
           {product.thumbnailUrl && (
@@ -123,6 +77,7 @@ export default function FeedDetailPage() {
         </div>
       </section>
 
+      {/* 제품명, 가격, 액션 버튼 */}
       <section className="mt-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
@@ -139,29 +94,43 @@ export default function FeedDetailPage() {
             <button type="button" aria-label="저장" className="p-2">
               <BookMarkedIcon className="w-5 h-5 text-primary-700" />
             </button>
-            <button type="button" aria-label="좋아요" className="p-2">
-              <FavoriteIcon className="w-5.5 h-5.5" />
+
+            <button
+              type="button"
+              aria-label={product.liked ? "좋아요 취소" : "좋아요"}
+              className="p-2"
+              disabled={isToggling}
+              onClick={() => toggleLike(product.id)}
+            >
+              {product.liked ? (
+                <FavoriteFillIcon className="w-5 h-5 text-primary-700" />
+              ) : (
+                <FavoriteIcon className="w-5 h-5 text-primary-700" />
+              )}
             </button>
           </div>
         </div>
       </section>
 
-      <section className="mt-10">
-        <div className="flex items-center gap-3">
-          {product.thumbnailUrl && (
-            <img
-              src={product.shop.logoUrl}
-              alt={product.shop.name}
-              className="w-11 h-11 rounded-full object-cover border border-primary-400"
-            />
-          )}
-
-          <div>
-            <p className="font-body2">{product.shop.name}</p>
+      {/* 샵 정보 */}
+      {product.shop && (
+        <section className="mt-10">
+          <div className="flex items-center gap-3">
+            {product.shop.logoUrl && (
+              <img
+                src={product.shop.logoUrl}
+                alt={product.shop.name}
+                className="w-11 h-11 rounded-full object-cover border border-primary-400"
+              />
+            )}
+            <div>
+              <p className="font-body2">{product.shop.name}</p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
+      {/* 제품 설명 */}
       <section className="mt-6">
         <p
           className={clsx(
@@ -193,6 +162,7 @@ export default function FeedDetailPage() {
         </div>
       </section>
 
+      {/* 관련 제품 */}
       <section className="mt-10">
         <p className="mb-3 font-body3 text-primary-700">관련 제품들</p>
 
@@ -218,30 +188,9 @@ export default function FeedDetailPage() {
         )}
       </section>
 
-      {/* TODO: API 연결*/}
+      {/* TODO: api 연동 및 구현 */}
       <section className="mt-10">
-        <p className="mb-3 font-body3 text-primary-700">관련 제품들</p>
-
-        {/* {relatedReferences.length === 0 ? (
-          <p className="font-caption text-primary-400">관련 상품이 없습니다.</p>
-        ) : (
-          <div className="grid grid-cols-3 gap-3">
-            {relatedReferences.slice(0, 6).map((item) => (
-              <div
-                key={item.id}
-                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200 border border-primary-400"
-              >
-                {item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )} */}
+        <p className="mb-3 font-body3 text-primary-700">관련 레퍼런스들</p>
       </section>
     </div>
   );
