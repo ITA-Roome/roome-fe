@@ -9,7 +9,7 @@ import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
 import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
-import CommentIogo from "@/assets/RoomeLogo/comment_lcon.svg?react";
+import CommentLogo from "@/assets/RoomeLogo/comment_icon.svg?react";
 
 import { useProductDetail } from "@/hooks/useProductDetail";
 import { useToggleProductLike } from "@/hooks/useToggleProductLike";
@@ -224,7 +224,7 @@ export default function FeedDetailPage() {
                 className="flex items-center gap-3 h-13 rounded-md bg-primary-200 px-4"
               >
                 <div className="w-8 h-8 rounded-full bg-primary-700 flex items-center justify-center">
-                  <CommentIogo />
+                  <CommentLogo />
                 </div>
 
                 <div className="min-w-0 self-start pt-0.5 leading-none">
