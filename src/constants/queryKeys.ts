@@ -14,3 +14,9 @@ export const productKeys = {
 
   detail: (id: number) => ["products", "detail", id] as const,
 };
+
+export const commentKeys = {
+  all: ["comments"] as const,
+  list: (type: string, commentableId: number) =>
+    ["comments", "list", type, commentableId] as const,
+};
