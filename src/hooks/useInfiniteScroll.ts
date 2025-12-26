@@ -1,13 +1,15 @@
 import {
   useInfiniteQuery,
   type UseInfiniteQueryResult,
+  type InfiniteData,
 } from "@tanstack/react-query";
 import { ProductApi } from "@/api/product";
 import type { CommonResponse } from "@/types/common";
 import type { ProductItem, ProductListResponse } from "@/types/product";
-import { QUERY_KEY } from "@/constants/key";
+import { productKeys } from "@/constants/queryKeys";
 
 export type ProductOrder = "LATEST" | "PRICE_ASC" | "PRICE_DESC" | "POPULAR";
+
 const orderToSort = (order: ProductOrder): string[] => {
   switch (order) {
     case "PRICE_ASC":
@@ -33,9 +35,16 @@ export default function useGetInfiniteProductsList(
   search: string,
   order: ProductOrder,
 ): UseInfiniteQueryResult<SelectedData, unknown> {
-  return useInfiniteQuery({
-    queryKey: [QUERY_KEY.products, "list", { search, order, limit }],
+  return useInfiniteQuery<
+    CommonResponse<ProductListResponse>,
+    unknown,
+    SelectedData,
+    ReturnType<typeof productKeys.list>,
+    number
+  >({
+    queryKey: productKeys.list({ search, order, limit }),
     enabled: true,
+
     queryFn: ({ pageParam = 0 }) =>
       ProductApi.fetchProducts({
         page: pageParam,
@@ -43,23 +52,34 @@ export default function useGetInfiniteProductsList(
         keyWord: search || undefined,
         sort: orderToSort(order),
       }),
+
     initialPageParam: 0,
-    getNextPageParam: (lastPage: CommonResponse<ProductListResponse>) => {
+
+    getNextPageParam: (lastPage) => {
       const d = lastPage.data;
       if (!d) return undefined;
       return d.last ? undefined : d.number + 1;
     },
-    select: (data) => {
+
+    select: (data: InfiniteData<CommonResponse<ProductListResponse>>) => {
       const pages = data.pages;
       const last = pages[pages.length - 1];
       const lastData = last?.data;
 
+      const items: ProductItem[] = pages.flatMap((p) =>
+        (p.data?.content ?? []).map((it) => ({
+          ...it,
+          liked: it.liked ?? false,
+        })),
+      );
+
       return {
-        items: pages.flatMap((p) => p.data?.content ?? []),
+        items,
         total: lastData?.totalElements ?? 0,
         pageCount: lastData?.totalPages ?? 0,
       };
     },
+
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnWindowFocus: false,

@@ -6,6 +6,7 @@ import GridSkeleton from "@/components/skeletons/GridSkeleton";
 import useGetInfiniteProductsList, {
   ProductOrder,
 } from "@/hooks/useInfiniteScroll";
+import { useToggleProductLike } from "@/hooks/useToggleProductLike";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,10 +15,14 @@ export default function FeedPage() {
   const [order] = useState<ProductOrder>("LATEST");
   const navigate = useNavigate();
 
+  const limit = 21;
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetInfiniteProductsList(21, search, order);
+    useGetInfiniteProductsList(limit, search, order);
 
   const flat = useMemo(() => data?.items ?? [], [data]);
+
+  const { mutate: toggleLike } = useToggleProductLike({ search, order, limit });
 
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-5">
@@ -44,6 +49,8 @@ export default function FeedPage() {
               imageUrl={it.thumbnailUrl}
               price={it.price}
               showInfo={false}
+              liked={it.liked}
+              onToggleLike={(id) => toggleLike(id)}
               onClick={() => navigate(`/feed/${it.id}`)}
             />
           )}
