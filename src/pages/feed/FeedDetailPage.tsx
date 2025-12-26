@@ -36,9 +36,6 @@ export default function FeedDetailPage() {
     limit,
   });
 
-  // 디버깅용 - 삭제 가능
-  console.log("FeedDetailPage - product.liked:", product?.liked);
-
   if (isLoading) {
     return (
       <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
@@ -59,7 +56,6 @@ export default function FeedDetailPage() {
 
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
-      {/* 제품 이미지 */}
       <section>
         <div className="relative rounded-2xl aspect-4/3 overflow-hidden border border-primary-400">
           {product.thumbnailUrl && (
@@ -79,7 +75,7 @@ export default function FeedDetailPage() {
         </div>
       </section>
 
-      {/* 제품명, 액션 버튼 */}
+      {/* 제목 / 가격 / 액션 */}
       <section className="mt-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">

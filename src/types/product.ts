@@ -54,7 +54,8 @@ export type ProductItem = {
 };
 
 export type RelatedProductList = {
-  id: number;
+  id?: number;
+  productId?: number;
   name: string;
   category: string;
   description: string;
