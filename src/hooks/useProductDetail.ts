@@ -51,11 +51,6 @@ export function useProductDetail(id: number | null) {
     return undefined;
   };
 
-  /**
-   * - id 보정: id ?? productId
-   * - imageUrl 보정: imageUrl ?? thumbnailUrl ?? url ?? ""
-   * - id 기준 dedupe(Map)
-   */
   const normalizeRelatedProducts = (
     list: RelatedProductLike[] | undefined,
   ): RelatedProductLike[] => {
@@ -74,7 +69,6 @@ export function useProductDetail(id: number | null) {
       RelatedProductLike & { id: number; imageUrl: string }
     >;
 
-    // id 기준 중복 제거
     return Array.from(new Map(mapped.map((p) => [p.id, p])).values());
   };
 

@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import clsx from "clsx";
 
@@ -11,7 +11,7 @@ import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
 
 import { useToggleProductLike } from "@/hooks/useToggleProductLike";
-import { ProductOrder } from "@/hooks/useInfiniteScroll";
+import type { ProductOrder } from "@/hooks/useInfiniteScroll";
 import { useProductDetail } from "@/hooks/useProductDetail";
 
 export default function ShopDetailPage() {
@@ -35,15 +35,6 @@ export default function ShopDetailPage() {
     order,
     limit,
   });
-
-  // liked 상태를 강제로 추출 (리렌더링 보장)
-  const [currentLiked, setCurrentLiked] = useState(false);
-
-  useEffect(() => {
-    if (product) {
-      setCurrentLiked(product.liked);
-    }
-  }, [product?.liked, product]);
 
   if (isLoading) {
     return (
@@ -103,17 +94,15 @@ export default function ShopDetailPage() {
             <button type="button" aria-label="저장" className="p-2">
               <BookMarkedIcon className="w-5 h-5 text-primary-700" />
             </button>
+
             <button
               type="button"
-              aria-label={currentLiked ? "좋아요 취소" : "좋아요"}
+              aria-label={product.liked ? "좋아요 취소" : "좋아요"}
               className="p-2"
               disabled={isToggling}
-              onClick={() => {
-                toggleLike(product.id);
-                setCurrentLiked(!currentLiked);
-              }}
+              onClick={() => toggleLike(product.id)}
             >
-              {currentLiked ? (
+              {product.liked ? (
                 <FavoriteFillIcon className="w-5 h-5 text-primary-700" />
               ) : (
                 <FavoriteIcon className="w-5 h-5 text-primary-700" />
