@@ -26,6 +26,34 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+apiClient.interceptors.response.use(
+  (response) => {
+    const body = response.data;
+
+    if (
+      body &&
+      typeof body === "object" &&
+      ("success" in body || "isSuccess" in body)
+    ) {
+      const ok = body.success ?? body.isSuccess ?? false;
+
+      if (!ok) {
+        throw new Error(body.message || "요청 처리에 실패했습니다.");
+      }
+    }
+
+    return response;
+  },
+  (error) => {
+    const message =
+      error?.response?.data?.message ||
+      error?.message ||
+      "서버 오류가 발생했습니다.";
+
+    return Promise.reject(new Error(message));
+  },
+);
+
 export const setAuthToken = (token: string | null) => {
   if (!token) {
     localStorage.removeItem("token");

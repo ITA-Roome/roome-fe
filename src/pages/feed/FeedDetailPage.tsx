@@ -9,10 +9,15 @@ import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
 import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
+import CommentLogo from "@/assets/RoomeLogo/comment_icon.svg?react";
 
 import { useProductDetail } from "@/hooks/useProductDetail";
 import { useToggleProductLike } from "@/hooks/useToggleProductLike";
 import type { ProductOrder } from "@/hooks/useInfiniteScroll";
+import { useComments } from "@/hooks/comment/useComments";
+import { useCreateComment } from "@/hooks/comment/useCreateComment";
+
+import ChatInput from "@/components/chatbot/ChatInput";
 
 export default function FeedDetailPage() {
   const { productId } = useParams<{ productId: string }>();
@@ -30,15 +35,32 @@ export default function FeedDetailPage() {
 
   const { data: product, isLoading, error } = useProductDetail(id);
 
+  const { data: commentList = [], isLoading: isCommentLoading } = useComments({
+    type: "PRODUCT",
+    commentableId: id,
+  });
+
+  const { mutate: createComment, isPending: isCreating } = useCreateComment();
+
   const { mutate: toggleLike, isPending: isToggling } = useToggleProductLike({
     search,
     order,
     limit,
   });
 
+  const handleSendComment = (message: string) => {
+    if (id === null) return;
+
+    createComment({
+      commentableType: "PRODUCT",
+      commentableId: id,
+      content: message,
+    });
+  };
+
   if (isLoading) {
     return (
-      <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
+      <div className="relative isolate pt-16 max-w-md mx-auto pb-24 bg-primary-50 text-primary-700">
         <p className="font-body2">상품 정보를 불러오는 중입니다...</p>
       </div>
     );
@@ -55,7 +77,7 @@ export default function FeedDetailPage() {
   const relatedProducts = product.relatedProductList || [];
 
   return (
-    <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
+    <div className="relative isolate pt-16 max-w-md mx-auto px-5 pb-24 bg-primary-50 text-primary-700">
       <section>
         <div className="relative rounded-2xl aspect-4/3 overflow-hidden border border-primary-400">
           {product.thumbnailUrl && (
@@ -75,7 +97,7 @@ export default function FeedDetailPage() {
         </div>
       </section>
 
-      {/* 제목 / 가격 / 액션 */}
+      {/* 제목 / 액션 */}
       <section className="mt-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
@@ -158,7 +180,6 @@ export default function FeedDetailPage() {
       {/* 관련 제품 */}
       <section className="mt-10">
         <p className="mb-3 font-body3 text-primary-700">관련 제품들</p>
-
         {relatedProducts.length === 0 ? (
           <p className="font-caption text-primary-400">관련 상품이 없습니다.</p>
         ) : (
@@ -175,6 +196,45 @@ export default function FeedDetailPage() {
                     className="w-full h-full object-cover"
                   />
                 )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* 댓글 */}
+      <section className="mt-10">
+        <p className="mb-3 font-body3 text-primary-700">댓글</p>
+
+        <ChatInput
+          onSend={handleSendComment}
+          placeholder="댓글을 입력하세요"
+          disabled={isCreating}
+        />
+
+        {isCommentLoading ? (
+          <p className="mt-3 font-caption text-primary-400">
+            댓글을 불러오는 중...
+          </p>
+        ) : (
+          <div className="mt-4 flex flex-col gap-2">
+            {commentList.map((c) => (
+              <div
+                key={String(c.id)}
+                className="flex items-center gap-3 h-13 rounded-md bg-primary-200 px-4"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary-700 flex items-center justify-center">
+                  <CommentLogo />
+                </div>
+
+                <div className="min-w-0 self-start pt-0.5 leading-none">
+                  <p className="font-caption text-primary-700 leading-none">
+                    {c.nickname}
+                  </p>
+                  <p className="font-caption text-primary-700/90 -mt-0.5 line-clamp-1">
+                    {c.content}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
