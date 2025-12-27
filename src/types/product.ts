@@ -51,9 +51,20 @@ export type ProductItem = {
   shop: ProductShop;
 
   relatedProductList?: RelatedProductList[];
+  relatedReferenceList?: RelatedReferenceList[];
 };
 
 export type RelatedProductList = {
+  id?: number;
+  productId?: number;
+  name: string;
+  category: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+};
+
+export type RelatedReferenceList = {
   id?: number;
   productId?: number;
   name: string;

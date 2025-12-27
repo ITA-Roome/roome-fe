@@ -5,6 +5,7 @@ import {
   type InfiniteData,
 } from "@tanstack/react-query";
 import { ProductApi } from "@/api/product";
+import { ReferenceApi } from "@/api/reference";
 import type { ProductItem, ProductListResponse } from "@/types/product";
 import type { CommonResponse } from "@/types/common";
 import { productKeys } from "@/constants/queryKeys";
@@ -85,6 +86,27 @@ export function useProductDetail(id: number | null) {
       const product = res.data as any;
       const cached = getInitialData();
 
+      // 관련 레퍼런스 조회 (상품명으로 검색)
+      let relatedReferences: RelatedProductLike[] = [];
+      try {
+        if (product.name) {
+          const refRes = await ReferenceApi.fetchReferenceList(product.name);
+          if (refRes.success && refRes.data) {
+            relatedReferences = refRes.data.referenceList.map((ref) => ({
+              id: ref.referenceId,
+              imageUrl: ref.imageUrlList[0], // 첫 번째 이미지 사용
+              // 필요한 나머지 필드는 비워두거나 임시 값 채움
+              name: "",
+              category: "",
+              description: "",
+              price: 0,
+            }));
+          }
+        }
+      } catch (e) {
+        console.error("Related references fetch failed", e);
+      }
+
       const normalizedProduct: ProductItem = {
         ...product,
 
@@ -97,6 +119,10 @@ export function useProductDetail(id: number | null) {
 
         relatedProductList: normalizeRelatedProducts(
           product.relatedProductList as RelatedProductLike[] | undefined,
+        ) as any,
+
+        relatedReferenceList: normalizeRelatedProducts(
+          relatedReferences,
         ) as any,
       };
 

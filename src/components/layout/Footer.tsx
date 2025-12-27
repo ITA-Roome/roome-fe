@@ -13,7 +13,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="fixed inset-x-0 bottom-0 z-50 bg-primary-50">
+    <footer className="fixed inset-x-0 bottom-0 z-50 bg-white">
       <nav className="mx-auto max-w-md px-4">
         <ul className="flex justify-around py-3">
           {navItems.map(({ to, label, Icon }) => (

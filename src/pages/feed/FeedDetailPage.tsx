@@ -77,9 +77,9 @@ export default function FeedDetailPage() {
   const relatedProducts = product.relatedProductList || [];
 
   return (
-    <div className="relative isolate pt-16 max-w-md mx-auto px-5 pb-24 bg-primary-50 text-primary-700">
+    <div className="relative isolate pt-16 max-w-md mx-auto px-5 pb-24 text-primary-700">
       <section>
-        <div className="relative rounded-2xl aspect-4/3 overflow-hidden border border-primary-400">
+        <div className="relative rounded-2xl aspect-4/3 overflow-hidden">
           {product.thumbnailUrl && (
             <img
               src={product.thumbnailUrl}
@@ -101,7 +101,7 @@ export default function FeedDetailPage() {
       <section className="mt-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h2 className="font-body1 line-clamp-2">{product.name}</h2>
+            <h2 className="font-heading1 line-clamp-1">{product.name}</h2>
           </div>
 
           <div className="flex items-center gap-1">
@@ -129,18 +129,17 @@ export default function FeedDetailPage() {
       </section>
 
       {/* 샵 정보 */}
-      <section className="mt-10">
+      <section className="mt-15">
         <div className="flex items-center gap-3">
           {product.shop?.logoUrl && (
             <img
               src={product.shop.logoUrl}
               alt={product.shop?.name ?? "shop"}
-              className="w-11 h-11 rounded-full object-cover border border-primary-400"
+              className="w-11 h-11 rounded-full object-cover"
             />
           )}
           <div>
-            <p className="font-body2">{product.shop?.name ?? ""}</p>
-            <p className="font-caption">간단한 설명</p>
+            <p className="font-body1">{product.shop?.name ?? ""}</p>
           </div>
         </div>
       </section>
@@ -149,18 +148,18 @@ export default function FeedDetailPage() {
       <section className="mt-6">
         <p
           className={clsx(
-            "mt-2 font-body2 text-primary-700",
+            "font-body3 text-primary-700",
             isDescOpen ? "" : "line-clamp-2",
           )}
         >
           {product.description}
         </p>
 
-        <div className="flex justify-center">
+        <div className="mt-2 flex justify-center">
           <button
             type="button"
             onClick={() => setIsDescOpen((prev) => !prev)}
-            className="flex items-center gap-x-2 font-caption-strong text-primary-700"
+            className="flex items-center gap-x-2 font-caption text-primary-700"
           >
             {isDescOpen ? (
               <>
@@ -178,7 +177,7 @@ export default function FeedDetailPage() {
       </section>
 
       {/* 관련 제품 */}
-      <section className="mt-10">
+      <section className="mt-15">
         <p className="mb-3 font-body3 text-primary-700">관련 제품들</p>
         {relatedProducts.length === 0 ? (
           <p className="font-caption text-primary-400">관련 상품이 없습니다.</p>
@@ -187,7 +186,7 @@ export default function FeedDetailPage() {
             {relatedProducts.slice(0, 6).map((item) => (
               <div
                 key={item.id}
-                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200 border border-primary-400"
+                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200"
               >
                 {item.imageUrl && (
                   <img
@@ -203,14 +202,10 @@ export default function FeedDetailPage() {
       </section>
 
       {/* 댓글 */}
-      <section className="mt-10">
+      <section className="mt-15">
         <p className="mb-3 font-body3 text-primary-700">댓글</p>
 
-        <ChatInput
-          onSend={handleSendComment}
-          placeholder="댓글을 입력하세요"
-          disabled={isCreating}
-        />
+        <ChatInput onSend={handleSendComment} disabled={isCreating} />
 
         {isCommentLoading ? (
           <p className="mt-3 font-caption text-primary-400">
@@ -227,11 +222,11 @@ export default function FeedDetailPage() {
                   <CommentLogo />
                 </div>
 
-                <div className="min-w-0 self-start pt-0.5 leading-none">
-                  <p className="font-caption text-primary-700 leading-none">
+                <div className="min-w-0 flex flex-col justify-center">
+                  <p className="font-caption-strong text-primary-700 leading-tight">
                     {c.nickname}
                   </p>
-                  <p className="font-caption text-primary-700/90 -mt-0.5 line-clamp-1">
+                  <p className="font-caption text-primary-700 line-clamp-1 leading-tight">
                     {c.content}
                   </p>
                 </div>

@@ -34,10 +34,10 @@ export default function ShopFilterPanel() {
                 type="button"
                 onClick={() => toggleKeyword(label)}
                 className={[
-                  "px-3 py-1 rounded-sm font-caption text-center transition-all",
+                  "px-3 py-2 rounded-full border border-primary-200 font-caption text-center transition-all",
                   on
-                    ? "bg-primary-400 text-white"
-                    : "bg-primary-700 text-primary-50",
+                    ? "bg-primary-700 text-white"
+                    : "bg-white text-primary-700",
                 ].join(" ")}
               >
                 {label}
@@ -58,10 +58,10 @@ export default function ShopFilterPanel() {
                 type="button"
                 onClick={() => setSort(label)}
                 className={[
-                  "px-4 py-1 rounded-md font-caption text-center transition-all",
+                  "px-4 py-2 rounded-full font-caption text-center transition-all",
                   on
-                    ? "bg-primary-400 text-primary-50"
-                    : "bg-primary-700 text-primary-50",
+                    ? "bg-primary-700 text-white"
+                    : "bg-white text-primary-700 border border-primary-200",
                 ].join(" ")}
               >
                 {label}
