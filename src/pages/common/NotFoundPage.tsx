@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import LogoMain from "@/assets/RoomeLogo/logo-main.svg?react";
+import LogoMain from "@/assets/RoomeLogo/Roome_main.svg?react";
 
 export default function NotFoundPage() {
   return (
