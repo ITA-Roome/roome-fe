@@ -41,7 +41,7 @@ button {
 
 /* 전체 배경 적용 */
 body {
-  background-color: #ffff;
+  background-color: #ffffff;
 }
 
 @layer utilities {
