@@ -23,7 +23,7 @@ export default function NotFoundPage() {
         <div className="mt-10">
           <Link
             to="/feed"
-            className="inline-block rounding-16 bg-primary-50 py-3 px-15 font-heading3 text-primary-700 transition-colors"
+            className="inline-block rounded-16 bg-primary-50 py-3 px-15 font-heading3 text-primary-700 transition-colors"
           >
             홈으로 가기
           </Link>

@@ -7,7 +7,7 @@ export const ReferenceApi = {
     keyWord: string,
   ): Promise<CommonResponse<ReferenceListResponse>> => {
     const { data } = await apiClient.get<CommonResponse<ReferenceListResponse>>(
-      "api/references",
+      "/api/references",
       {
         params: {
           keyWord,
