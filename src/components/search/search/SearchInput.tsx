@@ -51,7 +51,7 @@ export default function SearchInput({
   return (
     <div ref={rootRef} className={`relative w-full ${className}`}>
       <div
-        className="flex items-center gap-2 h-9 px-4 rounded-full max-w-[320px] mx-auto w-full bg-primary-50 border border-primary-700"
+        className="flex items-center gap-2 h-9 px-4 rounded-full max-w-[320px] mx-auto w-full bg-[#E0E0E0]"
         onClick={() => {
           setOpen(true);
           inputRef.current?.focus();
@@ -122,9 +122,9 @@ export default function SearchInput({
       </div>
 
       {open && (
-        <div className="absolute left-0 right-0 -z-100 top-full -mt-13 rounded-2xl bg-primary-50 shadow px-4 pt-3 pb-3 max-h-[55vh] overflow-auto">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="mt-12 font-caption text-primary-700">
+        <div className="absolute mt-2 left-0 right-0 top-full rounded-md border border-primary-700 bg-white shadow px-4 pt-3 pb-3 max-h-[55vh] overflow-auto">
+          <div className="flex items-center justify-between">
+            <h3 className="font-caption text-primary-700">
               {source === "recent"
                 ? "최근 검색"
                 : source === "popular"

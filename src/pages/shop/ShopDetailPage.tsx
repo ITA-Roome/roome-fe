@@ -38,7 +38,7 @@ export default function ShopDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
+      <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 text-primary-700">
         <p className="font-body2">상품 정보를 불러오는 중입니다...</p>
       </div>
     );
@@ -46,7 +46,7 @@ export default function ShopDetailPage() {
 
   if (error || !product) {
     return (
-      <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
+      <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 text-primary-700">
         <p className="font-body2">상품 정보를 찾을 수 없습니다.</p>
       </div>
     );
@@ -54,12 +54,13 @@ export default function ShopDetailPage() {
 
   const formattedPrice = `₩${product.price.toLocaleString("ko-KR")}`;
   const relatedProducts = product.relatedProductList || [];
+  const relatedReferences = product.relatedReferenceList || [];
 
   return (
-    <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
+    <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 text-primary-700">
       {/* 제품 이미지 */}
       <section>
-        <div className="relative rounded-2xl aspect-4/3 overflow-hidden border border-primary-400">
+        <div className="relative rounded-2xl aspect-4/3 overflow-hidden">
           {product.thumbnailUrl && (
             <img
               src={product.thumbnailUrl}
@@ -81,10 +82,10 @@ export default function ShopDetailPage() {
       <section className="mt-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h2 className="font-body1 line-clamp-2 wrap-break-words">
+            <h2 className="font-heading2 line-clamp-2 wrap-break-words">
               {product.name}
             </h2>
-            <h2 className="font-body1 line-clamp-2">{formattedPrice}</h2>
+            <h2 className="font-heading1 line-clamp-2">{formattedPrice}</h2>
           </div>
 
           <div className="flex items-center gap-1">
@@ -114,17 +115,17 @@ export default function ShopDetailPage() {
 
       {/* 샵 정보 */}
       {product.shop && (
-        <section className="mt-10">
+        <section className="mt-15">
           <div className="flex items-center gap-3">
             {product.shop.logoUrl && (
               <img
                 src={product.shop.logoUrl}
                 alt={product.shop.name}
-                className="w-11 h-11 rounded-full object-cover border border-primary-400"
+                className="w-11 h-11 rounded-full object-cover"
               />
             )}
             <div>
-              <p className="font-body2">{product.shop.name}</p>
+              <p className="font-body1">{product.shop.name}</p>
             </div>
           </div>
         </section>
@@ -134,18 +135,18 @@ export default function ShopDetailPage() {
       <section className="mt-6">
         <p
           className={clsx(
-            "mt-2 font-body2 text-primary-700",
+            "mt-2 font-body3 text-primary-700",
             isDescOpen ? "" : "line-clamp-2",
           )}
         >
           {product.description}
         </p>
 
-        <div className="flex justify-center">
+        <div className="mt-2 flex justify-center">
           <button
             type="button"
             onClick={() => setIsDescOpen((prev) => !prev)}
-            className="flex items-center gap-x-2 font-caption-strong text-primary-700"
+            className="flex items-center gap-x-2 font-caption text-primary-700"
           >
             {isDescOpen ? (
               <>
@@ -163,7 +164,7 @@ export default function ShopDetailPage() {
       </section>
 
       {/* 관련 제품 */}
-      <section className="mt-10">
+      <section className="mt-15">
         <p className="mb-3 font-body3 text-primary-700">관련 제품들</p>
 
         {relatedProducts.length === 0 ? (
@@ -173,7 +174,7 @@ export default function ShopDetailPage() {
             {relatedProducts.slice(0, 6).map((item) => (
               <div
                 key={item.id}
-                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200 border border-primary-400"
+                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200"
               >
                 {item.imageUrl && (
                   <img
@@ -188,9 +189,32 @@ export default function ShopDetailPage() {
         )}
       </section>
 
-      {/* TODO: api 연동 및 구현 */}
-      <section className="mt-10">
+      {/* 관련 레퍼런스 */}
+      <section className="mt-15">
         <p className="mb-3 font-body3 text-primary-700">관련 레퍼런스들</p>
+
+        {relatedReferences.length === 0 ? (
+          <p className="font-caption text-primary-400">
+            관련 레퍼런스가 없습니다.
+          </p>
+        ) : (
+          <div className="grid grid-cols-3 gap-3">
+            {relatedReferences.slice(0, 6).map((item) => (
+              <div
+                key={item.id}
+                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200"
+              >
+                {item.imageUrl && (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

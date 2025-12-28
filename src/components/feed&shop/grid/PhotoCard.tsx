@@ -31,7 +31,7 @@ export default function PhotoCard({
         tabIndex={0}
         onClick={onClick}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick?.()}
-        className="relative rounded-xl aspect-3/4 overflow-hidden border border-primary-400"
+        className="relative rounded-xl aspect-3/4 overflow-hidden"
       >
         {imageUrl ? (
           <img
@@ -67,7 +67,7 @@ export default function PhotoCard({
             <p className="font-caption truncate text-primary-700">{title}</p>
           )}
           {price != null && (
-            <p className="-mt-2 font-caption text-primary-700">
+            <p className="font-caption-strong text-primary-700">
               ₩{Number(price).toLocaleString()}
             </p>
           )}
