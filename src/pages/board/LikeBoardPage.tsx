@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
 import TabMenu from "@/components/board/TabMenu";
+import { UserApi } from "@/api/user";
 import type { UserLikeProduct } from "@/types/user";
+import { ProductApi } from "@/api/product";
 
 import ref1 from "@/assets/icons/bed.svg";
 import ref2 from "@/assets/icons/desk.svg";
@@ -21,56 +23,36 @@ export default function LikeBoardPage() {
   const [likedProducts, setLikedProducts] = useState<UserLikeProduct[]>([]);
   const [referenceImages] = useState<string[]>([ref1, ref2, ref3]);
 
-  // ⭐ fetchLikedProducts 내부에 dummy 배열 이동 → ESLint 해결
-  const fetchLikedProducts = useCallback(() => {
-    const dummy: UserLikeProduct[] = [
-      {
-        id: 1,
-        name: "침대",
-        price: 120000,
-        description: "",
-        category: "BEDROOM_BED",
-        productUrl: "",
-        thumbnailKey: "",
-        imageList: [ref1],
-        tagList: [],
-        createdAt: "",
-        updatedAt: "",
-      },
-      {
-        id: 2,
-        name: "책상",
-        price: 90000,
-        description: "",
-        category: "LIVING_DESK",
-        productUrl: "",
-        thumbnailKey: "",
-        imageList: [ref2],
-        tagList: [],
-        createdAt: "",
-        updatedAt: "",
-      },
-      {
-        id: 3,
-        name: "조명",
-        price: 40000,
-        description: "",
-        category: "LIVING_LIGHT",
-        productUrl: "",
-        thumbnailKey: "",
-        imageList: [ref3],
-        tagList: [],
-        createdAt: "",
-        updatedAt: "",
-      },
-    ];
+  const fetchLikedProducts = useCallback(async () => {
+    try {
+      const res = await UserApi.fetchUserLikedProducts();
 
-    setLikedProducts(dummy);
+      if (!res.isSuccess || !res.data) {
+        console.error("좋아요 상품 조회 실패:", res.message);
+        setLikedProducts([]);
+        return;
+      }
+
+      setLikedProducts(res.data.userLikeProductList ?? []);
+    } catch (error) {
+      console.error("좋아요 상품 조회 중 오류:", error);
+    }
   }, []);
 
   useEffect(() => {
     fetchLikedProducts();
   }, [fetchLikedProducts]);
+
+  const handleToggleLike = useCallback(async (productId: number) => {
+    try {
+      const res = await ProductApi.toggleProductLike(productId);
+      if (!res?.liked) {
+        setLikedProducts((prev) => prev.filter((p) => p.id !== productId));
+      }
+    } catch (error) {
+      console.error("좋아요 토글 실패: ", error);
+    }
+  }, []);
 
   return (
     <div className="pt-16 max-w-md mx-auto px-5 min-h-screen">
@@ -86,8 +68,9 @@ export default function LikeBoardPage() {
               title={it.name}
               price={it.price}
               imageUrl={it.imageList?.[0]}
+              liked={true}
+              onToggleLike={handleToggleLike}
               showInfo={true}
-              defaultLiked={true}
             />
           )}
           columns="grid-cols-3"
@@ -107,8 +90,8 @@ export default function LikeBoardPage() {
               title=""
               price={0}
               imageUrl={img}
+              liked={true}
               showInfo={false}
-              defaultLiked={true}
             />
           )}
           columns="grid-cols-3"

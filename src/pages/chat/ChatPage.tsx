@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MessageList from "@/components/chatbot/MessageList";
 import ChatInput from "@/components/chatbot/ChatInput";
 
@@ -10,6 +10,8 @@ export type Message = {
 const HEADER = 64;
 const FOOTER = 80;
 
+const STORAGE_KEY = "chatMessages";
+
 /**
  * Render the chat page UI and manage the message list.
  *
@@ -19,20 +21,39 @@ const FOOTER = 80;
  */
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) setMessages(JSON.parse(saved));
+    } catch (err) {
+      console.error("대화 복원 실패:", err);
+    } finally {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return; // 초기 빈 상태로 덮어쓰는 것 방지
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    } catch (err) {
+      console.error("대화 저장 실패:", err);
+    }
+  }, [messages, isHydrated]);
 
   const handleSend = async (userMessage: string) => {
     if (!userMessage.trim()) return;
 
-    // 1️⃣ 사용자 메시지 추가
-    const newMessage: Message = { role: "user", content: userMessage };
-    setMessages((prev) => [...prev, newMessage]);
-
-    // 2️⃣ 서버 요청 (임시로 가짜 답변)
-    const botReply: Message = {
-      role: "bot",
-      content: `“${userMessage}”에 대한 답변이에요.`,
-    };
-    setMessages((prev) => [...prev, botReply]);
+    setMessages((prev) => {
+      const next: Message[] = [
+        ...prev,
+        { role: "user", content: userMessage },
+        { role: "bot", content: `“${userMessage}”에 대한 답변이에요.` },
+      ];
+      return next;
+    });
   };
 
   return (
