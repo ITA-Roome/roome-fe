@@ -5,7 +5,7 @@ import Header from "../components/layout/Header";
 
 function Layout() {
   return (
-    <div className="min-h-screen bg-primary-50">
+    <div className="min-h-screen">
       <Header />
       <main className="px-4">
         <Outlet />
