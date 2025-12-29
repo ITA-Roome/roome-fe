@@ -17,7 +17,7 @@ export default function BotMessage({ content, avatarSrc }: Props) {
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="bg-primary-200 text-primary-800 p-3 rounded-lg">
+      <div className="border border-primary-700 text-primary-700 p-3 rounded-2xl">
         {content}
       </div>
     </div>

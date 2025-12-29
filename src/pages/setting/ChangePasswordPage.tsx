@@ -68,7 +68,7 @@ export default function ChangePasswordPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={`w-full mt-2 border rounded-lg px-4 py-3 ${
+            className={`w-full mt-2 border rounded-3xl px-4 py-3 ${
               isEmailValid ? "border-green-500" : "border-[#C7B5A1]"
             }`}
             placeholder="example@romme.com"
@@ -77,8 +77,8 @@ export default function ChangePasswordPage() {
           <button
             onClick={handleEmailSubmit}
             disabled={!isEmailValid}
-            className={`w-full mt-6 py-3 rounded-lg text-white transition ${
-              isEmailValid ? "bg-[#5D3C28]" : "bg-[#C7B5A1] opacity-50"
+            className={`w-full mt-6 py-3 rounded-3xl text-white transition ${
+              isEmailValid ? "bg-primary-700" : "bg-[#C7B5A1] opacity-50"
             }`}
           >
             비밀번호 변경
@@ -101,7 +101,7 @@ export default function ChangePasswordPage() {
               type="password"
               value={oldPw}
               onChange={(e) => setOldPw(e.target.value)}
-              className="w-full mt-2 border border-[#C7B5A1] rounded-lg px-4 py-3"
+              className="w-full mt-2 border border-[#C7B5A1] rounded-3xl px-4 py-3"
               placeholder="현재 비밀번호 입력"
             />
           </div>
@@ -114,7 +114,7 @@ export default function ChangePasswordPage() {
               type="password"
               value={newPw}
               onChange={(e) => setNewPw(e.target.value)}
-              className="w-full mt-2 border border-[#C7B5A1] rounded-lg px-4 py-3"
+              className="w-full mt-2 border border-[#C7B5A1] rounded-3xl px-4 py-3"
               placeholder="새 비밀번호 입력"
             />
 
@@ -131,7 +131,7 @@ export default function ChangePasswordPage() {
               type="password"
               value={confirmPw}
               onChange={(e) => setConfirmPw(e.target.value)}
-              className="w-full mt-2 border border-[#C7B5A1] rounded-lg px-4 py-3"
+              className="w-full mt-2 border border-[#C7B5A1] rounded-3xl px-4 py-3"
               placeholder="다시 입력"
             />
 
@@ -145,8 +145,8 @@ export default function ChangePasswordPage() {
           <button
             onClick={handlePasswordChange}
             disabled={!isChangeEnabled}
-            className={`w-full mt-8 py-3 rounded-lg text-white transition ${
-              isChangeEnabled ? "bg-[#5D3C28]" : "bg-[#C7B5A1] opacity-50"
+            className={`w-full mt-8 py-3 rounded-3xl text-white transition ${
+              isChangeEnabled ? "bg-primary-700" : "bg-[#C7B5A1] opacity-50"
             }`}
           >
             비밀번호 변경

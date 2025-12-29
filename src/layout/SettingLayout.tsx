@@ -5,7 +5,7 @@ import SettingHeader from "../components/layout/SettingHeader";
 
 function SettingLayout() {
   return (
-    <div className="min-h-screen bg-primary-50">
+    <div className="min-h-screen">
       <SettingHeader />
       <main className="px-4">
         <Outlet />

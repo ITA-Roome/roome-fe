@@ -9,12 +9,9 @@ export type LoginResponse = {
   data?: {
     accessToken: string;
     refreshToken: string;
-    userInfo: {
-      userId: number;
-      nickname: string;
-      email: string;
-      loginType: string;
-    };
+    userId: number;
+    nickname: string;
+    email: string;
   };
   message?: string;
 };

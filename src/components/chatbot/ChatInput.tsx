@@ -8,11 +8,7 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function ChatInput({
-  onSend,
-  placeholder = "댓글을 입력하세요",
-  disabled = false,
-}: Props) {
+export default function ChatInput({ onSend, disabled = false }: Props) {
   const [input, setInput] = useState("");
   const isSubmittingRef = useRef(false);
 
@@ -47,7 +43,6 @@ export default function ChatInput({
           e.preventDefault();
           handleSubmit();
         }}
-        placeholder={placeholder}
         disabled={disabled}
         className="w-full h-12 pl-4 pr-14 bg-white border border-primary-700 rounded-md
                      focus:outline-none focus:ring-1 focus:ring-primary-600 disabled:opacity-60"

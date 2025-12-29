@@ -83,10 +83,12 @@ export default function LoginPage() {
         return;
       }
 
-      const { accessToken, refreshToken } = payload.data;
+      const { accessToken, refreshToken, userId, nickname } = payload.data;
 
       setAuthToken(accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+      sessionStorage.setItem("userId", String(userId));
+      sessionStorage.setItem("nickname", String(nickname));
 
       try {
         const { data } = await UserApi.checkOnboardingExistence();

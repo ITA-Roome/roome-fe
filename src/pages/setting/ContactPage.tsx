@@ -106,8 +106,8 @@ export default function ContactPage() {
           disabled={!selectedType || !content}
           onClick={handleSubmit}
           className={`
-            w-full mt-4 py-3 rounded-lg text-white text-[14px] transition
-            ${selectedType && content ? "bg-[#5D3C28]" : "bg-[#C7B5A1] opacity-50"}
+            w-full mt-4 py-3 rounded-3xl text-white text-[14px] transition
+            ${selectedType && content ? "bg-primary-700" : "bg-[#C7B5A1] opacity-50"}
           `}
         >
           문의 제출

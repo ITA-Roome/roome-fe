@@ -185,7 +185,7 @@ export default function ProfilePage() {
               type="text"
               value={nickname}
               onChange={handleNicknameChange}
-              className="w-full h-12 border rounded-md pl-3 pr-24"
+              className="w-full h-12 border rounded-3xl pl-3 pr-24"
             />
 
             <button
@@ -195,7 +195,7 @@ export default function ProfilePage() {
                 nickname === originalNickname ||
                 nicknameLoading
               }
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white px-3 py-1 rounded disabled:opacity-40"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white px-3 py-1 rounded-3xl disabled:opacity-40"
             >
               {nicknameLoading ? "확인 중..." : "중복 확인"}
             </button>
@@ -215,9 +215,9 @@ export default function ProfilePage() {
           <button
             onClick={handleSave}
             disabled={!isSaveEnabled}
-            className={`w-full h-12 rounded-md font-semibold ${
+            className={`w-full h-12 rounded-3xl font-semibold ${
               isSaveEnabled
-                ? "bg-[#5D3C28] text-[#FFFDF4]"
+                ? "bg-primary-700 text-[#FFFDF4]"
                 : "bg-[#C4B3A2] opacity-40 text-white cursor-not-allowed"
             }`}
           >
