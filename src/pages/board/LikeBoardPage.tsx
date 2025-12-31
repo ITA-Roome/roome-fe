@@ -55,7 +55,7 @@ export default function LikeBoardPage() {
   }, []);
 
   return (
-    <div className="pt-16 max-w-md mx-auto px-5 min-h-screen">
+    <div className="max-w-md mx-auto px-5 min-h-screen">
       <TabMenu tab={tab} onChange={setTab} />
 
       {tab === "product" && (

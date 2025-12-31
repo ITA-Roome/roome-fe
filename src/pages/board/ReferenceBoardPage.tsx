@@ -15,11 +15,7 @@ export default function ReferenceBoardPage() {
   const dummyImages = [ref1, ref2, ref3];
 
   return (
-    <div className="pt-16 max-w-md mx-auto px-5 min-h-screen">
-      <h2 className="text-center text-primary-700 font-semibold mb-4">
-        내가 공유한 레퍼런스
-      </h2>
-
+    <div className="max-w-md mx-auto px-5 min-h-screen">
       <InfiniteScrollGrid
         items={dummyImages}
         keySelector={(_, i) => i}
@@ -30,7 +26,7 @@ export default function ReferenceBoardPage() {
             price={0}
             imageUrl={img}
             showInfo={false} // 제품 정보 숨기기
-            defaultLiked={true} // 좋아요 하트 고정
+            liked={true} // 좋아요 하트 고정
           />
         )}
         columns="grid-cols-3"

@@ -27,6 +27,7 @@ import ChatBoardPage from "@/pages/board/ChatBoardPage";
 import LikeBoardPage from "@/pages/board/LikeBoardPage";
 import ReferenceBoardPage from "@/pages/board/ReferenceBoardPage";
 import SettingLayout from "@/layout/SettingLayout";
+import BoardLayout from "@/layout/BoardLayout";
 import SettingPage from "@/pages/setting/SettingPage";
 import ProfilePage from "@/pages/setting/ProfilePage";
 import AccountPage from "@/pages/setting/AccountPage";
@@ -138,12 +139,31 @@ const router = createBrowserRouter([
         element: <FeedDetailPage />,
       },
       {
-        path: "chat",
-        element: <ChatPage />,
-      },
-      {
         path: "board",
         element: <BoardPage />,
+      },
+      {
+        path: "shop",
+        element: <ShopPage />,
+      },
+      {
+        path: "shop/:productId",
+        element: <ShopDetailPage />,
+      },
+    ],
+  },
+  {
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <BoardLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <NotFoundPage />,
+    children: [
+      {
+        path: "chat",
+        element: <ChatPage />,
       },
       {
         path: "board/like",
@@ -156,14 +176,6 @@ const router = createBrowserRouter([
       {
         path: "board/reference",
         element: <ReferenceBoardPage />,
-      },
-      {
-        path: "shop",
-        element: <ShopPage />,
-      },
-      {
-        path: "shop/:productId",
-        element: <ShopDetailPage />,
       },
     ],
   },

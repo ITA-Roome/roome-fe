@@ -55,11 +55,7 @@ export default function ChangePasswordPage() {
   if (loading) return <div className="pt-24 text-center">로딩 중...</div>;
 
   return (
-    <div className="min-h-screen bg-[#FFFDF4] px-5 pt-24">
-      <h1 className="text-center text-[#5D3C28] text-lg font-semibold mb-10">
-        비밀번호 변경
-      </h1>
-
+    <div className="min-h-screen px-5 pt-24">
       {/* STEP 1 */}
       {step === 1 && (
         <div className="max-w-sm mx-auto">

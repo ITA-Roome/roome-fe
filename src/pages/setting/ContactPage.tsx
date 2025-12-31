@@ -34,7 +34,7 @@ export default function ContactPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FFFDF4]">
+    <div className="min-h-screen">
       <div className="pt-24 max-w-md mx-auto px-5 pb-40">
         <div className="relative max-w-sm mx-auto w-full" ref={wrapperRef}>
           <div

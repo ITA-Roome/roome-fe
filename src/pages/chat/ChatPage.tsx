@@ -84,7 +84,6 @@ export default function ChatPage() {
       style={{
         // 전체 높이에서 Header + Footer 제거 → ChatPage 영역 확보
         height: `calc(100vh - ${HEADER + FOOTER}px)`,
-        marginTop: HEADER, // Header가 fixed라서 아래로 밀어주기
       }}
     >
       {/* 위~입력창 사이가 채팅 영역 */}
