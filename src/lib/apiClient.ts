@@ -8,12 +8,23 @@ export const apiClient = axios.create({
   },
 });
 
+// 인증이 필요 없는 경로들(소셜 로그인 URL, 로그인/회원가입, 토큰 재발급 등)
+const AUTH_FREE_PATHS = [
+  "/api/auth/login",
+  "/api/auth/signup",
+  "/api/auth/google/authorize-uri",
+  "/api/auth/kakao/authorize-uri",
+  "/api/auth/google/callback",
+  "/api/auth/kakao/callback", // "/api/auth/refresh",
+];
+
 apiClient.interceptors.request.use((config) => {
   if (config.data instanceof FormData) {
     delete config.headers["Content-Type"];
   }
 
-  if (config.url?.includes("/api/auth/login")) {
+  // 인증이 필요 없는 요청이면 토큰을 붙이지 않는다
+  if (config.url && AUTH_FREE_PATHS.some((p) => config.url?.includes(p))) {
     return config;
   }
 
@@ -45,6 +56,50 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    const { response, config } = error || {};
+    const status = response?.status;
+
+    // 401 만료 시 리프레시 토큰으로 1회 재발급 후 재시도
+    if (
+      status === 401 &&
+      config &&
+      !config._retry &&
+      !AUTH_FREE_PATHS.some((p) => config.url?.includes(p))
+    ) {
+      config._retry = true;
+
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) {
+        return Promise.reject(error);
+      }
+
+      return axios
+        .post(
+          `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
+          { refreshToken },
+          { withCredentials: true },
+        )
+        .then((res) => {
+          const newToken =
+            res.data?.data?.accessToken || res.data?.accessToken || "";
+
+          if (!newToken) {
+            throw new Error("토큰 재발급 실패");
+          }
+
+          setAuthToken(newToken);
+          config.headers = config.headers || {};
+          config.headers.Authorization = `Bearer ${newToken}`;
+          return apiClient(config);
+        })
+        .catch((refreshErr) => {
+          // 재발급 실패 시 토큰을 지우고 원래 에러 반환
+          localStorage.removeItem("token");
+          localStorage.removeItem("refreshToken");
+          return Promise.reject(refreshErr);
+        });
+    }
+
     const message =
       error?.response?.data?.message ||
       error?.message ||

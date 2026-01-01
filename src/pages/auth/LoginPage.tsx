@@ -141,7 +141,6 @@ export default function LoginPage() {
     try {
       const { data } = await AuthApi.getKakaoLoginUrl();
       const authorizeUri = data.data.authorizeUri;
-
       console.log("authorizeUri", authorizeUri);
 
       if (!authorizeUri) {
