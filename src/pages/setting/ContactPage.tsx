@@ -1,9 +1,20 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { InquiryApi } from "@/api/inquiry";
+
+const inquiryTypeMap: Record<string, string> = {
+  "계정/로그인 문제": "ACCOUNT_LOGIN",
+  "오류 및 버그 신고": "BUG_REPORT",
+  "제품 및 협업 문의": "PRODUCT_COLLAB",
+  "직접 작성": "CUSTOM",
+};
 
 export default function ContactPage() {
+  const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [content, setContent] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -14,9 +25,32 @@ export default function ContactPage() {
     "직접 작성",
   ];
 
-  const handleSubmit = () => {
-    if (!selectedType || !content) return;
-    alert("문의가 등록되었습니다!");
+  const handleSubmit = async () => {
+    if (!selectedType || !content.trim()) return;
+    const typeCode = inquiryTypeMap[selectedType] ?? "CUSTOM";
+
+    setSubmitting(true);
+    try {
+      const res = await InquiryApi.submitInquiry({
+        type: typeCode,
+        content: content.trim(),
+      });
+
+      if (!res.isSuccess) {
+        alert(res.message || "문의 등록에 실패했습니다.");
+        return;
+      }
+
+      alert("문의가 등록되었습니다!");
+      setContent("");
+      setSelectedType("");
+      navigate("/setting", { replace: true });
+    } catch (err) {
+      console.error("문의 등록 실패:", err);
+      alert("문의 등록 중 오류가 발생했습니다.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -103,14 +137,14 @@ export default function ContactPage() {
 
         <button
           type="button"
-          disabled={!selectedType || !content}
+          disabled={!selectedType || !content.trim() || submitting}
           onClick={handleSubmit}
           className={`
             w-full mt-4 py-3 rounded-3xl text-white text-[14px] transition
             ${selectedType && content ? "bg-primary-700" : "bg-[#C7B5A1] opacity-50"}
           `}
         >
-          문의 제출
+          {submitting ? "제출 중..." : "문의 제출"}
         </button>
       </div>
     </div>

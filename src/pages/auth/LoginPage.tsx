@@ -142,6 +142,8 @@ export default function LoginPage() {
       const { data } = await AuthApi.getKakaoLoginUrl();
       const authorizeUri = data.data.authorizeUri;
 
+      console.log("authorizeUri", authorizeUri);
+
       if (!authorizeUri) {
         throw new Error("카카오 로그인 URL이 비어 있습니다.");
       }

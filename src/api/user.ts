@@ -4,6 +4,7 @@ import {
   OnboardingPayload,
   OnboardingExistenceResponse,
   UserLikeProductResponse,
+  UserLikeReferenceResponse,
   UserProfile,
 } from "@/types/user";
 
@@ -19,10 +20,18 @@ export const UserApi = {
   fetchUserLikedProducts: async (): Promise<
     CommonResponse<UserLikeProductResponse>
   > => {
-    const { data } =
-      await apiClient.get<CommonResponse<UserLikeProductResponse>>(
-        "/api/user/likes",
-      );
+    const { data } = await apiClient.get<
+      CommonResponse<UserLikeProductResponse>
+    >("/api/user/likes/product");
+    return data;
+  },
+
+  fetchUserLikedReferences: async (): Promise<
+    CommonResponse<UserLikeReferenceResponse>
+  > => {
+    const { data } = await apiClient.get<
+      CommonResponse<UserLikeReferenceResponse>
+    >("/api/user/likes/reference");
     return data;
   },
 

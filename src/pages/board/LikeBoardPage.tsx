@@ -3,12 +3,8 @@ import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
 import TabMenu from "@/components/board/TabMenu";
 import { UserApi } from "@/api/user";
-import type { UserLikeProduct } from "@/types/user";
+import type { UserLikeProduct, UserLikeReference } from "@/types/user";
 import { ProductApi } from "@/api/product";
-
-import ref1 from "@/assets/icons/bed.svg";
-import ref2 from "@/assets/icons/desk.svg";
-import ref3 from "@/assets/icons/light.svg";
 
 /**
  * Like-board page that shows either liked reference images or liked products in a tabbed grid.
@@ -21,7 +17,9 @@ import ref3 from "@/assets/icons/light.svg";
 export default function LikeBoardPage() {
   const [tab, setTab] = useState<"reference" | "product">("reference");
   const [likedProducts, setLikedProducts] = useState<UserLikeProduct[]>([]);
-  const [referenceImages] = useState<string[]>([ref1, ref2, ref3]);
+  const [likedReferences, setLikedReferences] = useState<UserLikeReference[]>(
+    [],
+  );
 
   const fetchLikedProducts = useCallback(async () => {
     try {
@@ -39,9 +37,25 @@ export default function LikeBoardPage() {
     }
   }, []);
 
+  const fetchLikedReferences = useCallback(async () => {
+    try {
+      const res = await UserApi.fetchUserLikedReferences();
+      if (!res.isSuccess || !res.data) {
+        console.error("좋아요 레퍼런스 조회 실패:", res.message);
+        setLikedReferences([]);
+        return;
+      }
+
+      setLikedReferences(res.data.userLikeReferenceList ?? []);
+    } catch (err) {
+      console.error("좋아요 레퍼런스 조회 중 오류:", err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchLikedProducts();
-  }, [fetchLikedProducts]);
+    fetchLikedReferences();
+  }, [fetchLikedProducts, fetchLikedReferences]);
 
   const handleToggleLike = useCallback(async (productId: number) => {
     try {
@@ -82,14 +96,14 @@ export default function LikeBoardPage() {
 
       {tab === "reference" && (
         <InfiniteScrollGrid
-          items={referenceImages}
-          keySelector={(_, i) => i}
-          renderItem={(img) => (
+          items={likedReferences}
+          keySelector={(it) => it.referenceId}
+          renderItem={(it) => (
             <PhotoCard
-              id={0}
-              title=""
+              id={it.referenceId}
+              title={it.nickname}
               price={0}
-              imageUrl={img}
+              imageUrl={it.imageUrlList?.[0]}
               liked={true}
               showInfo={false}
             />
