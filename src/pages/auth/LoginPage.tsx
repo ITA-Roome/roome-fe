@@ -212,7 +212,7 @@ export default function LoginPage() {
               value={email}
               onChange={handleEmailChange}
               placeholder="이메일 입력"
-              className={`w-full h-[50px] p-3 pr-10 bg-white border rounded-md focus:outline-none focus:ring-2 ${
+              className={`w-full h-[50px] p-3 pr-10 bg-white border rounded-3xl focus:outline-none focus:ring-2 ${
                 emailError
                   ? "border-red-500 focus:ring-red-400"
                   : "border-[#5D3C28] focus:ring-[#5D3C28]"
@@ -238,7 +238,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호 입력"
-              className="w-full h-[50px] p-3 pr-10 bg-white border border-[#5D3C28] rounded-md focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
+              className="w-full h-[50px] p-3 pr-10 bg-white border border-[#5D3C28] rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
             />
 
             {password && (
@@ -257,7 +257,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={!isFormValid || loading}
-            className={`font-semibold h-[50px] py-2 rounded-md transition duration-300
+            className={`font-semibold h-[50px] py-2 rounded-3xl transition duration-300
               ${
                 isFormValid && !loading
                   ? "bg-[#5D3C28] hover:bg-[#4A3020] text-white cursor-pointer"

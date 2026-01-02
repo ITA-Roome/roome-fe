@@ -68,7 +68,8 @@ export default function AccountPage() {
       const res = await AuthApi.withdraw();
 
       if (res.isSuccess) {
-        localStorage.removeItem("token");
+        localStorage.clear();
+        sessionStorage.clear();
         alert("회원 탈퇴가 완료되었습니다.");
         navigate("/");
       } else {
