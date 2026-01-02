@@ -1,3 +1,7 @@
+import { useState } from "react";
+import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
+import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
+
 import Cozy from "@/assets/filter/Cozy.svg?react";
 import Living from "@/assets/filter/Living.svg?react";
 import Room from "@/assets/filter/Room.svg?react";
@@ -41,6 +45,8 @@ export default function ShopFilterPanel({
   sort,
   onSort,
 }: ShopFilterPanelProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   const toggleKeyword = (label: string) => {
     onSelect(
       selected.includes(label)
@@ -51,57 +57,73 @@ export default function ShopFilterPanel({
 
   return (
     <div>
-      {/* 키워드 */}
-      <section className="mt-1">
-        <div className="grid grid-cols-3 gap-2">
-          {KEYWORDS.map((label) => {
-            const on = selected.includes(label);
-            const Icon = FILTER_ICONS[label];
-            return (
-              <button
-                key={label}
-                type="button"
-                onClick={() => toggleKeyword(label)}
-                className={[
-                  "flex items-center justify-center w-full gap-1 px-1 py-2 rounded-full font-caption transition-all",
-                  on
-                    ? "bg-primary-700 text-white"
-                    : "bg-white text-primary-700 border border-primary-200",
-                ].join(" ")}
-              >
-                {Icon && <Icon className="w-4 h-4" />}
-                {label}
-              </button>
-            );
-          })}
-        </div>
-      </section>
+      <div className="flex justify-start mb-2">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2 font-caption text-primary-700 mt-2"
+        >
+          {isOpen ? (
+            <ArrowUpIcon className="w-2 h-2 text-primary-700" />
+          ) : (
+            <ArrowDownIcon className="w-2 h-2 text-primary-700" />
+          )}
+          필터 적용하기
+        </button>
+      </div>
 
-      {/* 정렬 */}
-      <section className="mt-4">
-        <div className="flex gap-2 justify-start">
-          {(["인기순", "최신순", "가격순"] as SortOption[]).map((label) => {
-            const on = sort === label;
-            const Icon = FILTER_ICONS[label];
-            return (
-              <button
-                key={label}
-                type="button"
-                onClick={() => onSort(label)}
-                className={[
-                  "flex items-center justify-center w-[75px] gap-1 px-1 py-2 rounded-full font-caption transition-all",
-                  on
-                    ? "bg-primary-700 text-white"
-                    : "bg-white text-primary-700 border border-primary-200",
-                ].join(" ")}
-              >
-                {Icon && <Icon className="w-4 h-4" />}
-                {label}
-              </button>
-            );
-          })}
+      {isOpen && (
+        <div className="animate-fade-in-down">
+          <section className="mt-1">
+            <div className="grid grid-cols-3 gap-2">
+              {KEYWORDS.map((label) => {
+                const on = selected.includes(label);
+                const Icon = FILTER_ICONS[label];
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => toggleKeyword(label)}
+                    className={[
+                      "flex items-center justify-center w-full gap-1 px-1 py-2 rounded-full font-caption transition-all",
+                      on
+                        ? "bg-primary-700 text-white"
+                        : "bg-white text-primary-700 border border-primary-200",
+                    ].join(" ")}
+                  >
+                    {Icon && <Icon className="w-4 h-4" />}
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+          <section className="mt-4">
+            <div className="flex gap-2 justify-start">
+              {(["인기순", "최신순", "가격순"] as SortOption[]).map((label) => {
+                const on = sort === label;
+                const Icon = FILTER_ICONS[label];
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => onSort(label)}
+                    className={[
+                      "flex items-center justify-center w-[75px] gap-1 px-1 py-2 rounded-full font-caption transition-all",
+                      on
+                        ? "bg-primary-700 text-white"
+                        : "bg-white text-primary-700 border border-primary-200",
+                    ].join(" ")}
+                  >
+                    {Icon && <Icon className="w-4 h-4" />}
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
         </div>
-      </section>
+      )}
     </div>
   );
 }

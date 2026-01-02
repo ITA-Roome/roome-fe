@@ -1,16 +1,26 @@
 import type { ProductOrder } from "@/hooks/useInfiniteScroll";
 
 export type ProductListKeyParams = {
-  search: string;
+  search?: string;
   order: ProductOrder;
   limit: number;
+  mood?: string[];
+  usage?: string[];
 };
 
 export const productKeys = {
   all: ["products"] as const,
 
   list: (p: ProductListKeyParams) =>
-    ["products", "list", p.search, p.order, p.limit] as const,
+    [
+      "products",
+      "list",
+      p.search ?? "",
+      p.order,
+      p.limit,
+      p.mood,
+      p.usage,
+    ] as const,
 
   detail: (id: number) => ["products", "detail", id] as const,
 };

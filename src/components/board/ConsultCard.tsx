@@ -11,17 +11,12 @@ export default function ConsultCard({
 }: ConsultCardProps) {
   return (
     <div className="w-full bg-[#5D3C28] text-white rounded-2xl p-5 space-y-4">
-      {/* 제목 */}
       <h2 className="text-lg font-semibold">{title}</h2>
-
-      {/* 상세 내용 */}
       <ul className="text-sm space-y-1">
         {details.map((line, i) => (
           <li key={i}>• {line}</li>
         ))}
       </ul>
-
-      {/* 이미지 그리드 */}
       <div className="grid grid-cols-3 grid-rows-2 gap-3">
         {images.slice(0, 6).map((img, i) => (
           <div

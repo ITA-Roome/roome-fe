@@ -5,6 +5,7 @@ import type {
   ProductListResponse,
   ProductItem,
   ToggleLikeResponse,
+  RelatedReferenceResponse,
 } from "@/types/product";
 
 export const ProductApi = {
@@ -30,17 +31,49 @@ export const ProductApi = {
   },
 
   toggleProductLike: async (productId: number): Promise<ToggleLikeResponse> => {
-    const res = await apiClient.post<CommonResponse<ToggleLikeResponse>>(
-      `/api/user/likes/${productId}`,
-    );
+    const res = await apiClient.post<
+      CommonResponse<ToggleLikeResponse> | ToggleLikeResponse
+    >(`/api/user/likes/product/${productId}`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data = res.data as any;
+    const isWrapped = "success" in data || "isSuccess" in data;
 
-    // sucess 필드 표준화
-    const ok = res.data.success ?? res.data.isSuccess ?? false;
+    if (isWrapped) {
+      if (!data.success && !data.isSuccess) {
+        throw new Error(data.message || "좋아요 토글 실패");
+      }
+      return data.data;
+    }
+    return data as ToggleLikeResponse;
+  },
 
-    if (!ok || !res.data.data) {
-      throw new Error(res.data.message || "좋아요 토글 실패");
+  toggleProductScrap: async (
+    productId: number,
+  ): Promise<{ scrapped: boolean }> => {
+    const res = await apiClient.post<
+      CommonResponse<{ scrapped: boolean }> | { scrapped: boolean }
+    >(`/api/user/scraps/product/${productId}`);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data = res.data as any;
+    const isWrapped = "success" in data || "isSuccess" in data;
+
+    if (isWrapped) {
+      if (!data.success && !data.isSuccess) {
+        throw new Error(data.message || "스크랩 토글 실패");
+      }
+      return data.data;
     }
 
-    return res.data.data;
+    return data as { scrapped: boolean };
+  },
+
+  fetchRelatedReferences: async (
+    productId: number,
+  ): Promise<RelatedReferenceResponse[]> => {
+    const { data } = await apiClient.get<
+      CommonResponse<RelatedReferenceResponse[]>
+    >(`/api/products/${productId}/related-references`);
+    return data.data ?? [];
   },
 };

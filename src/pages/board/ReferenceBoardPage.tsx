@@ -5,13 +5,7 @@ import ref1 from "@/assets/icons/bed.svg";
 import ref2 from "@/assets/icons/desk.svg";
 import ref3 from "@/assets/icons/light.svg";
 
-/**
- * Renders a reference board page that displays three dummy images in a three-column grid.
- *
- * @returns A JSX element containing the page layout with a header and an InfiniteScrollGrid of PhotoCard items.
- */
 export default function ReferenceBoardPage() {
-  // 더미 3개
   const dummyImages = [ref1, ref2, ref3];
 
   return (
@@ -25,8 +19,8 @@ export default function ReferenceBoardPage() {
             title=""
             price={0}
             imageUrl={img}
-            showInfo={false} // 제품 정보 숨기기
-            liked={true} // 좋아요 하트 고정
+            showInfo={false}
+            liked={true}
           />
         )}
         columns="grid-cols-3"

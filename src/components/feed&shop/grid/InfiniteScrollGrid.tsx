@@ -60,7 +60,6 @@ export default function InfiniteScrollGrid<T>({
       {(isFetchingNextPage || hasNextPage) && (
         <>
           {isFetchingNextPage && (Skeletons ?? <div className="h-24" />)}
-          {/* 뷰포트 트리거 */}
           <div ref={sentinelRef} className="h-1 col-span-full" />
         </>
       )}

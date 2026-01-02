@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { setAuthToken } from "../../lib/apiClient";
-import { AuthApi } from "../../api/auth";
+import { AuthApi } from "@/api/auth";
 import { UserApi } from "@/api/user";
-
-import RoomeMainLogo from "@/assets/RoomeLogo/Roome_main.svg?react";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -13,10 +11,7 @@ type LoginErrorResponse = {
   message?: string;
 };
 
-type LoginStep = "SPLASH" | "LANDING" | "FORM";
-
 export default function LoginPage() {
-  const [step, setStep] = useState<LoginStep>("SPLASH");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
@@ -24,16 +19,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-
-  // Splash Screen Timer
-  useEffect(() => {
-    if (step === "SPLASH") {
-      const timer = setTimeout(() => {
-        setStep("LANDING");
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [step]);
 
   // 입력 초기화 함수
   const handleClear = (field: "email" | "password") => {
@@ -153,47 +138,6 @@ export default function LoginPage() {
       alert("카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.");
     }
   };
-
-  if (step === "SPLASH" || step === "LANDING") {
-    const isLanding = step === "LANDING";
-
-    return (
-      <div className="flex flex-col justify-center items-center h-screen bg-[#5D3C28] px-6 animate-fade-in transition-all duration-1000">
-        <div className="flex flex-col items-center mb-10 transition-all duration-1000">
-          <RoomeMainLogo className="w-40 h-auto mb-6 transition-all duration-1000" />
-
-          <p
-            className={`text-white font-body3 text-center transition-opacity duration-1000 ${
-              isLanding ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            친근하고 현실적인
-            <br />
-            인테리어 도우미
-          </p>
-        </div>
-
-        <div
-          className={`w-full max-w-xs flex flex-col gap-4 transition-opacity duration-1000 ${
-            isLanding ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
-        >
-          <button
-            onClick={() => setStep("FORM")}
-            className="w-full bg-white text-primary-700 py-3 rounded-full font-heading3 font-bold hover:bg-white/90 transition"
-          >
-            로그인
-          </button>
-          <p className="text-center text-white/60 text-sm">
-            아직 계정이 없다면?{" "}
-            <Link to="/signup" className="text-white  underline">
-              회원가입
-            </Link>
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex justify-center items-center h-screen">

@@ -10,6 +10,11 @@ export type ProductListParams = {
   page?: number;
   size?: number;
   sort?: string[];
+  mood?: string[];
+  usage?: string[];
+  material?: string[];
+  style?: string[];
+  feature?: string[];
 };
 
 // 상품 이미지 정보 타입
@@ -33,12 +38,28 @@ export type ProductShop = {
   logoUrl: string;
 };
 
+// 리스트 조회용 단순 상품 정보
+export type ProductListItem = {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  productUrl: string;
+  thumbnailUrl: string;
+  shopId: number;
+  shopName: string;
+  isLiked: boolean;
+  isScrapped: boolean;
+};
+
 // 단일 상품 정보 타입
 export type ProductItem = {
   id: number;
   name: string;
   price: number;
-  liked: boolean;
+  liked: boolean; // API response check needed, keeping for backward compat if needed, but adding isLiked/isScrapped
+  isLiked: boolean; // Standardizing
+  isScrapped: boolean;
 
   category: string;
   description: string;
@@ -64,14 +85,20 @@ export type RelatedProductList = {
   imageUrl: string;
 };
 
+// UI에서 사용하는 관련 레퍼런스 타입
 export type RelatedReferenceList = {
-  id?: number;
-  productId?: number;
-  name: string;
-  category: string;
-  description: string;
-  price: number;
-  imageUrl: string;
+  id: number; // referenceId -> id
+  thumbnailUrl: string;
+};
+
+// API 응답용 관련 레퍼런스 타입
+export type RelatedReferenceResponse = {
+  referenceId: number;
+  thumbnailUrl: string;
+  imageUrls: string[];
+  scrapCount: number;
+  userName: string;
+  matchedTagCount: number;
 };
 
 // 상품 목록 조회 시 응답 데이터 구조
@@ -79,7 +106,7 @@ export type ProductListResponse = {
   totalElements: number;
   totalPages: number;
   size: number;
-  content: ProductItem[];
+  content: ProductListItem[];
   number: number;
   first: boolean;
   last: boolean;

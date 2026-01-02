@@ -2,20 +2,26 @@ import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import clsx from "clsx";
 
-import BookMarkedIcon from "@/assets/icons/bookmark.svg?react";
+import BookmarkIcon from "@/assets/icons/bookmark.svg?react";
+import BookmarkFillIcon from "@/assets/icons/bookmark-fill.svg?react";
 import MoveIcon from "@/assets/icons/move.svg?react";
 import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
 import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
 import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
+import ArrowLeftIcon from "@/assets/icons/arrow-left.svg?react";
+import { useNavigate } from "react-router-dom";
 
 import { useToggleProductLike } from "@/hooks/useToggleProductLike";
-import type { ProductOrder } from "@/hooks/useInfiniteScroll";
+import { useToggleProductScrap } from "@/hooks/useToggleProductScrap";
 import { useProductDetail } from "@/hooks/useProductDetail";
+import { useQuery } from "@tanstack/react-query";
+import { ProductApi } from "@/api/product";
 
 export default function ShopDetailPage() {
   const { productId } = useParams<{ productId: string }>();
+  const navigate = useNavigate();
 
   const id = useMemo(() => {
     const n = Number(productId);
@@ -24,16 +30,17 @@ export default function ShopDetailPage() {
 
   const [isDescOpen, setIsDescOpen] = useState(false);
 
-  const search = "";
-  const order: ProductOrder = "LATEST";
-  const limit = 21;
-
   const { data: product, isLoading, error } = useProductDetail(id);
 
-  const { mutate: toggleLike, isPending: isToggling } = useToggleProductLike({
-    search,
-    order,
-    limit,
+  const { mutate: toggleLike, isPending: isTogglingLike } =
+    useToggleProductLike();
+  const { mutate: toggleScrap, isPending: isTogglingScrap } =
+    useToggleProductScrap();
+
+  const { data: relatedReferencesData } = useQuery({
+    queryKey: ["relatedReferences", id],
+    queryFn: () => (id ? ProductApi.fetchRelatedReferences(id) : []),
+    enabled: !!id,
   });
 
   if (isLoading) {
@@ -52,13 +59,34 @@ export default function ShopDetailPage() {
     );
   }
 
-  const formattedPrice = `₩${product.price.toLocaleString("ko-KR")}`;
+  const formattedPrice = product.price
+    ? `₩${product.price.toLocaleString("ko-KR")}`
+    : "가격 정보 없음";
   const relatedProducts = product.relatedProductList || [];
-  const relatedReferences = product.relatedReferenceList || [];
+
+  const relatedReferences =
+    relatedReferencesData?.map((ref) => ({
+      id: ref.referenceId,
+      thumbnailUrl: ref.thumbnailUrl,
+    })) || [];
 
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 text-primary-700">
-      {/* 제품 이미지 */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-16 max-w-md mx-auto px-5 bg-white/90 backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="p-2 -ml-2 text-primary-700"
+          aria-label="뒤로 가기"
+        >
+          <ArrowLeftIcon className="w-6 h-6" />
+        </button>
+        <h1 className="absolute left-1/2 -translate-x-1/2 font-display text-2xl text-primary-700">
+          ROOME
+        </h1>
+        <div className="w-10" />
+      </header>
+
       <section>
         <div className="relative rounded-2xl aspect-4/3 overflow-hidden">
           {product.thumbnailUrl && (
@@ -78,7 +106,6 @@ export default function ShopDetailPage() {
         </div>
       </section>
 
-      {/* 제품명, 가격, 액션 버튼 */}
       <section className="mt-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
@@ -92,18 +119,28 @@ export default function ShopDetailPage() {
             <button type="button" aria-label="공유" className="p-2">
               <MoveIcon className="w-5 h-5 text-primary-700 fill-none" />
             </button>
-            <button type="button" aria-label="저장" className="p-2">
-              <BookMarkedIcon className="w-5 h-5 text-primary-700" />
+            <button
+              type="button"
+              aria-label={product.isScrapped ? "스크랩 취소" : "스크랩"}
+              className="p-2"
+              disabled={isTogglingScrap}
+              onClick={() => toggleScrap(product.id)}
+            >
+              {product.isScrapped ? (
+                <BookmarkFillIcon className="w-5 h-5 text-primary-700" />
+              ) : (
+                <BookmarkIcon className="w-5 h-5 text-primary-700" />
+              )}
             </button>
 
             <button
               type="button"
-              aria-label={product.liked ? "좋아요 취소" : "좋아요"}
+              aria-label={product.isLiked ? "좋아요 취소" : "좋아요"}
               className="p-2"
-              disabled={isToggling}
+              disabled={isTogglingLike}
               onClick={() => toggleLike(product.id)}
             >
-              {product.liked ? (
+              {product.isLiked ? (
                 <FavoriteFillIcon className="w-5 h-5 text-primary-700" />
               ) : (
                 <FavoriteIcon className="w-5 h-5 text-primary-700" />
@@ -113,7 +150,6 @@ export default function ShopDetailPage() {
         </div>
       </section>
 
-      {/* 샵 정보 */}
       {product.shop && (
         <section className="mt-15">
           <div className="flex items-center gap-3">
@@ -131,7 +167,6 @@ export default function ShopDetailPage() {
         </section>
       )}
 
-      {/* 제품 설명 */}
       <section className="mt-6">
         <p
           className={clsx(
@@ -163,7 +198,6 @@ export default function ShopDetailPage() {
         </div>
       </section>
 
-      {/* 관련 제품 */}
       <section className="mt-15">
         <p className="mb-3 font-body3 text-primary-700">관련 제품들</p>
 
@@ -189,7 +223,6 @@ export default function ShopDetailPage() {
         )}
       </section>
 
-      {/* 관련 레퍼런스 */}
       <section className="mt-15">
         <p className="mb-3 font-body3 text-primary-700">관련 레퍼런스들</p>
 
@@ -204,10 +237,10 @@ export default function ShopDetailPage() {
                 key={item.id}
                 className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200"
               >
-                {item.imageUrl && (
+                {item.thumbnailUrl && (
                   <img
-                    src={item.imageUrl}
-                    alt={item.name}
+                    src={item.thumbnailUrl}
+                    alt="reference"
                     className="w-full h-full object-cover"
                   />
                 )}

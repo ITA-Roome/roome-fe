@@ -5,17 +5,13 @@ import {
 } from "@tanstack/react-query";
 import { ProductApi } from "@/api/product";
 import type { CommonResponse } from "@/types/common";
-import type {
-  ProductListResponse,
-  ProductItem,
-  ToggleLikeResponse,
-} from "@/types/product";
+import type { ProductListResponse, ProductItem } from "@/types/product";
 import { productKeys } from "@/constants/queryKeys";
 
-function updateInfiniteListLike(
+function updateInfiniteListScrap(
   old: InfiniteData<CommonResponse<ProductListResponse>> | undefined,
   productId: number,
-  nextLiked: boolean,
+  nextScrapped: boolean,
 ): InfiniteData<CommonResponse<ProductListResponse>> | undefined {
   if (!old) return old;
 
@@ -23,13 +19,14 @@ function updateInfiniteListLike(
     ...old,
     pages: old.pages.map((page) => {
       const content = page.data?.content ?? [];
+
       return {
         ...page,
         data: page.data
           ? {
               ...page.data,
               content: content.map((p) =>
-                p.id === productId ? { ...p, isLiked: nextLiked } : p,
+                p.id === productId ? { ...p, isScrapped: nextScrapped } : p,
               ),
             }
           : page.data,
@@ -38,19 +35,22 @@ function updateInfiniteListLike(
   };
 }
 
-export function useToggleProductLike() {
+export function useToggleProductScrap() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (productId: number) => ProductApi.toggleProductLike(productId),
+    mutationFn: (productId: number) => ProductApi.toggleProductScrap(productId),
 
     onMutate: async (productId) => {
       await qc.cancelQueries({ queryKey: productKeys.all });
+
       const detailKey = productKeys.detail(productId);
       const detailData = qc.getQueryData<ProductItem>(detailKey);
-      let currentLiked = false;
-      if (detailData?.liked !== undefined) {
-        currentLiked = detailData.liked;
+
+      let currentScrapped = false;
+
+      if (detailData && "isScrapped" in detailData) {
+        currentScrapped = detailData.isScrapped;
       } else {
         const listQueries = qc.getQueriesData<
           InfiniteData<CommonResponse<ProductListResponse>>
@@ -62,17 +62,16 @@ export function useToggleProductLike() {
           if (!listData) continue;
           for (const page of listData.pages) {
             const found = page.data?.content?.find((p) => p.id === productId);
-            if (found) {
-              currentLiked = found.isLiked ?? false;
+            if (found && "isScrapped" in found) {
+              currentScrapped = found.isScrapped ?? false;
               break;
             }
           }
-          if (currentLiked) break;
+          if (currentScrapped) break;
         }
       }
 
-      const nextLiked = !currentLiked;
-
+      const nextScrapped = !currentScrapped;
       const listQueries = qc.getQueriesData<
         InfiniteData<CommonResponse<ProductListResponse>>
       >({
@@ -82,22 +81,24 @@ export function useToggleProductLike() {
       listQueries.forEach(([key, data]) => {
         qc.setQueryData(
           key,
-          updateInfiniteListLike(data, productId, nextLiked),
+          updateInfiniteListScrap(data, productId, nextScrapped),
         );
       });
+
       if (detailData) {
         qc.setQueryData(detailKey, {
           ...detailData,
-          liked: nextLiked,
-          isLiked: nextLiked,
+          isScrapped: nextScrapped,
+          scrapped: nextScrapped,
         });
       }
 
-      return { productId, prevLiked: currentLiked };
+      return { productId, prevScrapped: currentScrapped };
     },
 
-    onSuccess: (res: ToggleLikeResponse, productId) => {
-      const finalLiked = res.liked;
+    onSuccess: (res: { scrapped: boolean }, productId) => {
+      const finalScrapped = res.scrapped;
+
       const listQueries = qc.getQueriesData<
         InfiniteData<CommonResponse<ProductListResponse>>
       >({
@@ -107,7 +108,7 @@ export function useToggleProductLike() {
       listQueries.forEach(([key, data]) => {
         qc.setQueryData(
           key,
-          updateInfiniteListLike(data, productId, finalLiked),
+          updateInfiniteListScrap(data, productId, finalScrapped),
         );
       });
       const detailKey = productKeys.detail(productId);
@@ -116,16 +117,15 @@ export function useToggleProductLike() {
       if (detailData) {
         qc.setQueryData(detailKey, {
           ...detailData,
-          liked: finalLiked,
-          isLiked: finalLiked,
+          isScrapped: finalScrapped,
+          scrapped: finalScrapped,
         });
       }
     },
 
     onError: (_err, _productId, ctx) => {
       if (!ctx) return;
-
-      const { productId, prevLiked } = ctx;
+      const { productId, prevScrapped } = ctx;
 
       const listQueries = qc.getQueriesData<
         InfiniteData<CommonResponse<ProductListResponse>>
@@ -136,7 +136,7 @@ export function useToggleProductLike() {
       listQueries.forEach(([key, data]) => {
         qc.setQueryData(
           key,
-          updateInfiniteListLike(data, productId, prevLiked),
+          updateInfiniteListScrap(data, productId, prevScrapped),
         );
       });
 
@@ -146,8 +146,8 @@ export function useToggleProductLike() {
       if (detailData) {
         qc.setQueryData(detailKey, {
           ...detailData,
-          liked: prevLiked,
-          isLiked: prevLiked,
+          isScrapped: prevScrapped,
+          scrapped: prevScrapped,
         });
       }
     },

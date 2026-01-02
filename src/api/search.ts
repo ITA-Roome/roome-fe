@@ -1,31 +1,66 @@
-// api 연결 전 임시 값
-
+import { apiClient } from "@/lib/apiClient";
 import { SuggestItem } from "@/hooks/useSearchInput";
+import { CommonResponse } from "@/types/common";
 
-const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+type PopularKeyword = {
+  rank: number;
+  keyword: string;
+  score: number;
+};
 
-const RECENT: SuggestItem[] = [
-  { id: "r1", text: "의자" },
-  { id: "r2", text: "침대" },
-];
+type PopularSearchResponse = {
+  rankings: PopularKeyword[];
+};
 
-const POPULAR: SuggestItem[] = [
-  { id: "p1", text: "책상" },
-  { id: "p2", text: "커튼" },
-];
+type RecentSearchResponse = {
+  keywords: string[];
+};
 
-export async function getRecentMock() {
-  await delay(250);
-  return RECENT;
+export async function fetchRecentSearch(): Promise<SuggestItem[]> {
+  try {
+    const { data } = await apiClient.get<CommonResponse<RecentSearchResponse>>(
+      "/api/search/keywords/recent",
+    );
+
+    const keywords = data.data?.keywords ?? [];
+
+    return keywords.map((text, idx) => ({
+      id: `recent-${idx}`,
+      text,
+    }));
+  } catch (error) {
+    console.error("fetchRecentSearch error:", error);
+    return [];
+  }
 }
 
-export async function getPopularMock() {
-  await delay(250);
-  return POPULAR;
+export async function fetchPopularSearch(): Promise<SuggestItem[]> {
+  try {
+    const { data } = await apiClient.get<CommonResponse<PopularSearchResponse>>(
+      "/api/search/keywords/popular",
+    );
+
+    const rankings = data.data?.rankings ?? [];
+
+    return rankings.map((item) => ({
+      id: `popular-${item.rank}`,
+      text: item.keyword,
+    }));
+  } catch (error) {
+    console.error("fetchPopularSearch error:", error);
+    return [];
+  }
 }
 
-export async function fetchSuggestMock(q: string) {
-  await delay(350);
-  const pool = [...POPULAR, ...RECENT];
-  return pool.filter((it) => it.text.toLowerCase().includes(q.toLowerCase()));
+// 최근 검색어 삭제
+export async function deleteRecentSearch(keyword: string): Promise<boolean> {
+  try {
+    const { status } = await apiClient.delete("/api/search/keywords/recent", {
+      params: { keyword },
+    });
+    return status === 200;
+  } catch (error) {
+    console.error("deleteRecentSearch error:", error);
+    return false;
+  }
 }
