@@ -6,16 +6,27 @@ export const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  paramsSerializer: (params) => {
+    const searchParams = new URLSearchParams();
+    for (const key in params) {
+      const value = params[key];
+      if (Array.isArray(value)) {
+        value.forEach((v) => searchParams.append(key, v));
+      } else if (value !== undefined && value !== null) {
+        searchParams.append(key, value as string);
+      }
+    }
+    return searchParams.toString();
+  },
 });
 
-// 인증이 필요 없는 경로들(소셜 로그인 URL, 로그인/회원가입, 토큰 재발급 등)
 const AUTH_FREE_PATHS = [
   "/api/auth/login",
   "/api/auth/signup",
   "/api/auth/google/authorize-uri",
   "/api/auth/kakao/authorize-uri",
   "/api/auth/google/callback",
-  "/api/auth/kakao/callback", // "/api/auth/refresh",
+  "/api/auth/kakao/callback",
 ];
 
 apiClient.interceptors.request.use((config) => {

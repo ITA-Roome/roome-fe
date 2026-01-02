@@ -15,7 +15,7 @@ export function useUpdateComment() {
 
   return useMutation({
     mutationFn: ({ commentId, content }: UpdateCommentParams) =>
-      CommentApi.updateComment({ commentId, content }),
+      CommentApi.updateComment(commentId, content),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

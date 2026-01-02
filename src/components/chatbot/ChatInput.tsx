@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useState } from "react";
 import sendIcon from "@/assets/icons/send.svg";
 
@@ -38,6 +37,7 @@ export default function ChatInput({ onSend, disabled = false }: Props) {
         onKeyDown={(e) => {
           if (e.key !== "Enter") return;
 
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           if ((e.nativeEvent as any).isComposing) return;
 
           e.preventDefault();
@@ -45,7 +45,7 @@ export default function ChatInput({ onSend, disabled = false }: Props) {
         }}
         disabled={disabled}
         className="w-full h-12 pl-4 pr-14 bg-white border border-primary-700 rounded-md
-                     focus:outline-none focus:ring-1 focus:ring-primary-600 disabled:opacity-60"
+                     focus:outline-none font-body3 disabled:opacity-60"
       />
 
       <button
@@ -55,7 +55,7 @@ export default function ChatInput({ onSend, disabled = false }: Props) {
         disabled={disabled}
         className="absolute inset-y-0 right-5 flex items-center"
       >
-        <img src={sendIcon} alt="send" className="w-4.5 h-4.5 object-contain" />
+        <img src={sendIcon} alt="send" className="w-4 h-4 object-contain" />
       </button>
     </div>
   );

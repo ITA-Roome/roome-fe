@@ -13,6 +13,7 @@ import SignupEmailPage from "@/pages/auth/SignupEmailPage";
 import KakaoCallback from "@/pages/auth/KakaoCallback";
 import GoogleCallback from "@/pages/auth/GoogleCallback";
 import OnboardingPage from "@/pages/onboarding/OnboardingPage";
+import SplashPage from "@/pages/auth/SplashPage";
 import NotFoundPage from "@/pages/common/NotFoundPage";
 import { UserApi } from "@/api/user";
 import ChatPage from "@/pages/chat/ChatPage";
@@ -92,27 +93,27 @@ function ProtectedRoute({ children }: PropsWithChildren) {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <>
-        <AuthLayout />
-      </>
-    ),
+    element: <SplashPage />,
+    errorElement: <NotFoundPage />,
+  },
+  {
+    element: <AuthLayout />,
     errorElement: <NotFoundPage />,
     children: [
       {
-        index: true,
+        path: "/login",
         element: <LoginPage />,
       },
       {
-        path: "find-pw",
+        path: "/find-pw",
         element: <FindPw />,
       },
       {
-        path: "signup",
+        path: "/signup",
         element: <SignupPage />,
       },
       {
-        path: "signup/email",
+        path: "/signup/email",
         element: <SignupEmailPage />,
       },
     ],
@@ -126,10 +127,6 @@ const router = createBrowserRouter([
     ),
     errorElement: <NotFoundPage />,
     children: [
-      {
-        path: "onboarding",
-        element: <OnboardingPage />,
-      },
       {
         path: "feed",
         element: <FeedPage />,
@@ -151,6 +148,15 @@ const router = createBrowserRouter([
         element: <ShopDetailPage />,
       },
     ],
+  },
+  {
+    path: "/onboarding",
+    element: (
+      <ProtectedRoute>
+        <OnboardingPage />
+      </ProtectedRoute>
+    ),
+    errorElement: <NotFoundPage />,
   },
   {
     path: "/",

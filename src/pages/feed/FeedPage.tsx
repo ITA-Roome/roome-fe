@@ -1,37 +1,36 @@
-import { fetchSuggestMock, getPopularMock, getRecentMock } from "@/api/search";
+import {
+  fetchPopularSearch,
+  fetchRecentSearch,
+  deleteRecentSearch,
+} from "@/api/search";
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
 import SearchInput from "@/components/search/search/SearchInput";
 import GridSkeleton from "@/components/skeletons/GridSkeleton";
-import useGetInfiniteProductsList, {
-  ProductOrder,
-} from "@/hooks/useInfiniteScroll";
-import { useToggleProductLike } from "@/hooks/useToggleProductLike";
+import useGetInfiniteReferences from "@/hooks/useInfiniteReferences";
+import { useToggleReferenceLike } from "@/hooks/useToggleReferenceLike";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function FeedPage() {
-  const [search] = useState("");
-  const [order] = useState<ProductOrder>("LATEST");
+  const [search] = useState("bed");
   const navigate = useNavigate();
 
-  const limit = 21;
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetInfiniteProductsList(limit, search, order);
+    useGetInfiniteReferences(search);
 
   const flat = useMemo(() => data?.items ?? [], [data]);
 
-  const { mutate: toggleLike } = useToggleProductLike({ search, order, limit });
+  const { mutate: toggleLike } = useToggleReferenceLike();
 
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-5">
       <section className="relative z-30">
         <SearchInput
           onSubmit={(q) => console.log("submit:", q)}
-          fetchSuggest={fetchSuggestMock}
-          getRecent={getRecentMock}
-          getPopular={getPopularMock}
+          getRecent={fetchRecentSearch}
+          getPopular={fetchPopularSearch}
+          removeRecent={deleteRecentSearch}
           minLength={2}
           debounceMs={250}
           maxItems={10}
@@ -41,17 +40,17 @@ export default function FeedPage() {
       <section className="mt-3">
         <InfiniteScrollGrid
           items={flat}
-          keySelector={(it) => String(it.id)}
+          keySelector={(it) => String(it.referenceId)}
           renderItem={(it) => (
             <PhotoCard
-              id={it.id}
-              title={it.name}
-              imageUrl={it.thumbnailUrl}
-              price={it.price}
+              id={it.referenceId}
+              title={it.nickname}
+              imageUrl={it.imageUrlList?.[0] ?? ""}
+              price={0}
               showInfo={false}
-              liked={it.liked}
-              onToggleLike={(id) => toggleLike(id)}
-              onClick={() => navigate(`/feed/${it.id}`)}
+              isLiked={it.isLiked}
+              onLike={() => toggleLike(it.referenceId)}
+              onClick={() => navigate(`/feed/${it.referenceId}`)}
             />
           )}
           hasNextPage={!!hasNextPage}

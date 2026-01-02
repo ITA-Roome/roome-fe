@@ -6,6 +6,7 @@ export type TUseSearchInputOptions = {
   fetchSuggest?: (q: string) => Promise<SuggestItem[]>;
   getRecent?: () => Promise<SuggestItem[]>;
   getPopular?: () => Promise<SuggestItem[]>;
+  removeRecent?: (text: string) => Promise<boolean>;
   minLength?: number;
   debounceMs?: number;
   maxItems?: number;
@@ -46,12 +47,23 @@ export function useSearchbox({
     (async () => {
       try {
         setErr(null);
-        if (!input.trim() && getRecent) {
-          setLoading(true);
-          setRecent(await getRecent());
-        } else if (getPopular) {
-          setLoading(true);
+        setLoading(true);
+
+        if (source === "recent" && getRecent) {
+          const res = await getRecent();
+
+          if (res.length === 0 && getPopular) {
+            setSource("popular");
+          } else {
+            setRecent(res);
+          }
+        } else if (source === "popular" && getPopular) {
           setPopular(await getPopular());
+        } else if (source === "autocomplete" && fetchSuggest) {
+          const q = input.trim();
+          if (q.length >= minLength) {
+            setSuggest(await fetchSuggest(q));
+          }
         }
       } catch (e) {
         setErr("목록을 불러오지 못했어요.");
@@ -60,34 +72,21 @@ export function useSearchbox({
         setLoading(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [
+    open,
+    source,
+    debounced,
+    getRecent,
+    getPopular,
+    fetchSuggest,
+    minLength,
+    input,
+  ]);
 
-  useEffect(() => {
-    if (!open) return;
-    const q = input.trim();
-    setHighlight(-1);
-
-    if (q.length >= minLength && fetchSuggest) {
-      setSource("autocomplete");
-      (async () => {
-        try {
-          setLoading(true);
-          setErr(null);
-          setSuggest(await fetchSuggest(q));
-        } catch {
-          setErr("추천을 불러오지 못했어요.");
-        } finally {
-          setLoading(false);
-        }
-      })();
-    } else if (!q && getRecent) {
-      setSource("recent");
-    } else {
-      setSource("popular");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounced, open, fetchSuggest, getRecent, minLength]);
+  const removeItem = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setRecent((prev) => prev.filter((r) => r.id !== id));
+  };
 
   const items = useMemo(() => {
     const base =
@@ -110,6 +109,7 @@ export function useSearchbox({
     input,
     setInput,
     source,
+    setSource,
     items,
     loading,
     error: err,
@@ -119,5 +119,6 @@ export function useSearchbox({
     move,
     select: (index: number) => items[index]?.text ?? "",
     clear: () => setInput(""),
+    removeItem,
   };
 }

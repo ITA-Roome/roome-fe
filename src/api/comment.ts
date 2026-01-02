@@ -32,4 +32,25 @@ export const CommentApi = {
 
     return res.data.data;
   },
+
+  deleteComment: async (commentId: number) => {
+    const res = await apiClient.delete<CommonResponse<null>>(
+      `/api/comment/${commentId}`,
+    );
+    const body = res.data;
+    const ok = body.success ?? body.isSuccess ?? false;
+    if (!ok) throw new Error(body.message || "댓글 삭제 실패");
+    return body.data;
+  },
+
+  updateComment: async (commentId: number, content: string) => {
+    const res = await apiClient.patch<CommonResponse<CommentItem>>(
+      `/api/comment/${commentId}`,
+      { content },
+    );
+    const body = res.data;
+    const ok = body.success ?? body.isSuccess ?? false;
+    if (!ok) throw new Error(body.message || "댓글 수정 실패");
+    return body.data;
+  },
 };

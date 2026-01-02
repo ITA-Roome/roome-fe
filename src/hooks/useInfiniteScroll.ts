@@ -30,15 +30,31 @@ type SelectedData = {
   pageCount: number;
 };
 
+const MOOD_MAP: Record<string, string> = {
+  포근한: "COZY",
+  심플한: "SIMPLE",
+  아늑한: "SNUG",
+};
+
+const USAGE_MAP: Record<string, string> = {
+  "방 (공간)": "ROOM",
+  원룸: "ONE_ROOM",
+  거실: "LIVING_ROOM",
+};
+
 export default function useGetInfiniteProductsList(
   limit: number,
   search: string,
   keywords: string[],
   order: ProductOrder,
 ): UseInfiniteQueryResult<SelectedData, unknown> {
-  // combine search + keywords for the API
-  // If the API supports multiple keywords via space separation:
-  const combinedKeyword = [search, ...keywords].filter(Boolean).join(" ");
+  // 키워드 분류
+  const mood = keywords.map((k) => MOOD_MAP[k]).filter(Boolean);
+
+  const usage = keywords.map((k) => USAGE_MAP[k]).filter(Boolean);
+
+  // 검색어만 keyWord로 전달
+  const keyWord = search || undefined;
 
   return useInfiniteQuery<
     CommonResponse<ProductListResponse>,
@@ -47,14 +63,16 @@ export default function useGetInfiniteProductsList(
     ReturnType<typeof productKeys.list>,
     number
   >({
-    queryKey: productKeys.list({ search: combinedKeyword, order, limit }),
+    queryKey: productKeys.list({ search: keyWord, order, limit, mood, usage }),
     enabled: true,
 
     queryFn: ({ pageParam = 0 }) =>
       ProductApi.fetchProducts({
         page: pageParam,
         size: limit,
-        keyWord: combinedKeyword || undefined,
+        keyWord,
+        mood: mood.length > 0 ? mood : undefined,
+        usage: usage.length > 0 ? usage : undefined,
         sort: orderToSort(order),
       }),
 
@@ -74,7 +92,15 @@ export default function useGetInfiniteProductsList(
       const items: ProductItem[] = pages.flatMap((p) =>
         (p.data?.content ?? []).map((it) => ({
           ...it,
-          liked: it.liked ?? false,
+          liked: it.isLiked,
+          description: "",
+          images: [],
+          tags: [],
+          shop: {
+            id: it.shopId,
+            name: it.shopName,
+            logoUrl: "",
+          },
         })),
       );
 
