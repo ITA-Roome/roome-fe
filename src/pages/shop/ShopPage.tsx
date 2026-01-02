@@ -1,4 +1,8 @@
-import { fetchSuggestMock, getPopularMock, getRecentMock } from "@/api/search";
+import {
+  fetchPopularSearch,
+  fetchRecentSearch,
+  deleteRecentSearch,
+} from "@/api/search";
 import useGetInfiniteProductsList, {
   ProductOrder,
 } from "@/hooks/useInfiniteScroll";
@@ -6,85 +10,98 @@ import { useMemo, useState } from "react";
 
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
-import SearchInput from "@/components/feed&shop/search/SearchInput";
-import GridSkeleton from "@/components/skeletons/GridSkeleton";
-import Dropdown from "@/components/feed&shop/dropdown/Dropdown";
-import ShopFilterPanel from "../../components/feed&shop/dropdown/ShopFilterPanel";
+import SearchInput from "@/components/search/search/SearchInput";
+import ShopFilterPanel, {
+  SortOption,
+} from "../../components/feed&shop/dropdown/ShopFilterPanel";
 
-import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
-import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
 import { useNavigate } from "react-router-dom";
+import { useToggleProductLike } from "@/hooks/useToggleProductLike";
 
 export default function ShopPage() {
-  const [search, setSearch] = useState("");
-  const [order] = useState<ProductOrder>("LATEST");
+  const [inputValue, setInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState<SortOption>("인기순");
+  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   const navigate = useNavigate();
+  const limit = 21;
+
+  const order: ProductOrder = useMemo(() => {
+    switch (sortOption) {
+      case "인기순":
+        return "POPULAR";
+      case "최신순":
+        return "LATEST";
+      case "가격순":
+        return "PRICE_ASC";
+      default:
+        return "POPULAR";
+    }
+  }, [sortOption]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetInfiniteProductsList(21, search, order);
+    useGetInfiniteProductsList(limit, searchQuery, selectedKeywords, order);
+
   const flat = useMemo(() => data?.items ?? [], [data]);
+
+  const { mutate: toggleLike } = useToggleProductLike();
+
+  const handleSearchSubmit = (val: string) => {
+    setSearchQuery(val);
+    setInputValue(val);
+  };
 
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-5">
-      {/* 검색 */}
       <section className="relative z-30">
         <SearchInput
-          value={search}
-          onChange={setSearch}
-          onSubmit={setSearch}
-          fetchSuggest={fetchSuggestMock}
-          getRecent={getRecentMock}
-          getPopular={getPopularMock}
+          value={inputValue}
+          onChange={setInputValue}
+          onSubmit={handleSearchSubmit}
+          getRecent={fetchRecentSearch}
+          getPopular={fetchPopularSearch}
+          removeRecent={deleteRecentSearch}
           minLength={2}
           debounceMs={250}
           maxItems={10}
         />
       </section>
 
-      {/* 드롭다운 */}
-      <section>
-        <Dropdown
-          wrapperClassName="w-full"
-          menuClassname="w-full"
-          toggleButton={(open) => (
-            <div className="mt-3 flex flex-row items-center gap-x-2 font-caption-strong text-primary-700">
-              {open ? (
-                <ArrowDownIcon className="w-3 h-3 " />
-              ) : (
-                <ArrowUpIcon className="w-3 h-3" />
-              )}
-              <p>필터 적용하기</p>
-            </div>
-          )}
-        >
-          <ShopFilterPanel />
-        </Dropdown>
-      </section>
+      <ShopFilterPanel
+        selected={selectedKeywords}
+        onSelect={setSelectedKeywords}
+        sort={sortOption}
+        onSort={setSortOption}
+      />
 
-      {/* 제품 */}
-      <section className="mt-3">
-        <InfiniteScrollGrid
-          items={flat}
-          keySelector={(it) => String(it.id)}
-          renderItem={(it) => (
-            <PhotoCard
-              id={it.id}
-              title={it.name}
-              imageUrl={it.thumbnailUrl}
-              price={it.price}
-              subtitle={it.shopName}
-              showInfo
-              onClick={() => navigate(`/shop-detail/${it.id}`)}
-            />
-          )}
-          hasNextPage={!!hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          loadMore={fetchNextPage}
-          columns="grid-cols-3"
-          gap="gap-4"
-          Skeletons={<GridSkeleton />}
-        />
-      </section>
+      <div className="mt-4 pb-20">
+        {flat.length === 0 && !isFetchingNextPage ? (
+          <div className="py-20 text-center text-gray-500">
+            조건에 맞는 상품이 없습니다.
+          </div>
+        ) : (
+          <InfiniteScrollGrid
+            items={flat}
+            keySelector={(item) => item.id}
+            renderItem={(item) => (
+              <PhotoCard
+                key={item.id}
+                id={item.id}
+                imageUrl={item.thumbnailUrl}
+                title={item.shop.name}
+                price={item.price}
+                subtitle={item.name}
+                isLiked={item.isLiked}
+                onLike={() => toggleLike(item.id)}
+                onClick={() => navigate(`/shop/${item.id}`)}
+              />
+            )}
+            loadMore={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+        )}
+      </div>
     </div>
   );
 }

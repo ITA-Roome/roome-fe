@@ -1,41 +1,62 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import sendIcon from "@/assets/icons/send.svg";
 
 type Props = {
   onSend: (message: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
 };
 
-/**
- * Renders a text input and send button that collect a message and invoke a send callback.
- *
- * @param onSend - Callback invoked with the current input text when the send button is pressed; the input is cleared after calling this callback.
- * @returns The chat input element containing a text field and a send button.
- */
-export default function ChatInput({ onSend }: Props) {
+export default function ChatInput({ onSend, disabled = false }: Props) {
   const [input, setInput] = useState("");
+  const isSubmittingRef = useRef(false);
 
   const handleSubmit = () => {
-    onSend(input);
+    if (disabled) return;
+
+    const trimmed = input.trim();
+    if (!trimmed) return;
+
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
+    onSend(trimmed);
     setInput("");
+
+    queueMicrotask(() => {
+      isSubmittingRef.current = false;
+    });
   };
 
   return (
-    <div className="p-3">
-      <div className="relative">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="w-full pr-12 pl-4 py-3 bg-white border border-[var(--color-primary-300)] rounding-32 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-600)]"
-        />
-        <button
-          onClick={handleSubmit}
-          aria-label="메시지 보내기"
-          className="absolute inset-y-0 right-4 flex items-center text-2xl"
-        >
-          <img src={sendIcon} alt="send" className="w-6 h-6 object-contain" />
-        </button>
-      </div>
+    <div className="relative">
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key !== "Enter") return;
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if ((e.nativeEvent as any).isComposing) return;
+
+          e.preventDefault();
+          handleSubmit();
+        }}
+        disabled={disabled}
+        className="w-full h-12 pl-4 pr-14 bg-white border border-primary-700 rounded-md
+                     focus:outline-none font-body3 disabled:opacity-60"
+      />
+
+      <button
+        type="button"
+        onClick={handleSubmit}
+        aria-label="메시지 보내기"
+        disabled={disabled}
+        className="absolute inset-y-0 right-5 flex items-center"
+      >
+        <img src={sendIcon} alt="send" className="w-4 h-4 object-contain" />
+      </button>
     </div>
   );
 }

@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { TUseSearchInputOptions, useSearchbox } from "@/hooks/useSearchInput";
 import SearchIcon from "@/assets/icons/navBar/search.svg?react";
 import CloseIcon from "@/assets/icons/close.svg?react";
+import UpdateIcon from "@/assets/icons/update.svg?react";
+import PopularIcon from "@/assets/filter/Popular.svg?react";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 
 type TSearchInputProps = {
@@ -34,13 +36,12 @@ export default function SearchInput({
     composingRef,
     select,
     clear,
+    removeItem,
   } = useSearchbox(opts);
 
-  // 제어형/비제어형 다 지원
   const isControlled = typeof value === "string";
   const v = isControlled ? value! : input;
 
-  // refs
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -52,9 +53,8 @@ export default function SearchInput({
 
   return (
     <div ref={rootRef} className={`relative w-full ${className}`}>
-      {/* Input */}
       <div
-        className="flex items-center gap-2 h-9 px-4 rounded-full max-w-[320px] mx-auto w-full bg-primary-50 border border-primary-700"
+        className="flex items-center gap-2 h-9 px-4 rounded-full max-w-[320px] mx-auto w-full bg-[#E0E0E0]"
         onClick={() => {
           setOpen(true);
           inputRef.current?.focus();
@@ -64,11 +64,11 @@ export default function SearchInput({
         aria-haspopup="listbox"
         aria-owns="search-suggest-list"
       >
-        <SearchIcon className="w-5 h-5 shrink-0" />
+        <SearchIcon className="w-4 h-4 text-primary-700" />
         <input
           ref={inputRef}
           value={v}
-          className="flex-1 outline-none text-primary-700 font-body2 bg-transparent"
+          className="flex-1 outline-none text-primary-700 font-body3 bg-transparent"
           onFocus={() => setOpen(true)}
           onChange={(e) => {
             if (!isControlled) setInput(e.target.value);
@@ -105,7 +105,6 @@ export default function SearchInput({
             }
           }}
         />
-        {/* X */}
         {v && (
           <button
             type="button"
@@ -125,17 +124,18 @@ export default function SearchInput({
         )}
       </div>
 
-      {/* Panel */}
       {open && (
-        <div className="absolute left-0 right-0 -z-100 top-full -mt-13 rounded-2xl bg-primary-50 shadow px-4 pt-3 pb-3 max-h-[55vh] overflow-auto">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="mt-12 font-caption text-primary-700">
-              {source === "recent"
-                ? "최근 검색"
-                : source === "popular"
-                  ? "인기 검색"
-                  : "추천 결과"}
-            </h3>
+        <div className="absolute mt-2 left-0 right-0 top-full rounded-xl border border-primary-700 bg-white shadow px-4 pt-3 pb-3 max-h-[55vh] overflow-auto">
+          <div className="flex items-center justify-between">
+            {source === "popular" ? (
+              <h3 className="font-caption text-primary-700 mb-2 flex items-center gap-1">
+                <PopularIcon className="w-3 h-3" /> 인기 검색 Top 10
+              </h3>
+            ) : (
+              <h3 className="font-caption text-primary-700 mb-2">
+                최근 검색어
+              </h3>
+            )}
             {loading && (
               <span className="mt-12 font-caption text-primary-700">
                 불러오는 중…
@@ -154,10 +154,10 @@ export default function SearchInput({
           <ul id="search-suggest-list" role="listbox">
             {items.map((item, idx) => (
               <li key={item.id}>
-                <button
+                <div
                   role="option"
                   aria-selected={highlight === idx}
-                  className={`w-full flex items-center gap-3 rounded-xl px-2 py-2 transition
+                  className={`w-full flex items-center gap-2 rounded-xl px-2 py-1 transition cursor-pointer
                     ${highlight === idx ? "bg-primary-200/50" : "hover:bg-primary-200/30"}`}
                   onMouseEnter={() => {}}
                   onClick={() => {
@@ -168,13 +168,28 @@ export default function SearchInput({
                     setOpen(false);
                   }}
                 >
-                  <span className="w-6 text-right tabular-nums font-body2 text-primary-700/70">
-                    {source === "popular" ? `${idx + 1}.` : "↻"}
-                  </span>
-                  <span className="font-body1 text-primary-700">
+                  {source === "popular" ? (
+                    <span className="w-6 text-left text-primary-700">
+                      {idx + 1}
+                    </span>
+                  ) : (
+                    <div className="w-6 flex justify-center">
+                      <UpdateIcon className="w-4 h-4 text-primary-700" />
+                    </div>
+                  )}
+                  <span className="font-body1 text-primary-700 flex-1 text-left">
                     {item.text}
                   </span>
-                </button>
+                  {source === "recent" && (
+                    <button
+                      type="button"
+                      className="p-1 hover:bg-gray-200 rounded-full"
+                      onClick={(e) => removeItem(e, item.id)}
+                    >
+                      <CloseIcon className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

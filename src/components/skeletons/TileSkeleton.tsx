@@ -1,5 +1,5 @@
 type TileSkeletonProps = {
-  aspect?: string; // Tailwind aspect-ratio 클래스
+  aspect?: string;
   className?: string;
 };
 

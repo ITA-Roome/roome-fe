@@ -1,14 +1,15 @@
 import {
   useInfiniteQuery,
   type UseInfiniteQueryResult,
+  type InfiniteData,
 } from "@tanstack/react-query";
 import { ProductApi } from "@/api/product";
 import type { CommonResponse } from "@/types/common";
 import type { ProductItem, ProductListResponse } from "@/types/product";
-import { QUERY_KEY } from "@/constants/key";
+import { productKeys } from "@/constants/queryKeys";
 
-// 정렬 순서
 export type ProductOrder = "LATEST" | "PRICE_ASC" | "PRICE_DESC" | "POPULAR";
+
 const orderToSort = (order: ProductOrder): string[] => {
   switch (order) {
     case "PRICE_ASC":
@@ -29,38 +30,87 @@ type SelectedData = {
   pageCount: number;
 };
 
+const MOOD_MAP: Record<string, string> = {
+  포근한: "COZY",
+  심플한: "SIMPLE",
+  아늑한: "SNUG",
+};
+
+const USAGE_MAP: Record<string, string> = {
+  "방 (공간)": "ROOM",
+  원룸: "ONE_ROOM",
+  거실: "LIVING_ROOM",
+};
+
 export default function useGetInfiniteProductsList(
   limit: number,
   search: string,
+  keywords: string[],
   order: ProductOrder,
 ): UseInfiniteQueryResult<SelectedData, unknown> {
-  return useInfiniteQuery({
-    queryKey: [QUERY_KEY.products, "list", { search, order, limit }],
+  // 키워드 분류
+  const mood = keywords.map((k) => MOOD_MAP[k]).filter(Boolean);
+
+  const usage = keywords.map((k) => USAGE_MAP[k]).filter(Boolean);
+
+  // 검색어만 keyWord로 전달
+  const keyWord = search || undefined;
+
+  return useInfiniteQuery<
+    CommonResponse<ProductListResponse>,
+    unknown,
+    SelectedData,
+    ReturnType<typeof productKeys.list>,
+    number
+  >({
+    queryKey: productKeys.list({ search: keyWord, order, limit, mood, usage }),
     enabled: true,
+
     queryFn: ({ pageParam = 0 }) =>
       ProductApi.fetchProducts({
         page: pageParam,
         size: limit,
-        keyWord: search || undefined,
+        keyWord,
+        mood: mood.length > 0 ? mood : undefined,
+        usage: usage.length > 0 ? usage : undefined,
         sort: orderToSort(order),
       }),
+
     initialPageParam: 0,
-    getNextPageParam: (lastPage: CommonResponse<ProductListResponse>) => {
+
+    getNextPageParam: (lastPage) => {
       const d = lastPage.data;
       if (!d) return undefined;
       return d.last ? undefined : d.number + 1;
     },
-    select: (data) => {
+
+    select: (data: InfiniteData<CommonResponse<ProductListResponse>>) => {
       const pages = data.pages;
       const last = pages[pages.length - 1];
       const lastData = last?.data;
 
+      const items: ProductItem[] = pages.flatMap((p) =>
+        (p.data?.content ?? []).map((it) => ({
+          ...it,
+          liked: it.isLiked,
+          description: "",
+          images: [],
+          tags: [],
+          shop: {
+            id: it.shopId,
+            name: it.shopName,
+            logoUrl: "",
+          },
+        })),
+      );
+
       return {
-        items: pages.flatMap((p) => p.data?.content ?? []),
+        items,
         total: lastData?.totalElements ?? 0,
         pageCount: lastData?.totalPages ?? 0,
       };
     },
+
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnWindowFocus: false,

@@ -6,8 +6,9 @@ import Step1Space from "@/components/steps/Step1Space";
 import Step2Mood from "@/components/steps/Step2Mood";
 import Step3Age from "@/components/steps/Step3Age";
 import Step4Gender from "@/components/steps/Step4Gender";
+import Step5Result from "@/components/steps/Step5Result";
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 const AGE_MAP = {
   "10대": "TEENAGER",
@@ -25,12 +26,12 @@ const GENDER_MAP = {
 };
 
 const SPACE_MAP = {
-  원룸: "ONE_ROOM",
-  침실: "BEDROOM",
-  화장실: "BATHROOM",
-  주방: "KITCHEN",
-  현관: "ENTRANCE",
   방: "ROOM",
+  원룸: "ONE_ROOM",
+  거실: "LIVING_ROOM",
+  주방: "KITCHEN",
+  화장실: "BATHROOM",
+  침실: "BEDROOM",
 };
 
 const MOOD_MAP = {
@@ -42,16 +43,6 @@ const MOOD_MAP = {
   귀여운: "CUTE",
 };
 
-/**
- * Displays a four-step onboarding UI for selecting space, mood, age group, and gender,
- * then submits the mapped onboarding payload and navigates to the feed on success.
- *
- * The component tracks the current step and collected answers, maps user-facing labels
- * to internal IDs, calls UserApi.onboardingSubmit with the mapped payload, and on success
- * replaces navigation to "/feed". On submission failure an alert is shown.
- *
- * @returns The onboarding page React element.
- */
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -78,22 +69,31 @@ export default function OnboardingPage() {
         moodType: MOOD_MAP[form.moodType as keyof typeof MOOD_MAP],
       };
 
-      console.log("보낼 payload:", payload);
+      console.log("Onboarding Payload:", payload);
+      const token = localStorage.getItem("token");
+      console.log("Auth Token exists:", !!token);
+
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+
       await UserApi.onboardingSubmit(payload);
       navigate("/feed", { replace: true });
     } catch (error) {
       console.error("온보딩 저장 실패:", error);
-      alert("온보딩 정보 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      alert("온보딩 정보 저장에 실패했습니다. (서버 오류)");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FFFDF4]">
+    <div className="min-h-screen flex items-center justify-center ">
       {step === 1 && (
         <Step1Space
           value={form.spaceType}
           onSelect={updateField("spaceType")}
           onNext={nextStep}
+          onPrev={() => navigate(-1)}
           currentStep={step}
           totalSteps={TOTAL_STEPS}
         />
@@ -122,6 +122,16 @@ export default function OnboardingPage() {
         <Step4Gender
           value={form.gender}
           onSelect={updateField("gender")}
+          onNext={nextStep}
+          onPrev={prevStep}
+          currentStep={step}
+          totalSteps={TOTAL_STEPS}
+        />
+      )}
+      {step === 5 && (
+        <Step5Result
+          moodLabel={form.moodType}
+          spaceLabel={form.spaceType}
           onPrev={prevStep}
           onSubmit={handleSubmit}
           currentStep={step}

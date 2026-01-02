@@ -1,6 +1,5 @@
 import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
 import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
-import { useState } from "react";
 
 type PhotoCardProps = {
   id: number;
@@ -8,9 +7,10 @@ type PhotoCardProps = {
   imageUrl: string;
   price: number;
   subtitle?: string;
-  onClick?: () => void; // 추후 상세 이동 구현 예정
-  defaultLiked?: boolean;
-  showInfo?: boolean; // 제품 정보 표시 여부
+  onClick?: () => void;
+  isLiked?: boolean;
+  onLike?: () => void;
+  showInfo?: boolean;
 };
 
 export default function PhotoCard({
@@ -18,20 +18,18 @@ export default function PhotoCard({
   price,
   imageUrl,
   onClick,
-  defaultLiked = false,
+  isLiked = false,
+  onLike,
   showInfo = true,
 }: PhotoCardProps) {
-  const [liked, setLiked] = useState(defaultLiked);
-
   return (
     <div className="w-full">
-      {/* 제품 이미지 */}
       <div
         role="button"
         tabIndex={0}
         onClick={onClick}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick?.()}
-        className="relative rounded-xl aspect-[3/4] overflow-hidden border border-primary-400"
+        className="relative rounded-xl aspect-3/4 overflow-hidden group"
       >
         {imageUrl ? (
           <img
@@ -41,34 +39,35 @@ export default function PhotoCard({
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full" />
+          <div className="w-full h-full bg-gray-100" />
         )}
 
-        {/* 하트 */}
-        <button
-          type="button"
-          className="absolute right-2 bottom-2 transition-transform"
-          aria-label={liked ? "unlike" : "like"}
-          onClick={(e) => {
-            e.stopPropagation();
-            setLiked((p) => !p);
-          }}
-        >
-          {liked ? (
-            <FavoriteFillIcon className="w-5 h-5 text-primary-700" />
-          ) : (
-            <FavoriteIcon className="w-5 h-5 text-primary-700" />
-          )}
-        </button>
+        <div className="absolute right-2 bottom-2 flex gap-2">
+          <button
+            type="button"
+            className="p-1 transition-transform active:scale-95"
+            aria-label={isLiked ? "unlike" : "like"}
+            onClick={(e) => {
+              e.stopPropagation();
+              onLike?.();
+            }}
+          >
+            {isLiked ? (
+              <FavoriteFillIcon className="w-5 h-5 text-primary-700" />
+            ) : (
+              <FavoriteIcon className="w-5 h-5 text-primary-700" />
+            )}
+          </button>
+        </div>
       </div>
-      {/* 제품 정보 */}
+
       {showInfo && (
         <div className="mt-1">
           {title && (
             <p className="font-caption truncate text-primary-700">{title}</p>
           )}
           {price != null && (
-            <p className="-mt-2 font-caption text-primary-700">
+            <p className="font-caption-strong text-primary-700">
               ₩{Number(price).toLocaleString()}
             </p>
           )}

@@ -1,22 +1,147 @@
-import { useState } from "react";
-import BookMarkedIcon from "@/assets/icons/bookmark.svg?react";
-import MoveIcon from "@/assets/icons/move.svg?react";
-import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
-import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
-
-import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
-import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
+import { useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 
+import BookmarkIcon from "@/assets/icons/bookmark.svg?react";
+import BookmarkFillIcon from "@/assets/icons/bookmark-fill.svg?react";
+import MoveIcon from "@/assets/icons/move.svg?react";
+import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
+import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
+import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
+import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
+import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
+import ArrowLeftIcon from "@/assets/icons/arrow-left.svg?react";
+import CommentLogo from "@/assets/RoomeLogo/comment_icon.svg?react";
+
+import { useReferenceDetail } from "@/hooks/useReferenceDetail";
+import { useComments } from "@/hooks/comment/useComments";
+import { useCreateComment } from "@/hooks/comment/useCreateComment";
+import { useUpdateComment } from "@/hooks/comment/useUpdateComment";
+import { useDeleteComment } from "@/hooks/comment/useDeleteComment";
+import { useToggleReferenceLike } from "@/hooks/useToggleReferenceLike";
+import { useToggleReferenceScrap } from "@/hooks/useToggleReferenceScrap";
+import ChatInput from "@/components/chatbot/ChatInput";
+
 export default function FeedDetailPage() {
+  const { productId } = useParams<{ productId: string }>();
+  const navigate = useNavigate();
+
+  const id = useMemo(() => {
+    const n = Number(productId);
+    return Number.isFinite(n) ? n : null;
+  }, [productId]);
+
   const [isDescOpen, setIsDescOpen] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editContent, setEditContent] = useState("");
+
+  const { data: reference, isLoading, error } = useReferenceDetail(id);
+
+  const { data: commentList = [], isLoading: isCommentLoading } = useComments({
+    type: "REFERENCE",
+    commentableId: id,
+  });
+
+  const { mutate: createComment, isPending: isCreating } = useCreateComment();
+  const { mutate: updateComment } = useUpdateComment();
+  const { mutate: deleteComment } = useDeleteComment();
+  const { mutate: toggleLike, isPending: isTogglingLike } =
+    useToggleReferenceLike();
+  const { mutate: toggleScrap, isPending: isTogglingScrap } =
+    useToggleReferenceScrap();
+
+  const handleSendComment = (message: string) => {
+    if (id === null) return;
+
+    createComment({
+      commentableType: "REFERENCE",
+      commentableId: id,
+      content: message,
+    });
+  };
+
+  const handleEditStart = (commentId: number, currentContent: string) => {
+    setEditingCommentId(commentId);
+    setEditContent(currentContent);
+  };
+
+  const handleEditCancel = () => {
+    setEditingCommentId(null);
+    setEditContent("");
+  };
+
+  const handleEditSubmit = (commentId: number) => {
+    if (!id) return;
+    updateComment(
+      {
+        type: "REFERENCE",
+        commentableId: id,
+        commentId,
+        content: editContent,
+      },
+      {
+        onSuccess: () => {
+          setEditingCommentId(null);
+          setEditContent("");
+        },
+      },
+    );
+  };
+
+  const handleDelete = (commentId: number) => {
+    if (!id || !confirm("정말 삭제하시겠습니까?")) return;
+    deleteComment({
+      commentId,
+      commentableType: "REFERENCE",
+      commentableId: id,
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="relative isolate pt-16 max-w-md mx-auto pb-24 bg-primary-50 text-primary-700">
+        <p className="font-body2">레퍼런스 정보를 불러오는 중입니다...</p>
+      </div>
+    );
+  }
+
+  if (error || !reference) {
+    return (
+      <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
+        <p className="font-body2">레퍼런스 정보를 찾을 수 없습니다.</p>
+      </div>
+    );
+  }
+
+  const mainImage = reference.imageUrls?.[0] ?? "";
+  const referenceItems = reference.referenceItems || [];
 
   return (
-    <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
-      {/* 메인 이미지 */}
+    <div className="relative isolate pt-16 max-w-md mx-auto px-5 pb-24 text-primary-700">
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-16 max-w-md mx-auto px-5 bg-white/90 backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="p-2 -ml-2 text-primary-700"
+          aria-label="뒤로 가기"
+        >
+          <ArrowLeftIcon className="w-6 h-6" />
+        </button>
+        <h1 className="absolute left-1/2 -translate-x-1/2 font-display text-2xl text-primary-700">
+          ROOME
+        </h1>
+        <div className="w-10" />
+      </header>
+
       <section>
-        <div className="relative rounded-2xl bg-primary-200 aspect-4/3 overflow-hidden">
-          {/* 곰 아이콘 */}
+        <div className="relative rounded-2xl aspect-4/3 overflow-hidden">
+          {mainImage && (
+            <img
+              src={mainImage}
+              alt={reference.name}
+              className="w-full h-full object-cover"
+            />
+          )}
           <button
             type="button"
             aria-label="badge"
@@ -27,59 +152,76 @@ export default function FeedDetailPage() {
         </div>
       </section>
 
-      {/* 제목 / 가격 / 액션 */}
       <section className="mt-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h2 className="font-heading3">제목</h2>
-            <p className="font-body2">₩10000</p>
+            <h2 className="font-heading1 line-clamp-1">{reference.name}</h2>
           </div>
 
-          {/* 액션 아이콘 */}
           <div className="flex items-center gap-1">
             <button type="button" aria-label="공유" className="p-2">
               <MoveIcon className="w-5 h-5 text-primary-700 fill-none" />
             </button>
-            <button type="button" aria-label="저장" className="p-2">
-              <BookMarkedIcon className="w-5 h-5 text-primary-700" />
+            <button
+              type="button"
+              aria-label={reference.isScrapped ? "스크랩 취소" : "스크랩"}
+              className="p-2"
+              disabled={isTogglingScrap}
+              onClick={() => toggleScrap(reference.referenceId)}
+            >
+              {reference.isScrapped ? (
+                <BookmarkFillIcon className="w-5 h-5 text-primary-700" />
+              ) : (
+                <BookmarkIcon className="w-5 h-5 text-primary-700" />
+              )}
             </button>
-            <button type="button" aria-label="좋아요" className="p-2">
-              <FavoriteIcon className="w-5.5 h-5.5" />
+            <button
+              type="button"
+              aria-label={reference.isLiked ? "좋아요 취소" : "좋아요"}
+              className="p-2"
+              disabled={isTogglingLike}
+              onClick={() => toggleLike(reference.referenceId)}
+            >
+              {reference.isLiked ? (
+                <FavoriteFillIcon className="w-5 h-5 text-primary-700" />
+              ) : (
+                <FavoriteIcon className="w-5 h-5 text-primary-700" />
+              )}
             </button>
           </div>
         </div>
       </section>
 
-      {/* 작성자 정보 */}
-      <section className="mt-10">
+      <section className="mt-15">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-full bg-primary-200" />
+          {reference.userProfileUrl && (
+            <img
+              src={reference.userProfileUrl}
+              alt={reference.userName}
+              className="w-11 h-11 rounded-full object-cover"
+            />
+          )}
           <div>
-            <p className="font-caption-strong">닉네임</p>
-            <p className="font-body2 text-primary-400">간단한 설명</p>
+            <p className="font-body1">{reference.userName}</p>
           </div>
         </div>
       </section>
 
-      {/* 기타 설명 */}
       <section className="mt-6">
-        {/* 설명 텍스트*/}
         <p
           className={clsx(
-            "mt-2 font-body2 text-primary-700",
+            "font-body3 text-primary-700",
             isDescOpen ? "" : "line-clamp-2",
           )}
         >
-          Description text about something on this page that can be long or
-          short. It can be pretty long and will be clamped to three lines in
-          preview...
+          {reference.description}
         </p>
-        {/* 토글 */}
-        <div className="flex justify-center">
+
+        <div className="mt-2 flex justify-center">
           <button
             type="button"
             onClick={() => setIsDescOpen((prev) => !prev)}
-            className="flex items-center gap-x-2 font-caption-strong text-primary-700"
+            className="flex items-center gap-x-2 font-caption text-primary-700"
           >
             {isDescOpen ? (
               <>
@@ -96,34 +238,91 @@ export default function FeedDetailPage() {
         </div>
       </section>
 
-      {/* 관련 제품 - 레이아웃만 */}
-      <section className="mt-10">
-        <p className="mb-3 font-caption-strong text-primary-600">관련 제품들</p>
-
-        <div className="grid grid-cols-3 gap-3">
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-        </div>
+      <section className="mt-15">
+        <p className="mb-3 font-body3 text-primary-700">사용된 가구</p>
+        {referenceItems.length === 0 ? (
+          <p className="font-caption text-primary-400">관련 가구가 없습니다.</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-3">
+            {referenceItems.slice(0, 6).map((item) => (
+              <div
+                key={item.productId}
+                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200"
+              >
+                {item.thumbnailUrl && (
+                  <img
+                    src={item.thumbnailUrl}
+                    alt={item.productName}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* 관련 레퍼 - 레이아웃만 */}
-      <section className="mt-10">
-        <p className="mb-3 font-caption-strong text-primary-600">
-          관련 레퍼런스들
-        </p>
+      <section className="mt-15">
+        <p className="mb-3 font-body3 text-primary-700">댓글</p>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-          <div className="aspect-4/3 rounded-xl bg-primary-200" />
-        </div>
+        <ChatInput onSend={handleSendComment} disabled={isCreating} />
+
+        {isCommentLoading ? (
+          <p className="mt-3 font-caption text-primary-400">
+            댓글을 불러오는 중...
+          </p>
+        ) : (
+          <div className="mt-4 flex flex-col gap-2">
+            {commentList.map((c) => (
+              <div
+                key={String(c.id)}
+                className="flex items-start gap-3 p-3 rounded-md bg-primary-200"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary-700 flex items-center justify-center flex-shrink-0">
+                  <CommentLogo />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start">
+                    <p className="font-caption-strong text-primary-700">
+                      {c.nickname}
+                    </p>
+                    {c.isAuthor && editingCommentId !== c.id && (
+                      <div className="flex gap-2 font-caption text-primary-500">
+                        <button
+                          onClick={() => handleEditStart(c.id, c.content)}
+                        >
+                          수정
+                        </button>
+                        <button onClick={() => handleDelete(c.id)}>삭제</button>
+                      </div>
+                    )}
+                  </div>
+
+                  {editingCommentId === c.id ? (
+                    <div className="mt-1">
+                      <input
+                        className="w-full text-sm p-1 border rounded"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                      />
+                      <div className="flex gap-2 mt-2 font-caption justify-end">
+                        <button onClick={handleEditCancel}>취소</button>
+                        <button onClick={() => handleEditSubmit(c.id)}>
+                          저장
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="font-caption text-primary-700 whitespace-pre-wrap leading-tight mt-0.5">
+                      {c.content}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

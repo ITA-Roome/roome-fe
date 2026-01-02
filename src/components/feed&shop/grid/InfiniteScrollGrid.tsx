@@ -5,16 +5,14 @@ type Props<T> = {
   keySelector: (item: T, index: number) => string | number;
   renderItem: (item: T, index: number) => ReactNode;
 
-  // 인피니트 관련
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   loadMore: () => void | Promise<unknown>;
 
-  // 스타일 옵션
   className?: string;
-  gap?: string; // ex) "gap-3"
-  columns?: string; // ex) "grid-cols-3"
-  Skeletons?: ReactNode; // 로딩 플레이스홀더
+  gap?: string;
+  columns?: string;
+  Skeletons?: ReactNode;
 };
 
 export default function InfiniteScrollGrid<T>({
@@ -39,13 +37,12 @@ export default function InfiniteScrollGrid<T>({
       (entries) => {
         const [entry] = entries;
         if (!entry.isIntersecting) return;
-        if (!hasNextPage || isFetchingNextPage) return; // 중복 요청 방지
-        // 다음 페이지 로드
+        if (!hasNextPage || isFetchingNextPage) return;
         void loadMore();
       },
       {
         root: null,
-        rootMargin: "200px", // 미리 당겨서 로드
+        rootMargin: "200px",
         threshold: 0.01,
       },
     );
@@ -63,7 +60,6 @@ export default function InfiniteScrollGrid<T>({
       {(isFetchingNextPage || hasNextPage) && (
         <>
           {isFetchingNextPage && (Skeletons ?? <div className="h-24" />)}
-          {/* 이 ref가 뷰포트에 들어오면 loadMore 트리거 */}
           <div ref={sentinelRef} className="h-1 col-span-full" />
         </>
       )}
