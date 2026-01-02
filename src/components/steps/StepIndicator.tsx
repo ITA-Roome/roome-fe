@@ -11,8 +11,8 @@ export default function StepIndicator({ current, total }: StepIndicatorProps) {
         return (
           <span
             key={index}
-            className={`h-2.5 w-2.5 rounded-full border border-[#5D3C28] ${
-              isActive ? "bg-[#5D3C28]" : "bg-transparent"
+            className={`h-2.5 w-2.5 rounded-full border border-primary-700 ${
+              isActive ? "bg-primary-700" : "bg-white"
             }`}
           />
         );

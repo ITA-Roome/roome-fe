@@ -12,7 +12,7 @@ export const ProductApi = {
     params: ProductListParams,
   ): Promise<CommonResponse<ProductListResponse>> => {
     const { data } = await apiClient.get<CommonResponse<ProductListResponse>>(
-      "api/products",
+      "/api/products",
       {
         params,
       },
@@ -24,14 +24,14 @@ export const ProductApi = {
     productId: number,
   ): Promise<CommonResponse<ProductItem>> => {
     const { data } = await apiClient.get<CommonResponse<ProductItem>>(
-      `api/products/${productId}`,
+      `/api/products/${productId}`,
     );
     return data;
   },
 
   toggleProductLike: async (productId: number): Promise<ToggleLikeResponse> => {
     const res = await apiClient.post<CommonResponse<ToggleLikeResponse>>(
-      `api/user/likes/${productId}`,
+      `/api/user/likes/${productId}`,
     );
 
     // sucess 필드 표준화
