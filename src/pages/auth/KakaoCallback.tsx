@@ -8,40 +8,41 @@ export default function KakaoCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const code = new URL(window.location.href).searchParams.get("code");
-
+    console.log(window.location.search);
+    const code = new URLSearchParams(window.location.search).get("code");
+    console.log(code);
     if (!code) {
+      navigate("/", { replace: true });
       return;
     }
 
     const handleKakaoAuth = async () => {
       try {
-        const { data } = await AuthApi.loginWithKakao({ code });
-        const { accessToken, refreshToken } = data.data;
+        const { data } = await AuthApi.loginWithKakao({ code }); // 백엔드로 code 전달
+        console.log(data);
+        if (!data.isSuccess || !data.data) {
+          throw new Error(data.message || "카카오 로그인 실패");
+        }
 
+        const { accessToken, refreshToken, userInfo } = data.data;
         setAuthToken(accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        try {
-          const { data: onboardingData } =
-            await UserApi.checkOnboardingExistence();
+        sessionStorage.setItem("userId", String(userInfo.userId));
+        sessionStorage.setItem("nickname", userInfo.nickname);
 
-          const alreadyOnboarded =
-            onboardingData.data?.isExist ??
-            onboardingData.data?.exists ??
-            onboardingData.data?.hasOnboardingInformation ??
-            false;
+        const { data: onboardingData } =
+          await UserApi.checkOnboardingExistence();
+        const alreadyOnboarded =
+          onboardingData.data?.isExist ??
+          onboardingData.data?.exists ??
+          onboardingData.data?.hasOnboardingInformation ??
+          false;
 
-          navigate(alreadyOnboarded ? "/feed" : "/onboarding", {
-            replace: true,
-          });
-        } catch (existError) {
-          console.error("온보딩 여부 확인 실패:", existError);
-          navigate("/onboarding", { replace: true });
-        }
-      } catch (error) {
-        console.error("카카오 로그인 실패", error);
+        navigate(alreadyOnboarded ? "/feed" : "/onboarding", { replace: true });
+      } catch (err) {
+        console.error("카카오 로그인 실패:", err);
         alert("카카오 로그인 실패");
-        navigate("/");
+        navigate("/", { replace: true });
       }
     };
 

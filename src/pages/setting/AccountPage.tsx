@@ -130,14 +130,14 @@ export default function AccountPage() {
             <button
               type="button"
               onClick={handleDeleteAccount}
-              className="w-full py-3 rounded-lg bg-[#5D3C28] text-[#FFFDF4] text-[14px]"
+              className="w-full py-3 rounded-3xl bg-primary-700 text-[#FFFDF4] text-[14px]"
             >
               회원 탈퇴
             </button>
             <button
               type="button"
               onClick={handleChangePassword}
-              className="w-full py-3 rounded-lg bg-[#5D3C28] text-[#FFFDF4] text-[14px]"
+              className="w-full py-3 rounded-3xl bg-primary-700 text-[#FFFDF4] text-[14px]"
             >
               비밀번호 변경
             </button>

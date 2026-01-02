@@ -34,6 +34,10 @@ export default function SettingPage() {
       }
 
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+
+      // 세션스토리지 전체 정리
+      sessionStorage.clear();
 
       navigate("/", { replace: true });
     } catch (error) {
@@ -65,21 +69,21 @@ export default function SettingPage() {
         {/* 메뉴 리스트 (닉네임과 로그아웃 사이 가운데 배치) */}
         <div className="mt-16 flex flex-col gap-6">
           <button
-            className="w-full py-3 rounded-md bg-[#6B4B3A] text-white text-[15px]"
+            className="w-full py-3 rounded-3xl bg-primary-700 text-white text-[15px]"
             onClick={() => navigate("/setting/profile")}
           >
             프로필 관리
           </button>
 
           <button
-            className="w-full py-3 rounded-md bg-[#6B4B3A] text-white text-[15px]"
+            className="w-full py-3 rounded-3xl bg-primary-700 text-white text-[15px]"
             onClick={() => navigate("/setting/account")}
           >
             계정 정보
           </button>
 
           <button
-            className="w-full py-3 rounded-md bg-[#6B4B3A] text-white text-[15px]"
+            className="w-full py-3 rounded-3xl bg-primary-700 text-white text-[15px]"
             onClick={() => navigate("/setting/contact")}
           >
             문의하기
@@ -90,7 +94,7 @@ export default function SettingPage() {
       {/* 로그아웃 버튼: 페이지 하단 고정 */}
       <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-full max-w-md px-5">
         <button
-          className="w-full py-3 rounded-md bg-[#6B4B3A] text-white text-[15px]"
+          className="w-full py-3 rounded-3xl bg-primary-700 text-white text-[15px]"
           onClick={handleLogout}
         >
           로그아웃

@@ -58,7 +58,7 @@ export default function ChatBoardPage() {
   ];
 
   return (
-    <div className="pt-16 max-w-md mx-auto px-5 min-h-screen space-y-6">
+    <div className="max-w-md mx-auto px-5 min-h-screen space-y-6">
       <InfiniteScrollGrid
         items={dummyConsultItems}
         keySelector={(it) => it.id}

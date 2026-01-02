@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import type { UserLikeProduct } from "@/types/user";
-// import { UserApi } from "@/api/user";
+import { UserApi } from "@/api/user";
 
 import chat1 from "@/assets/icons/bed.svg";
 import chat2 from "@/assets/icons/desk.svg";
@@ -34,24 +34,27 @@ export default function BoardPage() {
 
   const fetchBoardData = async () => {
     try {
-      // 1️⃣ 좋아요 상품 API (아직 좋아요 기능이 없으므로 예시)
-      // const liked = await UserApi.fetchUserLikedProducts();
-      // setLikedProducts(liked.data?.userLikeProductList ?? []);
-      setProductImages([chat1, chat2, chat3]);
+      const res = await UserApi.fetchUserLikedProducts();
 
-      // 2️⃣ 상담 데이터 API (아직 없으므로 예시)
-      // 실제 API 나오면 여기에 연결!
+      if (res.isSuccess && res.data) {
+        const imgs = (res.data.userLikeProductList ?? [])
+          .map((p) => p.imageList?.[0])
+          .filter(Boolean) as string[];
+
+        setProductImages(imgs.slice(0, 4)); // 앞 4개만 사용
+      } else {
+        console.error("좋아요 상품 조회 실패:", res?.message);
+        setProductImages([]);
+      }
+
+      // 상담/레퍼런스는 API 준비되기 전까지 기존 더미 유지
       setConsultImages([chat1, chat2, chat3, chat2]);
-
-      // 3️⃣ 공유 레퍼런스 API (아직 없으므로 예시)
       setReferenceImages([chat1, chat2, chat3, chat1]);
     } catch (err) {
       console.error(err);
+      setProductImages([]);
     }
   };
-
-  // 좋아요 4개 이미지만 뽑기
-  //const likePreview = likedProducts.slice(0, 4).map((p) => p.imageList?.[0]);
 
   // 전체 보드 구성
   const boards: BoardItem[] = [
