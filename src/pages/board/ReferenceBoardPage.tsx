@@ -20,7 +20,7 @@ export default function ReferenceBoardPage() {
             price={0}
             imageUrl={img}
             showInfo={false}
-            liked={true}
+            isLiked={true}
           />
         )}
         columns="grid-cols-3"
