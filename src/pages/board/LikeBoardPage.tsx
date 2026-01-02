@@ -5,6 +5,7 @@ import TabMenu from "@/components/board/TabMenu";
 import { UserApi } from "@/api/user";
 import type { UserLikeProduct, UserLikeReference } from "@/types/user";
 import { ProductApi } from "@/api/product";
+import { ReferenceApi } from "@/api/reference";
 
 export default function LikeBoardPage() {
   const [tab, setTab] = useState<"reference" | "product">("reference");
@@ -49,11 +50,24 @@ export default function LikeBoardPage() {
     fetchLikedReferences();
   }, [fetchLikedProducts, fetchLikedReferences]);
 
-  const handleToggleLike = useCallback(async (productId: number) => {
+  const handleProductToggleLike = useCallback(async (productId: number) => {
     try {
       const res = await ProductApi.toggleProductLike(productId);
       if (!res?.liked) {
         setLikedProducts((prev) => prev.filter((p) => p.id !== productId));
+      }
+    } catch (error) {
+      console.error("좋아요 토글 실패: ", error);
+    }
+  }, []);
+
+  const handleReferenceToggleLike = useCallback(async (referenceId: number) => {
+    try {
+      const res = await ReferenceApi.toggleReferenceLike(referenceId);
+      if (!res?.liked) {
+        setLikedReferences((prev) =>
+          prev.filter((p) => p.referenceId !== referenceId),
+        );
       }
     } catch (error) {
       console.error("좋아요 토글 실패: ", error);
@@ -80,8 +94,8 @@ export default function LikeBoardPage() {
                   title={it.name}
                   price={it.price}
                   imageUrl={it.imageList?.[0]}
-                  liked={true}
-                  onToggleLike={handleToggleLike}
+                  isLiked={true}
+                  onLike={() => handleProductToggleLike(it.id)}
                   showInfo={true}
                 />
               )}
@@ -110,7 +124,8 @@ export default function LikeBoardPage() {
                   title={it.nickname}
                   price={0}
                   imageUrl={it.imageUrlList?.[0]}
-                  liked={true}
+                  isLiked={true}
+                  onLike={() => handleReferenceToggleLike(it.referenceId)}
                   showInfo={false}
                 />
               )}
