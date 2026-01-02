@@ -49,6 +49,15 @@ export const AuthApi = {
     const { data } = await apiClient.post("/api/auth/logout");
     return data;
   },
+  changePassword: async (
+    payload: LoginRequest,
+  ): Promise<CommonResponse<void>> => {
+    const { data } = await apiClient.patch<CommonResponse<void>>(
+      "/api/auth/password",
+      payload,
+    );
+    return data;
+  },
   withdraw: async (): Promise<CommonResponse<null>> => {
     const { data } = await apiClient.delete("/api/auth/withdraw");
     return data;
