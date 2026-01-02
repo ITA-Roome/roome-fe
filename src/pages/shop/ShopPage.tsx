@@ -9,7 +9,9 @@ import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
 import SearchInput from "@/components/search/search/SearchInput";
 import GridSkeleton from "@/components/skeletons/GridSkeleton";
 import Dropdown from "@/components/feed&shop/dropdown/Dropdown";
-import ShopFilterPanel from "../../components/feed&shop/dropdown/ShopFilterPanel";
+import ShopFilterPanel, {
+  SortOption,
+} from "../../components/feed&shop/dropdown/ShopFilterPanel";
 
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
@@ -18,12 +20,26 @@ import { useToggleProductLike } from "@/hooks/useToggleProductLike";
 
 export default function ShopPage() {
   const [search, setSearch] = useState("");
-  const [order] = useState<ProductOrder>("LATEST");
+  const [sortOption, setSortOption] = useState<SortOption>("인기순");
+  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   const navigate = useNavigate();
   const limit = 21;
 
+  const order: ProductOrder = useMemo(() => {
+    switch (sortOption) {
+      case "인기순":
+        return "POPULAR";
+      case "최신순":
+        return "LATEST";
+      case "가격순":
+        return "PRICE_ASC";
+      default:
+        return "POPULAR";
+    }
+  }, [sortOption]);
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetInfiniteProductsList(limit, search, order);
+    useGetInfiniteProductsList(limit, search, selectedKeywords, order);
 
   const flat = useMemo(() => data?.items ?? [], [data]);
 
@@ -54,7 +70,7 @@ export default function ShopPage() {
           wrapperClassName="w-full"
           menuClassname="w-full"
           toggleButton={(open) => (
-            <div className="mt-3 flex flex-row items-center gap-x-2 font-caption-strong text-primary-700">
+            <div className="mt-3 flex flex-row items-center gap-x-2 font-caption text-primary-700">
               {open ? (
                 <ArrowDownIcon className="w-3 h-3 " />
               ) : (
@@ -64,7 +80,12 @@ export default function ShopPage() {
             </div>
           )}
         >
-          <ShopFilterPanel />
+          <ShopFilterPanel
+            selected={selectedKeywords}
+            onSelect={setSelectedKeywords}
+            sort={sortOption}
+            onSort={setSortOption}
+          />
         </Dropdown>
       </section>
 

@@ -33,8 +33,13 @@ type SelectedData = {
 export default function useGetInfiniteProductsList(
   limit: number,
   search: string,
+  keywords: string[],
   order: ProductOrder,
 ): UseInfiniteQueryResult<SelectedData, unknown> {
+  // combine search + keywords for the API
+  // If the API supports multiple keywords via space separation:
+  const combinedKeyword = [search, ...keywords].filter(Boolean).join(" ");
+
   return useInfiniteQuery<
     CommonResponse<ProductListResponse>,
     unknown,
@@ -42,14 +47,14 @@ export default function useGetInfiniteProductsList(
     ReturnType<typeof productKeys.list>,
     number
   >({
-    queryKey: productKeys.list({ search, order, limit }),
+    queryKey: productKeys.list({ search: combinedKeyword, order, limit }),
     enabled: true,
 
     queryFn: ({ pageParam = 0 }) =>
       ProductApi.fetchProducts({
         page: pageParam,
         size: limit,
-        keyWord: search || undefined,
+        keyWord: combinedKeyword || undefined,
         sort: orderToSort(order),
       }),
 

@@ -1,10 +1,10 @@
-import StepIndicator from "./StepIndicator";
+import OnboardingLayout from "./OnboardingLayout";
 
 type Step4GenderProps = {
   value: string;
   onSelect: (value: string) => void;
+  onNext: () => void;
   onPrev: () => void;
-  onSubmit: () => void;
   currentStep: number;
   totalSteps: number;
 };
@@ -15,51 +15,34 @@ export default function Step4Gender({
   value,
   onSelect,
   onPrev,
-  onSubmit,
+  onNext,
   currentStep,
   totalSteps,
 }: Step4GenderProps) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#FFFDF4]">
-      <h2 className="text-xl font-semibold text-[#5D3C28] mb-10">
-        성별을 선택해주세요
-      </h2>
-
-      <div className="grid grid-cols-3 gap-5 justify-items-center">
+    <OnboardingLayout
+      title="성별을 선택해주세요"
+      onNext={onNext}
+      onPrev={onPrev}
+      nextDisabled={!value}
+      currentStep={currentStep}
+      totalSteps={totalSteps}
+    >
+      <div className="grid grid-cols-3 gap-6 w-full mb-10">
         {GENDER_OPTIONS.map((gender) => (
           <button
             key={gender}
             onClick={() => onSelect(gender)}
-            className={`flex flex-col items-center justify-center w-25 h-25 rounded-xl text-lg font-semibold transition ${
+            className={`flex items-center justify-center p-5 w-full h-13 rounded-lg font-body2 transition ${
               value === gender
-                ? "bg-[#5D3C28] text-white scale-105"
-                : "bg-[#E5DCC7] text-[#5D3C28]"
+                ? "bg-primary-700 text-white"
+                : "bg-[#BB854A] text-white"
             }`}
           >
             {gender}
           </button>
         ))}
       </div>
-
-      <div className="mt-40">
-        <StepIndicator current={currentStep} total={totalSteps} />
-      </div>
-
-      <div className="mt-16 flex gap-4">
-        <button
-          onClick={onPrev}
-          className="px-6 py-2 rounded-lg bg-[#E5DCC7] text-[#5D3C28]"
-        >
-          이전으로
-        </button>
-        <button
-          onClick={onSubmit}
-          disabled={!value}
-          className="px-6 py-2 rounded-lg bg-[#5D3C28] text-white disabled:opacity-40"
-        >
-          제출하기
-        </button>
-      </div>
-    </div>
+    </OnboardingLayout>
   );
 }
