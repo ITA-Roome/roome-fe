@@ -1,6 +1,8 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import MessageList from "@/components/chatbot/MessageList";
 import ChatInput from "@/components/chatbot/ChatInput";
+import { ChatApi } from "@/api/chatbot";
+import { ChatInputType } from "@/types/chatbot";
 
 export type Message = {
   role: "user" | "bot";
@@ -40,6 +42,9 @@ export default function ChatPage() {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [options, setOptions] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // 1) 세션 저장소에서 복원. 없으면 기본 봇 인사.
   useEffect(() => {
@@ -68,14 +73,44 @@ export default function ChatPage() {
     }
   }, [messages, isHydrated, storageKey]);
 
-  const handleSend = async (userMessage: string) => {
-    if (!userMessage.trim()) return;
+  const sendToBot = useCallback(
+    async (UserMessage: string, inputType: ChatInputType) => {
+      const trimmed = UserMessage.trim();
+      if (!trimmed) return;
 
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", content: userMessage },
-      { role: "bot", content: `“${userMessage}”에 대한 답변이에요.` },
-    ]);
+      setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
+      setLoading(true);
+
+      try {
+        const res = await ChatApi.sendRecommendation({
+          sessionId,
+          inputType,
+          message: trimmed,
+        });
+
+        setSessionId(res.sessionId);
+        setOptions(res.options ?? []);
+
+        setMessages((prev) => [...prev, { role: "bot", content: res.message }]);
+      } catch (error) {
+        console.error("챗봇 호출 실패:", error);
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", content: "죄송해요. 잠시 후 다시 시도해 주세요." },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [sessionId],
+  );
+
+  const handleSend = (userMessage: string) => {
+    void sendToBot(userMessage, ChatInputType.TEXT);
+  };
+
+  const handleOptionClick = (option: string) => {
+    void sendToBot(option, ChatInputType.BUTTON);
   };
 
   return (
@@ -91,9 +126,25 @@ export default function ChatPage() {
         <MessageList messages={messages} />
       </div>
 
+      {/* 옵션 버튼 */}
+      {options.length > 0 && (
+        <div className="px-4 pb-2 flex flex-wrap gap-2">
+          {options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => handleOptionClick(opt)}
+              className="px-3 py-2 rounded-full border border-primary-700 text-sm bg-white active:bg-primary-50"
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* 입력창 */}
       <div className="px-4 py-3">
-        <ChatInput onSend={handleSend} />
+        <ChatInput onSend={handleSend} disabled={loading} />
       </div>
     </div>
   );

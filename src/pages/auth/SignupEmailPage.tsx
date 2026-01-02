@@ -255,7 +255,7 @@ export default function SignupEmailPage() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-[#FFFDF4]">
+    <div className="flex justify-center items-center h-screen">
       {/* 회원가입 카드 컨테이너 */}
       <div className="text-center w-full max-w-sm">
         {/* 회원가입 폼 */}
@@ -276,13 +276,13 @@ export default function SignupEmailPage() {
                   setNicknameMessage("");
                 }}
                 placeholder="닉네임을 입력해주세요"
-                className="w-full h-[50px] pl-3 pr-24 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
+                className="w-full h-[50px] pl-3 pr-24 border border-[#5D3C28] rounded-3xl bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
               />
               <button
                 type="button"
                 onClick={handleCheckNickname}
                 disabled={nicknameLoading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded disabled:opacity-60"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded-3xl disabled:opacity-60"
               >
                 {nicknameLoading ? "확인 중..." : "중복 확인"}
               </button>
@@ -309,7 +309,7 @@ export default function SignupEmailPage() {
                 value={email}
                 onChange={(e) => handleEmailChange(e.target.value)}
                 placeholder="ID@example.com"
-                className={`w-full h-[50px] pl-3 pr-24 border rounded-md bg-white focus:outline-none focus:ring-2 ${
+                className={`w-full h-[50px] pl-3 pr-24 border rounded-3xl bg-white focus:outline-none focus:ring-2 ${
                   emailError
                     ? "border-red-500 focus:ring-red-400"
                     : "border-[#5D3C28] focus:ring-[#5D3C28]"
@@ -322,7 +322,7 @@ export default function SignupEmailPage() {
                 type="button"
                 onClick={handleRequestEmailVerification}
                 disabled={emailLoading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded-3xl"
               >
                 {emailLoading ? "발송 중..." : "인증하기"}
               </button>
@@ -340,13 +340,13 @@ export default function SignupEmailPage() {
                 value={verifyCode}
                 onChange={(e) => setVerifyCode(e.target.value)}
                 placeholder="인증번호 입력"
-                className="w-full h-[50px] pl-3 pr-20 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
+                className="w-full h-[50px] pl-3 pr-20 border border-[#5D3C28] rounded-3xl bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
               />
               <button
                 type="button"
                 onClick={handleConfirmVerification}
                 disabled={codeLoading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white text-sm px-3 py-1 rounded-3xl"
               >
                 {codeLoading ? "확인 중..." : "확인"}
               </button>
@@ -372,7 +372,7 @@ export default function SignupEmailPage() {
               value={phone}
               onChange={(e) => handlePhoneChange(e.target.value)}
               placeholder="전화번호"
-              className="w-full h-[50px] p-3 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
+              className="w-full h-[50px] p-3 border border-[#5D3C28] rounded-3xl bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
             />
             {phoneError && (
               <p className="text-red-500 text-xs mt-1">{phoneError}</p>
@@ -392,7 +392,7 @@ export default function SignupEmailPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"
-              className="w-full h-[50px] p-3 border border-[#5D3C28] rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
+              className="w-full h-[50px] p-3 border border-[#5D3C28] rounded-3xl bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
             />
           </div>
 
@@ -411,7 +411,7 @@ export default function SignupEmailPage() {
               value={passwordConfirm}
               onChange={handleConfirmChange}
               placeholder="비밀번호 확인"
-              className={`w-full h-[50px] p-3 border rounded-md bg-white focus:outline-none focus:ring-2 ${
+              className={`w-full h-[50px] p-3 border rounded-3xl bg-white focus:outline-none focus:ring-2 ${
                 isMatch
                   ? "border-[#5D3C28] focus:ring-[#5D3C28]"
                   : "border-red-500 focus:ring-red-400"
@@ -423,7 +423,7 @@ export default function SignupEmailPage() {
           <button
             type="submit"
             disabled={signupLoading}
-            className="w-full h-[50px] mt-2 bg-[#D3C6BC] text-[#5D3C28] font-medium rounded-md disabled:opacity-60"
+            className="w-full h-[50px] mt-2 bg-[#D3C6BC] text-[#5D3C28] font-medium rounded-3xl disabled:opacity-60"
           >
             {signupLoading ? "가입 중..." : "회원가입"}
           </button>

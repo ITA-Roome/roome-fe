@@ -65,46 +65,62 @@ export default function LikeBoardPage() {
       <TabMenu tab={tab} onChange={setTab} />
 
       {tab === "product" && (
-        <InfiniteScrollGrid
-          items={likedProducts}
-          keySelector={(it) => it.id}
-          renderItem={(it) => (
-            <PhotoCard
-              id={it.id}
-              title={it.name}
-              price={it.price}
-              imageUrl={it.imageList?.[0]}
-              liked={true}
-              onToggleLike={handleToggleLike}
-              showInfo={true}
+        <>
+          {likedProducts.length === 0 ? (
+            <p className="py-16 text-center text-primary-700">
+              좋아요한 상품이 없습니다!
+            </p>
+          ) : (
+            <InfiniteScrollGrid
+              items={likedProducts}
+              keySelector={(it) => it.id}
+              renderItem={(it) => (
+                <PhotoCard
+                  id={it.id}
+                  title={it.name}
+                  price={it.price}
+                  imageUrl={it.imageList?.[0]}
+                  liked={true}
+                  onToggleLike={handleToggleLike}
+                  showInfo={true}
+                />
+              )}
+              columns="grid-cols-3"
+              gap="gap-4"
+              hasNextPage={false}
+              loadMore={() => {}}
             />
           )}
-          columns="grid-cols-3"
-          gap="gap-4"
-          hasNextPage={false}
-          loadMore={() => {}}
-        />
+        </>
       )}
 
       {tab === "reference" && (
-        <InfiniteScrollGrid
-          items={likedReferences}
-          keySelector={(it) => it.referenceId}
-          renderItem={(it) => (
-            <PhotoCard
-              id={it.referenceId}
-              title={it.nickname}
-              price={0}
-              imageUrl={it.imageUrlList?.[0]}
-              liked={true}
-              showInfo={false}
+        <>
+          {likedReferences.length === 0 ? (
+            <p className="py-16 text-center text-primary-700">
+              좋아요한 레퍼런스가 없습니다!
+            </p>
+          ) : (
+            <InfiniteScrollGrid
+              items={likedReferences}
+              keySelector={(it) => it.referenceId}
+              renderItem={(it) => (
+                <PhotoCard
+                  id={it.referenceId}
+                  title={it.nickname}
+                  price={0}
+                  imageUrl={it.imageUrlList?.[0]}
+                  liked={true}
+                  showInfo={false}
+                />
+              )}
+              columns="grid-cols-3"
+              gap="gap-4"
+              hasNextPage={false}
+              loadMore={() => {}}
             />
           )}
-          columns="grid-cols-3"
-          gap="gap-4"
-          hasNextPage={false}
-          loadMore={() => {}}
-        />
+        </>
       )}
     </div>
   );

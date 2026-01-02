@@ -8,7 +8,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-[#FFFDF4]">
+    <div className="flex justify-center items-center h-screen">
       <div className="text-center w-full max-w-sm">
         <h2 className="font-pretendard font-black text-[20px] text-[#5D3C28] leading-[25px] tracking-[0.4px] mb-4">
           내 방이 따뜻해지는 가장 쉬운 방법
