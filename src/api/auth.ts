@@ -4,6 +4,7 @@ import {
   LoginRequest,
   LoginResponse,
   NicknameCheckResponse,
+  EmailExistResponse,
   OAuthCodeRequest,
   OAuthLoginResponse,
   SignupRequest,
@@ -32,6 +33,10 @@ export const AuthApi = {
   checkNickname: (nickname: string) =>
     apiClient.get<NicknameCheckResponse>("/api/auth/check-nickname", {
       params: { nickname },
+    }),
+  checkEmailExists: (email: string) =>
+    apiClient.get<EmailExistResponse>("/api/auth/check-email", {
+      params: { email },
     }),
   requestEmailVerification: (payload: EmailVerificationRequest) =>
     apiClient.post<CommonResponse<void>>(
