@@ -105,6 +105,11 @@ export default function ChangePasswordPage() {
             }`}
             placeholder="example@romme.com"
           />
+          {!isEmailValid && email.length > 0 && (
+            <p className="text-xs text-red-500 mt-2">
+              입력한 이메일이 계정과 일치하지 않습니다.
+            </p>
+          )}
 
           <button
             onClick={handleEmailSubmit}
@@ -115,12 +120,6 @@ export default function ChangePasswordPage() {
           >
             비밀번호 변경
           </button>
-
-          {!isEmailValid && email.length > 0 && (
-            <p className="text-xs text-red-500 mt-2">
-              입력한 이메일이 계정과 일치하지 않습니다.
-            </p>
-          )}
         </div>
       )}
 

@@ -1,10 +1,13 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 
 import ProfileChangeIcon from "@/assets/icons/imgChange.svg?react";
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
+
   const [originalNickname, setOriginalNickname] = useState("");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
 
@@ -138,6 +141,7 @@ export default function ProfilePage() {
       setProfileImage(null);
 
       alert("프로필이 저장되었습니다!");
+      navigate("/setting");
     } catch (error) {
       console.error("프로필 저장 실패:", error);
       alert("프로필 저장 중 오류가 발생했습니다.");
@@ -200,7 +204,6 @@ export default function ProfilePage() {
               {nicknameLoading ? "확인 중..." : "중복 확인"}
             </button>
           </div>
-
           {nicknameMessage && (
             <p
               className={`text-xs mt-1 ${nicknameChecked ? "text-green-600" : "text-red-500"}`}
