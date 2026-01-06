@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useLayoutEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 
@@ -31,10 +31,21 @@ export default function FeedDetailPage() {
   }, [productId]);
 
   const [isDescOpen, setIsDescOpen] = useState(false);
+  const [isOverflow, setIsOverflow] = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
+
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
 
   const { data: reference, isLoading, error } = useReferenceDetail(id);
+
+  useLayoutEffect(() => {
+    if (descRef.current) {
+      setIsOverflow(
+        descRef.current.scrollHeight > descRef.current.clientHeight,
+      );
+    }
+  }, [reference?.description]);
 
   const { data: commentList = [], isLoading: isCommentLoading } = useComments({
     type: "REFERENCE",
@@ -193,6 +204,7 @@ export default function FeedDetailPage() {
 
       <section className="mt-6">
         <p
+          ref={descRef}
           className={clsx(
             "font-body3 text-primary-700",
             isDescOpen ? "" : "line-clamp-2",
@@ -201,25 +213,27 @@ export default function FeedDetailPage() {
           {reference.description}
         </p>
 
-        <div className="mt-2 flex justify-center">
-          <button
-            type="button"
-            onClick={() => setIsDescOpen((prev) => !prev)}
-            className="flex items-center gap-x-2 font-caption text-primary-700"
-          >
-            {isDescOpen ? (
-              <>
-                <ArrowUpIcon className="w-3 h-3" />
-                <span>설명 접기</span>
-              </>
-            ) : (
-              <>
-                <ArrowDownIcon className="w-3 h-3" />
-                <span>설명 더보기</span>
-              </>
-            )}
-          </button>
-        </div>
+        {isOverflow && (
+          <div className="mt-2 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setIsDescOpen((prev) => !prev)}
+              className="flex items-center gap-x-2 font-caption text-primary-700"
+            >
+              {isDescOpen ? (
+                <>
+                  <ArrowUpIcon className="w-3 h-3" />
+                  <span>설명 접기</span>
+                </>
+              ) : (
+                <>
+                  <ArrowDownIcon className="w-3 h-3" />
+                  <span>설명 더보기</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="mt-15">
