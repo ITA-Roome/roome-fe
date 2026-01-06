@@ -261,7 +261,7 @@ export default function FeedDetailPage() {
             {commentList.map((c) => (
               <div
                 key={String(c.id)}
-                className="flex items-start gap-3 p-3 rounded-md bg-primary-200"
+                className="flex items-start gap-3 p-3 rounded-md bg-primary-50"
               >
                 <div className="w-8 h-8 rounded-full bg-primary-700 flex items-center justify-center flex-shrink-0">
                   <CommentLogo />
