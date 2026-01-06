@@ -3,7 +3,8 @@ import {
   fetchRecentSearch,
   deleteRecentSearch,
 } from "@/api/search";
-import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
+
+import MasonryInfiniteGrid from "@/components/feed&shop/grid/MasonryInfiniteGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
 import SearchInput from "@/components/search/search/SearchInput";
 import GridSkeleton from "@/components/skeletons/GridSkeleton";
@@ -12,8 +13,13 @@ import { useToggleReferenceLike } from "@/hooks/useToggleReferenceLike";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+function getAspectRatio(id: number) {
+  const ratios = ["aspect-[3/4]", "aspect-[1/1]", "aspect-[4/5]"];
+  return ratios[id % ratios.length];
+}
+
 export default function FeedPage() {
-  const [search] = useState("bed");
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -27,7 +33,7 @@ export default function FeedPage() {
     <div className="relative isolate pt-16 max-w-md mx-auto px-5">
       <section className="relative z-30">
         <SearchInput
-          onSubmit={(q) => console.log("submit:", q)}
+          onSubmit={setSearch}
           getRecent={fetchRecentSearch}
           getPopular={fetchPopularSearch}
           removeRecent={deleteRecentSearch}
@@ -38,7 +44,7 @@ export default function FeedPage() {
       </section>
 
       <section className="mt-3">
-        <InfiniteScrollGrid
+        <MasonryInfiniteGrid
           items={flat}
           keySelector={(it) => String(it.referenceId)}
           renderItem={(it) => (
@@ -51,12 +57,13 @@ export default function FeedPage() {
               isLiked={it.isLiked}
               onLike={() => toggleLike(it.referenceId)}
               onClick={() => navigate(`/feed/${it.referenceId}`)}
+              ratio="auto"
+              className={getAspectRatio(it.referenceId)}
             />
           )}
           hasNextPage={!!hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
           loadMore={() => fetchNextPage()}
-          columns="grid-cols-3"
           gap="gap-4"
           Skeletons={<GridSkeleton />}
         />

@@ -3,6 +3,8 @@ import { Outlet, useLocation } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import BoardHeader from "../components/layout/BoardHeader";
 
+import ScrollToTop from "../components/layout/ScrollToTop";
+
 function BoardLayout() {
   const location = useLocation();
 
@@ -18,6 +20,7 @@ function BoardLayout() {
 
   return (
     <div className="min-h-screen">
+      <ScrollToTop />
       <BoardHeader title={title} />
       <main className="px-4">
         <Outlet />

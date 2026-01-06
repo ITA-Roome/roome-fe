@@ -11,6 +11,8 @@ type PhotoCardProps = {
   isLiked?: boolean;
   onLike?: () => void;
   showInfo?: boolean;
+  ratio?: "default" | "auto";
+  className?: string;
 };
 
 export default function PhotoCard({
@@ -21,15 +23,21 @@ export default function PhotoCard({
   isLiked = false,
   onLike,
   showInfo = true,
+  ratio = "default",
+  className = "",
 }: PhotoCardProps) {
   return (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       <div
         role="button"
         tabIndex={0}
         onClick={onClick}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick?.()}
-        className="relative rounded-xl aspect-3/4 overflow-hidden group"
+        className={`relative rounded-xl overflow-hidden group h-full ${
+          ratio === "default" && !className.includes("aspect")
+            ? "aspect-3/4"
+            : ""
+        }`}
       >
         {imageUrl ? (
           <img
@@ -53,9 +61,9 @@ export default function PhotoCard({
             }}
           >
             {isLiked ? (
-              <FavoriteFillIcon className="w-5 h-5 text-primary-700" />
+              <FavoriteFillIcon className="w-5 h-5 text-point" />
             ) : (
-              <FavoriteIcon className="w-5 h-5 text-primary-700" />
+              <FavoriteIcon className="w-5 h-5 text-primary-50" />
             )}
           </button>
         </div>
@@ -63,9 +71,7 @@ export default function PhotoCard({
 
       {showInfo && (
         <div className="mt-1">
-          {title && (
-            <p className="font-caption truncate text-primary-700">{title}</p>
-          )}
+          <p className="font-caption truncate text-primary-700">{title}</p>
           {price != null && (
             <p className="font-caption-strong text-primary-700">
               ₩{Number(price).toLocaleString()}

@@ -29,13 +29,13 @@ export default function useGetInfiniteReferences(
         size: 21,
       }),
     getNextPageParam: (lastPage, allPages) => {
-      const list = lastPage.data?.referenceList ?? [];
-      if (list.length === 0) return undefined;
+      const isLast = lastPage.data?.last ?? true;
+      if (isLast) return undefined;
       return allPages.length;
     },
     select: (data) => {
       const items = data.pages
-        .flatMap((page) => page.data?.referenceList ?? [])
+        .flatMap((page) => page.data?.content ?? [])
         .map((item) => ({
           ...item,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

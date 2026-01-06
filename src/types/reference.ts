@@ -16,7 +16,15 @@ export type ReferenceListItem = {
 };
 
 export type ReferenceListResponse = {
-  referenceList: ReferenceListItem[];
+  content: ReferenceListItem[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  empty: boolean;
 };
 
 export type ReferenceDetailReferenceItem = {

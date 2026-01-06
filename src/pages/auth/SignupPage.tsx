@@ -35,7 +35,7 @@ export default function SignupPage() {
         <h3 className="font-pretendard font-normal text-[14px] text-[#5D3C28] leading-[25px] tracking-[0.4px] mt-5">
           이미 ROOME 회원이라면?
           <Link
-            to="/"
+            to="/login"
             className="text-[#5D3C28] font-semibold hover:underline hover:text-[#3E271B]"
           >
             로그인
