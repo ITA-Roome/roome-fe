@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserApi } from "@/api/user";
+import { AuthApi } from "@/api/auth";
 
 export default function ChangePasswordPage() {
   const [step, setStep] = useState<1 | 2>(1);
@@ -11,6 +13,11 @@ export default function ChangePasswordPage() {
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -36,20 +43,49 @@ export default function ChangePasswordPage() {
   const isEmailValid = email === userEmail;
   const isPasswordValid = passwordRegex.test(newPw);
 
-  const isPwMatch =
-    newPw.length > 0 && confirmPw.length > 0 && newPw === confirmPw;
-
-  const isChangeEnabled = oldPw.length > 0 && isPasswordValid && isPwMatch;
+  const isNewPwDifferent = newPw.length > 0 && newPw !== oldPw;
+  const isPwMatch = confirmPw.length > 0 && newPw === confirmPw;
+  const isChangeEnabled =
+    oldPw.length > 0 && isPasswordValid && isPwMatch && isNewPwDifferent;
 
   const handleEmailSubmit = () => {
     if (!isEmailValid) return;
     setStep(2);
   };
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
     if (!isChangeEnabled) return;
-    // TODO: Implement API call to change password
-    alert("비밀번호 변경 API가 아직 연동되지 않았습니다.");
+
+    setSubmitLoading(true);
+    setSubmitError("");
+    try {
+      const res = await AuthApi.changePassword({
+        email: userEmail,
+        password: newPw,
+      });
+
+      if (!res.isSuccess) {
+        setSubmitError(res.message || "비밀번호 변경에 실패했습니다.");
+        return;
+      }
+
+      alert("비밀번호가 변경되었습니다. 다시 로그인해 주세요.");
+      // 필드 초기화 및 navigate로 이동
+      setOldPw("");
+      setNewPw("");
+      setConfirmPw("");
+      setEmail("");
+      setStep(1);
+      navigate("/", { replace: true });
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error
+          ? err.message
+          : "비밀번호 변경 중 오류가 발생했습니다.",
+      );
+    } finally {
+      setSubmitLoading(false);
+    }
   };
 
   if (loading) return <div className="pt-24 text-center">로딩 중...</div>;
@@ -82,7 +118,7 @@ export default function ChangePasswordPage() {
 
           {!isEmailValid && email.length > 0 && (
             <p className="text-xs text-red-500 mt-2">
-              🔒 입력한 이메일이 계정과 일치하지 않습니다.
+              입력한 이메일이 계정과 일치하지 않습니다.
             </p>
           )}
         </div>
@@ -110,13 +146,21 @@ export default function ChangePasswordPage() {
               type="password"
               value={newPw}
               onChange={(e) => setNewPw(e.target.value)}
-              className="w-full mt-2 border border-[#C7B5A1] rounded-3xl px-4 py-3"
+              className={`w-full mt-2 border rounded-3xl px-4 py-3 ${
+                newPw && (!isPasswordValid || !isNewPwDifferent)
+                  ? "border-red-500"
+                  : "border-[#C7B5A1]"
+              }`}
               placeholder="새 비밀번호 입력"
             />
-
             {newPw && !isPasswordValid && (
               <p className="text-xs text-red-500 mt-1">
                 최소 8자, 영문, 숫자, 특수문자를 포함해야 합니다.
+              </p>
+            )}
+            {newPw && !isNewPwDifferent && (
+              <p className="text-xs text-red-500 mt-1">
+                기존 비밀번호와 동일합니다. 다른 비밀번호를 입력해주세요.
               </p>
             )}
           </div>
@@ -127,7 +171,9 @@ export default function ChangePasswordPage() {
               type="password"
               value={confirmPw}
               onChange={(e) => setConfirmPw(e.target.value)}
-              className="w-full mt-2 border border-[#C7B5A1] rounded-3xl px-4 py-3"
+              className={`w-full mt-2 border rounded-3xl px-4 py-3 ${
+                confirmPw && !isPwMatch ? "border-red-500" : "border-[#C7B5A1]"
+              }`}
               placeholder="다시 입력"
             />
 
@@ -140,13 +186,18 @@ export default function ChangePasswordPage() {
 
           <button
             onClick={handlePasswordChange}
-            disabled={!isChangeEnabled}
+            disabled={!isChangeEnabled || submitLoading}
             className={`w-full mt-8 py-3 rounded-3xl text-white transition ${
-              isChangeEnabled ? "bg-primary-700" : "bg-[#C7B5A1] opacity-50"
+              isChangeEnabled && !submitLoading
+                ? "bg-primary-700"
+                : "bg-[#C7B5A1] opacity-50"
             }`}
           >
-            비밀번호 변경
+            {submitLoading ? "변경 중..." : "비밀번호 변경"}
           </button>
+          {submitError && (
+            <p className="text-xs text-red-500 mt-1">{submitError}</p>
+          )}
         </div>
       )}
     </div>

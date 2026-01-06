@@ -5,6 +5,7 @@ import TabMenu from "@/components/board/TabMenu";
 import { UserApi } from "@/api/user";
 import type { UserLikeProduct, UserLikeReference } from "@/types/user";
 import { ProductApi } from "@/api/product";
+import { ReferenceApi } from "@/api/reference";
 
 export default function LikeBoardPage() {
   const [tab, setTab] = useState<"reference" | "product">("reference");
@@ -49,11 +50,24 @@ export default function LikeBoardPage() {
     fetchLikedReferences();
   }, [fetchLikedProducts, fetchLikedReferences]);
 
-  const handleToggleLike = useCallback(async (productId: number) => {
+  const handleProductToggleLike = useCallback(async (productId: number) => {
     try {
       const res = await ProductApi.toggleProductLike(productId);
       if (!res?.liked) {
         setLikedProducts((prev) => prev.filter((p) => p.id !== productId));
+      }
+    } catch (error) {
+      console.error("좋아요 토글 실패: ", error);
+    }
+  }, []);
+
+  const handleReferenceToggleLike = useCallback(async (referenceId: number) => {
+    try {
+      const res = await ReferenceApi.toggleReferenceLike(referenceId);
+      if (!res?.liked) {
+        setLikedReferences((prev) =>
+          prev.filter((p) => p.referenceId !== referenceId),
+        );
       }
     } catch (error) {
       console.error("좋아요 토글 실패: ", error);
@@ -65,46 +79,63 @@ export default function LikeBoardPage() {
       <TabMenu tab={tab} onChange={setTab} />
 
       {tab === "product" && (
-        <InfiniteScrollGrid
-          items={likedProducts}
-          keySelector={(it) => it.id}
-          renderItem={(it) => (
-            <PhotoCard
-              id={it.id}
-              title={it.name}
-              price={it.price}
-              imageUrl={it.imageList?.[0]}
-              liked={true}
-              onToggleLike={handleToggleLike}
-              showInfo={true}
+        <>
+          {likedProducts.length === 0 ? (
+            <p className="py-16 text-center text-primary-700">
+              좋아요한 상품이 없습니다!
+            </p>
+          ) : (
+            <InfiniteScrollGrid
+              items={likedProducts}
+              keySelector={(it) => it.id}
+              renderItem={(it) => (
+                <PhotoCard
+                  id={it.id}
+                  title={it.name}
+                  price={it.price}
+                  imageUrl={it.imageList?.[0]}
+                  isLiked={true}
+                  onLike={() => handleProductToggleLike(it.id)}
+                  showInfo={true}
+                />
+              )}
+              columns="grid-cols-3"
+              gap="gap-4"
+              hasNextPage={false}
+              loadMore={() => {}}
             />
           )}
-          columns="grid-cols-3"
-          gap="gap-4"
-          hasNextPage={false}
-          loadMore={() => {}}
-        />
+        </>
       )}
 
       {tab === "reference" && (
-        <InfiniteScrollGrid
-          items={likedReferences}
-          keySelector={(it) => it.referenceId}
-          renderItem={(it) => (
-            <PhotoCard
-              id={it.referenceId}
-              title={it.nickname}
-              price={0}
-              imageUrl={it.imageUrlList?.[0]}
-              liked={true}
-              showInfo={false}
+        <>
+          {likedReferences.length === 0 ? (
+            <p className="py-16 text-center text-primary-700">
+              좋아요한 레퍼런스가 없습니다!
+            </p>
+          ) : (
+            <InfiniteScrollGrid
+              items={likedReferences}
+              keySelector={(it) => it.referenceId}
+              renderItem={(it) => (
+                <PhotoCard
+                  id={it.referenceId}
+                  title={it.nickname}
+                  price={0}
+                  imageUrl={it.imageUrlList?.[0]}
+                  isLiked={true}
+                  onLike={() => handleReferenceToggleLike(it.referenceId)}
+                  showInfo={false}
+                />
+              )}
+              columns="grid-cols-3"
+              gap="gap-4"
+              hasNextPage={false}
+              loadMore={() => {}}
             />
           )}
-          columns="grid-cols-3"
-          gap="gap-4"
-          hasNextPage={false}
-          loadMore={() => {}}
-        />
+        </>
       )}
     </div>
   );
