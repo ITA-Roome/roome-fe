@@ -22,7 +22,7 @@ export default function Footer() {
                 to={to}
                 className={({ isActive }) =>
                   `flex flex-col items-center ${
-                    isActive ? "text-primary-700" : "text-primary-disabled"
+                    isActive ? "text-primary-700" : "text-primary-50"
                   }`
                 }
               >
@@ -30,12 +30,12 @@ export default function Footer() {
                   <>
                     <Icon
                       className={`w-6 h-6 ${
-                        isActive ? "text-primary-700" : "text-primary-disabled"
+                        isActive ? "text-primary-700" : "text-primary-50"
                       }`}
                     />
                     <span
                       className={`font-caption ${
-                        isActive ? "text-primary-700" : "text-primary-disabled"
+                        isActive ? "text-primary-700" : "text-primary-50"
                       }`}
                     >
                       {label}

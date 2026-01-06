@@ -38,7 +38,7 @@ export function useToggleReferenceScrap() {
         for (const [, listData] of listQueries) {
           if (!listData) continue;
           for (const page of listData.pages) {
-            const found = page.data?.referenceList?.find(
+            const found = page.data?.content?.find(
               (r) => r.referenceId === referenceId,
             );
             if (found) {
@@ -67,7 +67,7 @@ export function useToggleReferenceScrap() {
             data: page.data
               ? {
                   ...page.data,
-                  referenceList: page.data.referenceList.map((ref) =>
+                  content: page.data.content.map((ref) =>
                     ref.referenceId === referenceId
                       ? { ...ref, isScrapped: nextScrapped }
                       : ref,
@@ -110,7 +110,7 @@ export function useToggleReferenceScrap() {
             data: page.data
               ? {
                   ...page.data,
-                  referenceList: page.data.referenceList.map((ref) =>
+                  content: page.data.content.map((ref) =>
                     ref.referenceId === referenceId
                       ? { ...ref, isScrapped: finalScrapped }
                       : ref,
@@ -155,7 +155,7 @@ export function useToggleReferenceScrap() {
             data: page.data
               ? {
                   ...page.data,
-                  referenceList: page.data.referenceList.map((ref) =>
+                  content: page.data.content.map((ref) =>
                     ref.referenceId === referenceId
                       ? { ...ref, isScrapped: prevScrapped }
                       : ref,

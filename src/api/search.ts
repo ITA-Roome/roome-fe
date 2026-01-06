@@ -28,8 +28,7 @@ export async function fetchRecentSearch(): Promise<SuggestItem[]> {
       id: `recent-${idx}`,
       text,
     }));
-  } catch (error) {
-    console.error("fetchRecentSearch error:", error);
+  } catch {
     return [];
   }
 }
@@ -46,21 +45,21 @@ export async function fetchPopularSearch(): Promise<SuggestItem[]> {
       id: `popular-${item.rank}`,
       text: item.keyword,
     }));
-  } catch (error) {
-    console.error("fetchPopularSearch error:", error);
+  } catch {
     return [];
   }
 }
 
-// 최근 검색어 삭제
 export async function deleteRecentSearch(keyword: string): Promise<boolean> {
   try {
-    const { status } = await apiClient.delete("/api/search/keywords/recent", {
-      params: { keyword },
-    });
-    return status === 200;
-  } catch (error) {
-    console.error("deleteRecentSearch error:", error);
+    const { data } = await apiClient.delete<CommonResponse<unknown>>(
+      "/api/search/keywords/recent",
+      {
+        params: { keyword },
+      },
+    );
+    return data.isSuccess || data.success;
+  } catch {
     return false;
   }
 }

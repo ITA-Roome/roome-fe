@@ -2,10 +2,12 @@ import { Outlet } from "react-router-dom";
 
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import ScrollToTop from "../components/layout/ScrollToTop";
 
 function Layout() {
   return (
     <div className="min-h-screen">
+      <ScrollToTop />
       <Header />
       <main className="px-4">
         <Outlet />

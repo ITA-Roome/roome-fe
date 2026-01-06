@@ -16,6 +16,7 @@ export function useSearchbox({
   fetchSuggest,
   getRecent,
   getPopular,
+  removeRecent,
   minLength = 2,
   debounceMs = 250,
   maxItems = 10,
@@ -85,7 +86,25 @@ export function useSearchbox({
 
   const removeItem = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    setRecent((prev) => prev.filter((r) => r.id !== id));
+    const target = recent.find((r) => r.id === id);
+    if (!target) return;
+
+    if (removeRecent) {
+      const success = await removeRecent(target.text);
+      if (success) {
+        setRecent((prev) => {
+          const next = prev.filter((r) => r.id !== id);
+          if (next.length === 0) setSource("popular");
+          return next;
+        });
+      }
+    } else {
+      setRecent((prev) => {
+        const next = prev.filter((r) => r.id !== id);
+        if (next.length === 0) setSource("popular");
+        return next;
+      });
+    }
   };
 
   const items = useMemo(() => {

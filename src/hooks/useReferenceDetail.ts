@@ -18,7 +18,7 @@ export const useReferenceDetail = (referenceId: number | null) => {
     for (const [, data] of listQueries) {
       if (!data) continue;
       for (const page of data.pages) {
-        const found = page.data?.referenceList?.find(
+        const found = page.data?.content?.find(
           (r) => r.referenceId === referenceId,
         );
         if (found) {

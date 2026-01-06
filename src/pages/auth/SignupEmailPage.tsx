@@ -439,7 +439,7 @@ export default function SignupEmailPage() {
         <p className="text-center text-sm text-[#5D3C28] mt-4">
           이미 ROOME 회원이라면?{" "}
           <Link
-            to="/" // 로그인 페이지로 이동
+            to="/login" // 로그인 페이지로 이동
             className="text-[#5D3C28] font-semibold hover:underline hover:text-[#3E271B]"
           >
             로그인

@@ -114,6 +114,7 @@ export default function SearchInput({
               e.stopPropagation();
               if (!isControlled) clear();
               onChange?.("");
+              onSubmit("");
               onClear?.();
               setOpen(true);
               inputRef.current?.focus();

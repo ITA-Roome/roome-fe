@@ -88,9 +88,9 @@ export default function ShopPage() {
                 key={item.id}
                 id={item.id}
                 imageUrl={item.thumbnailUrl}
-                title={item.shop.name}
+                title={item.name}
                 price={item.price}
-                subtitle={item.name}
+                subtitle={item.shop.name}
                 isLiked={item.isLiked}
                 onLike={() => toggleLike(item.id)}
                 onClick={() => navigate(`/shop/${item.id}`)}
