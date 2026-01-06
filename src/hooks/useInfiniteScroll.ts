@@ -48,12 +48,8 @@ export default function useGetInfiniteProductsList(
   keywords: string[],
   order: ProductOrder,
 ): UseInfiniteQueryResult<SelectedData, unknown> {
-  // 키워드 분류
   const mood = keywords.map((k) => MOOD_MAP[k]).filter(Boolean);
-
   const usage = keywords.map((k) => USAGE_MAP[k]).filter(Boolean);
-
-  // 검색어만 keyWord로 전달
   const keyWord = search || undefined;
 
   return useInfiniteQuery<

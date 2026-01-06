@@ -4,14 +4,13 @@ import clsx from "clsx";
 
 import BookmarkIcon from "@/assets/icons/bookmark.svg?react";
 import BookmarkFillIcon from "@/assets/icons/bookmark-fill.svg?react";
-import MoveIcon from "@/assets/icons/move.svg?react";
 import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
 import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
 import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
-import ArrowLeftIcon from "@/assets/icons/arrow-left.svg?react";
 import CommentLogo from "@/assets/RoomeLogo/comment_icon.svg?react";
+import RoomeExport from "@/assets/RoomeLogo/roome_export.svg?react";
 
 import { useReferenceDetail } from "@/hooks/useReferenceDetail";
 import { useComments } from "@/hooks/comment/useComments";
@@ -118,21 +117,6 @@ export default function FeedDetailPage() {
 
   return (
     <div className="relative isolate pt-16 max-w-md mx-auto px-5 pb-24 text-primary-700">
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-16 max-w-md mx-auto px-5 bg-white/90 backdrop-blur-sm">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="p-2 -ml-2 text-primary-700"
-          aria-label="뒤로 가기"
-        >
-          <ArrowLeftIcon className="w-6 h-6" />
-        </button>
-        <h1 className="absolute left-1/2 -translate-x-1/2 font-display text-2xl text-primary-700">
-          ROOME
-        </h1>
-        <div className="w-10" />
-      </header>
-
       <section>
         <div className="relative rounded-2xl aspect-4/3 overflow-hidden">
           {mainImage && (
@@ -155,12 +139,12 @@ export default function FeedDetailPage() {
       <section className="mt-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h2 className="font-heading1 line-clamp-1">{reference.name}</h2>
+            <h2 className="font-heading1">{reference.name}</h2>
           </div>
 
           <div className="flex items-center gap-1">
             <button type="button" aria-label="공유" className="p-2">
-              <MoveIcon className="w-5 h-5 text-primary-700 fill-none" />
+              <RoomeExport className="w-6 h-6 text-primary-700 fill-none" />
             </button>
             <button
               type="button"
@@ -170,9 +154,9 @@ export default function FeedDetailPage() {
               onClick={() => toggleScrap(reference.referenceId)}
             >
               {reference.isScrapped ? (
-                <BookmarkFillIcon className="w-5 h-5 text-primary-700" />
+                <BookmarkFillIcon className="w-6 h-6 text-primary-700" />
               ) : (
-                <BookmarkIcon className="w-5 h-5 text-primary-700" />
+                <BookmarkIcon className="w-6 h-6 text-primary-50" />
               )}
             </button>
             <button
@@ -183,9 +167,9 @@ export default function FeedDetailPage() {
               onClick={() => toggleLike(reference.referenceId)}
             >
               {reference.isLiked ? (
-                <FavoriteFillIcon className="w-5 h-5 text-primary-700" />
+                <FavoriteFillIcon className="w-6 h-6 text-point" />
               ) : (
-                <FavoriteIcon className="w-5 h-5 text-primary-700" />
+                <FavoriteIcon className="w-6 h-6 text-primary-50" />
               )}
             </button>
           </div>
@@ -247,7 +231,8 @@ export default function FeedDetailPage() {
             {referenceItems.slice(0, 6).map((item) => (
               <div
                 key={item.productId}
-                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200"
+                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200 cursor-pointer"
+                onClick={() => navigate(`/shop/${item.productId}`)}
               >
                 {item.thumbnailUrl && (
                   <img
@@ -276,7 +261,7 @@ export default function FeedDetailPage() {
             {commentList.map((c) => (
               <div
                 key={String(c.id)}
-                className="flex items-start gap-3 p-3 rounded-md bg-primary-200"
+                className="flex items-start gap-3 p-3 rounded-md bg-primary-50"
               >
                 <div className="w-8 h-8 rounded-full bg-primary-700 flex items-center justify-center flex-shrink-0">
                   <CommentLogo />

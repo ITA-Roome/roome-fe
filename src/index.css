@@ -24,15 +24,13 @@ body {
   --color-primary-800: #412a1d;
   --color-primary-700: #5d3c28; /* primary color */
   --color-primary-600: #764e3a;
-  --color-primary-400: #8d7569;
-  --color-primary-200: #cbbfb3;
-  --color-primary-50: #fffdf4;
+  --color-primary-400: #9f692d;
+  --color-primary-200: #8d7569;
+  --color-primary-50: #cbbfb3;
+  --color-primary-10: #fffdf4;
 
-  --color-point: #ff5d0c;
-  --color-state-green: #27d11e;
+  --color-point: #ffd100;
   --color-state-red: #ff120a;
-
-  --color-primary-disabled: #a09cab;
 }
 
 button {

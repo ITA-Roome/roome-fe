@@ -57,11 +57,11 @@ export default function ShopFilterPanel({
 
   return (
     <div>
-      <div className="flex justify-start mb-2">
+      <div className="flex justify-start mb-3">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 font-caption text-primary-700 mt-2"
+          className="flex items-center gap-2 font-caption text-primary-700 mt-2 py-3"
         >
           {isOpen ? (
             <ArrowUpIcon className="w-2 h-2 text-primary-700" />
@@ -87,7 +87,7 @@ export default function ShopFilterPanel({
                     className={[
                       "flex items-center justify-center w-full gap-1 px-1 py-2 rounded-full font-caption transition-all",
                       on
-                        ? "bg-primary-700 text-white"
+                        ? "bg-primary-700 text-white border border-primary-700"
                         : "bg-white text-primary-700 border border-primary-200",
                     ].join(" ")}
                   >
@@ -98,7 +98,7 @@ export default function ShopFilterPanel({
               })}
             </div>
           </section>
-          <section className="mt-4">
+          <section className="mt-4 mb-6">
             <div className="flex gap-2 justify-start">
               {(["인기순", "최신순", "가격순"] as SortOption[]).map((label) => {
                 const on = sort === label;
@@ -111,7 +111,7 @@ export default function ShopFilterPanel({
                     className={[
                       "flex items-center justify-center w-[75px] gap-1 px-1 py-2 rounded-full font-caption transition-all",
                       on
-                        ? "bg-primary-700 text-white"
+                        ? "bg-primary-700 text-white border border-primary-700"
                         : "bg-white text-primary-700 border border-primary-200",
                     ].join(" ")}
                   >
