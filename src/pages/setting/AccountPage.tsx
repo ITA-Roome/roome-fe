@@ -6,6 +6,8 @@ import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 import type { UserProfile } from "@/types/user";
 
+import RoomeDefault from "@/assets/RoomeLogo/roome-fill.svg";
+
 export default function AccountPage() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserProfile | null>(null);
@@ -87,7 +89,6 @@ export default function AccountPage() {
   };
 
   const handleChangePassword = () => {
-    // TODO: 비밀번호 변경 페이지로 이동
     navigate("/setting/account/password");
   };
 
@@ -103,7 +104,13 @@ export default function AccountPage() {
                   alt="프로필 이미지"
                   className="w-full h-full object-cover"
                 />
-              ) : null}
+              ) : (
+                <img
+                  src={RoomeDefault}
+                  alt="기본 프로필 이미지"
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
             <p className="mt-4 text-sm text-[#5D3C28]">
               {isLoading

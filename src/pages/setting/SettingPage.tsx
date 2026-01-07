@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
+import RoomeDefault from "@/assets/RoomeLogo/roome-fill.svg";
 
 export default function SettingPage() {
   const navigate = useNavigate();
@@ -58,9 +59,11 @@ export default function SettingPage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-[#5D3C28]">
-                프로필 없음
-              </div>
+              <img
+                src={RoomeDefault}
+                alt="기본 프로필 이미지"
+                className="w-full h-full object-cover"
+              />
             )}
           </div>
           <p className="mt-4 text-[16px] text-[#5D3C28]">{nickname}</p>
