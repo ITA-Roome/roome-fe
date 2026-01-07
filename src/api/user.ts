@@ -3,8 +3,8 @@ import { CommonResponse } from "@/types/common";
 import {
   OnboardingPayload,
   OnboardingExistenceResponse,
-  UserLikeProductResponse,
-  UserLikeReferenceResponse,
+  UserScrapProductResponse,
+  UserScrapReferenceResponse,
   UserProfile,
 } from "@/types/user";
 
@@ -17,21 +17,21 @@ export const UserApi = {
       "/api/user/onboarding/existence",
     ),
 
-  fetchUserLikedProducts: async (): Promise<
-    CommonResponse<UserLikeProductResponse>
+  fetchUserScrapProducts: async (): Promise<
+    CommonResponse<UserScrapProductResponse>
   > => {
     const { data } = await apiClient.get<
-      CommonResponse<UserLikeProductResponse>
-    >("/api/user/likes/product");
+      CommonResponse<UserScrapProductResponse>
+    >("/api/user/scraps/product");
     return data;
   },
 
-  fetchUserLikedReferences: async (): Promise<
-    CommonResponse<UserLikeReferenceResponse>
+  fetchUserScrapReferences: async (): Promise<
+    CommonResponse<UserScrapReferenceResponse>
   > => {
     const { data } = await apiClient.get<
-      CommonResponse<UserLikeReferenceResponse>
-    >("/api/user/likes/reference");
+      CommonResponse<UserScrapReferenceResponse>
+    >("/api/user/scraps/reference");
     return data;
   },
 

@@ -53,19 +53,19 @@ export default function BoardPage() {
   const fetchBoardData = useCallback(async () => {
     try {
       // 제품 좋아요
-      const prodRes = await UserApi.fetchUserLikedProducts();
+      const prodRes = await UserApi.fetchUserScrapProducts();
       const prodImgs =
         prodRes.isSuccess && prodRes.data
-          ? ((prodRes.data.userLikeProductList ?? [])
+          ? ((prodRes.data.userScrapProductList ?? [])
               .map((p) => p.imageList?.[0])
               .filter(Boolean) as string[])
           : [];
 
       // 레퍼런스 좋아요
-      const refRes = await UserApi.fetchUserLikedReferences();
+      const refRes = await UserApi.fetchUserScrapReferences();
       const refImgs =
         refRes.isSuccess && refRes.data
-          ? ((refRes.data.userLikeReferenceList ?? [])
+          ? ((refRes.data.userScrapReferenceList ?? [])
               .map((r) => r.imageUrlList?.[0])
               .filter(Boolean) as string[])
           : [];
