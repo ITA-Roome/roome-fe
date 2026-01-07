@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
-import RoomeDefault from "@/assets/RoomeLogo/roome-fill.svg";
+import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
 
 export default function SettingPage() {
   const navigate = useNavigate();

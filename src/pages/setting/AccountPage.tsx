@@ -6,7 +6,7 @@ import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 import type { UserProfile } from "@/types/user";
 
-import RoomeDefault from "@/assets/RoomeLogo/roome-fill.svg";
+import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
 
 export default function AccountPage() {
   const navigate = useNavigate();

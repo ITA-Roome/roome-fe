@@ -4,6 +4,7 @@ import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 
 import ProfileChangeIcon from "@/assets/icons/imgChange.svg?react";
+import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -158,7 +159,7 @@ export default function ProfilePage() {
             className="relative w-[180px] h-[180px] rounded-full overflow-hidden bg-[#D7C7B5] cursor-pointer"
           >
             <img
-              src={previewImage ?? undefined}
+              src={previewImage ?? RoomeDefault}
               alt="프로필 이미지 미리보기"
               className="w-full h-full object-cover"
             />

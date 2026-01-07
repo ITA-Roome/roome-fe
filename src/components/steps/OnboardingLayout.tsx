@@ -24,7 +24,7 @@ export default function OnboardingLayout({
   centerTitle = false,
 }: OnboardingLayoutProps) {
   return (
-    <div className="flex flex-col h-[calc(100vh-40px)] w-full max-w-[320px] relative justify-between py-6">
+    <div className="flex flex-col h-[calc(100vh-80px)] w-full max-w-[320px] relative justify-between py-6">
       <div className="flex flex-col w-full">
         <div className="h-12 w-full flex items-center mb-2">
           {onPrev && (

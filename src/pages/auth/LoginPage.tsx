@@ -91,16 +91,28 @@ export default function LoginPage() {
     } catch (error) {
       if (axios.isAxiosError<LoginErrorResponse>(error)) {
         const { status, data } = error.response ?? {};
+
         if (status === 401) {
-          setError(
-            data?.message ?? "이메일 또는 비밀번호가 올바르지 않습니다.",
-          );
-        } else {
-          setError("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+          setError(data?.message ?? "비밀번호가 일치하지 않습니다.");
+          return;
         }
-      } else {
-        setError("알 수 없는 오류가 발생했습니다.");
+
+        if (status === 404) {
+          setError(data?.message ?? "해당 이메일의 사용자를 찾을 수 없습니다.");
+          return;
+        }
+
+        setError(
+          data?.message ?? "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
+        );
+        return;
       }
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
+      );
     } finally {
       setLoading(false);
     }
