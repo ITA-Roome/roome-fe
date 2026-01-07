@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 // import type { UserLikeProduct } from "@/types/user";
 import { UserApi } from "@/api/user";
@@ -23,45 +23,75 @@ interface BoardItem {
 export default function BoardPage() {
   const navigate = useNavigate();
 
-  // const [likedProducts, setLikedProducts] = useState<UserLikeProduct[]>([]);
-  const [productImages, setProductImages] = useState<string[]>([]);
+  const [likePreviewImages, setLikePreviewImages] = useState<string[]>([]);
   const [consultImages, setConsultImages] = useState<string[]>([]);
   const [referenceImages, setReferenceImages] = useState<string[]>([]);
 
-  useEffect(() => {
-    fetchBoardData();
-  }, []);
+  // 레퍼런스/제품 이미지 배열을 받아 4칸(2x2) 미리보기 조합
+  const buildLikePreview = (refs: string[], prods: string[]) => {
+    const refQueue = [...refs];
+    const prodQueue = [...prods];
 
-  const fetchBoardData = async () => {
+    // 상단 2칸: 레퍼런스 우선, 부족하면 제품으로 채움
+    const top = refQueue.splice(0, 2);
+    while (top.length < 2 && prodQueue.length) top.push(prodQueue.shift()!);
+
+    // 하단 2칸: 제품 우선, 부족하면 남은 레퍼런스로 채움
+    const bottom = prodQueue.splice(0, 2);
+    while (bottom.length < 2 && refQueue.length) bottom.push(refQueue.shift()!);
+
+    // 남은 슬록(총 4칸) 채우기: 레퍼런스 → 제품 순
+    const preview = [...top, ...bottom];
+    while (preview.length < 4 && (refQueue.length || prodQueue.length)) {
+      if (refQueue.length) preview.push(refQueue.shift()!);
+      else if (prodQueue.length) preview.push(prodQueue.shift()!);
+    }
+
+    return preview; // 길이가 0~4일 수 있음
+  };
+
+  const fetchBoardData = useCallback(async () => {
     try {
-      const res = await UserApi.fetchUserLikedProducts();
+      // 제품 좋아요
+      const prodRes = await UserApi.fetchUserLikedProducts();
+      const prodImgs =
+        prodRes.isSuccess && prodRes.data
+          ? ((prodRes.data.userLikeProductList ?? [])
+              .map((p) => p.imageList?.[0])
+              .filter(Boolean) as string[])
+          : [];
 
-      if (res.isSuccess && res.data) {
-        const imgs = (res.data.userLikeProductList ?? [])
-          .map((p) => p.imageList?.[0])
-          .filter(Boolean) as string[];
+      // 레퍼런스 좋아요
+      const refRes = await UserApi.fetchUserLikedReferences();
+      const refImgs =
+        refRes.isSuccess && refRes.data
+          ? ((refRes.data.userLikeReferenceList ?? [])
+              .map((r) => r.imageUrlList?.[0])
+              .filter(Boolean) as string[])
+          : [];
 
-        setProductImages(imgs.slice(0, 4)); // 앞 4개만 사용
-      } else {
-        console.error("좋아요 상품 조회 실패:", res?.message);
-        setProductImages([]);
-      }
+      // 좋아요 썸네일 4칸 조합
+      setLikePreviewImages(buildLikePreview(refImgs, prodImgs));
 
       // 상담/레퍼런스는 API 준비되기 전까지 기존 더미 유지
       setConsultImages([chat1, chat2, chat3, chat2]);
       setReferenceImages([chat1, chat2, chat3, chat1]);
     } catch (err) {
       console.error(err);
-      setProductImages([]);
+      setReferenceImages([]);
+      setLikePreviewImages([]);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void fetchBoardData();
+  }, [fetchBoardData]);
 
   // 전체 보드 구성
   const boards: BoardItem[] = [
     {
       title: "좋아요",
-      // images: likePreview,
-      images: productImages.slice(0, 4),
+      images: likePreviewImages,
       path: "/board/like",
     },
     {
@@ -87,7 +117,18 @@ export default function BoardPage() {
               className="flex flex-col items-start cursor-pointer active:opacity-60 transition"
               onClick={() => navigate(board.path)}
             >
-              <div className="w-full aspect-square rounded-2xl overflow-hidden grid grid-cols-2 grid-rows-2 gap-[1px] bg-[var(--color-primary-200)] border border-[var(--color-primary-700)]">
+              <div
+                className="w-full aspect-square rounded-2xl overflow-hidden border border-[var(--color-primary-700)] bg-white grid grid-cols-2 grid-rows-2"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(var(--color-primary-700) 0 0),
+                    linear-gradient(var(--color-primary-700) 0 0)
+                  `,
+                  backgroundSize: "1px 100%, 100% 1px", // 세로줄 1px, 가로줄 1px
+                  backgroundPosition: "50% 0, 0 50%", // 세로 중앙, 가로 중앙
+                  backgroundRepeat: "no-repeat",
+                }}
+              >
                 {board.images.length > 0 ? (
                   board.images.map((img, index) => (
                     <img
@@ -99,10 +140,10 @@ export default function BoardPage() {
                   ))
                 ) : (
                   <>
-                    <div className="bg-[var(--color-primary-200)]" />
-                    <div className="bg-[var(--color-primary-200)]" />
-                    <div className="bg-[var(--color-primary-200)]" />
-                    <div className="bg-[var(--color-primary-200)]" />
+                    <div className="bg-white" />
+                    <div className="bg-white" />
+                    <div className="bg-white" />
+                    <div className="bg-white" />
                   </>
                 )}
               </div>
