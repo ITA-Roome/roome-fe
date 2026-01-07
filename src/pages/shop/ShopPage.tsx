@@ -18,6 +18,8 @@ import ShopFilterPanel, {
 import { useNavigate } from "react-router-dom";
 import { useToggleProductLike } from "@/hooks/useToggleProductLike";
 
+import { motion } from "framer-motion";
+
 export default function ShopPage() {
   const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,17 +86,24 @@ export default function ShopPage() {
             items={flat}
             keySelector={(item) => item.id}
             renderItem={(item) => (
-              <PhotoCard
+              <motion.div
                 key={item.id}
-                id={item.id}
-                imageUrl={item.thumbnailUrl}
-                title={item.name}
-                price={item.price}
-                subtitle={item.shop.name}
-                isLiked={item.isLiked}
-                onLike={() => toggleLike(item.id)}
-                onClick={() => navigate(`/shop/${item.id}`)}
-              />
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <PhotoCard
+                  id={item.id}
+                  imageUrl={item.thumbnailUrl}
+                  title={item.name}
+                  price={item.price}
+                  subtitle={item.shop.name}
+                  isLiked={item.isLiked}
+                  onLike={() => toggleLike(item.id)}
+                  onClick={() => navigate(`/shop/${item.id}`)}
+                />
+              </motion.div>
             )}
             loadMore={fetchNextPage}
             hasNextPage={hasNextPage}
