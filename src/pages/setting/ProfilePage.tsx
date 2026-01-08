@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
+import { isAxiosError } from "axios";
 
 import ProfileChangeIcon from "@/assets/icons/imgChange.svg";
 import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
@@ -19,6 +20,7 @@ export default function ProfilePage() {
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -122,6 +124,8 @@ export default function ProfilePage() {
 
   // 저장 요청
   const handleSave = async () => {
+    setSaveError(null);
+
     try {
       const formData = new FormData();
       formData.append("nickname", nickname);
@@ -133,7 +137,7 @@ export default function ProfilePage() {
       const res = await UserApi.updateUserProfile(formData);
 
       if (!res.isSuccess) {
-        alert(res.message);
+        setSaveError(res.message || "프로필 저장에 실패했습니다.");
         return;
       }
 
@@ -143,9 +147,18 @@ export default function ProfilePage() {
 
       alert("프로필이 저장되었습니다!");
       navigate("/setting");
-    } catch (error) {
-      console.error("프로필 저장 실패:", error);
-      alert("프로필 저장 중 오류가 발생했습니다.");
+    } catch (err: unknown) {
+      let message = "프로필 저장 중 오류가 발생했습니다.";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
+
+      if (isAxiosError(err)) {
+        message = err.response?.data?.message ?? message;
+      }
+
+      setSaveError(message);
     }
   };
 
@@ -223,6 +236,9 @@ export default function ProfilePage() {
 
         {/* 저장 버튼 */}
         <div className="mt-12">
+          {saveError && (
+            <p className="mb-2 text-sm text-red-500">{saveError}</p>
+          )}
           <button
             onClick={handleSave}
             disabled={!isSaveEnabled}
