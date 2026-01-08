@@ -368,10 +368,12 @@ export default function SignupEmailPage() {
                 type="text"
                 value={nickname}
                 onChange={(e) => {
-                  setNickname(e.target.value);
+                  const next = e.target.value.slice(0, 8);
+                  setNickname(next);
                   setNicknameChecked(false);
                   setNicknameMessage("");
                 }}
+                maxLength={8}
                 placeholder="닉네임을 입력해주세요"
                 className="w-full h-[50px] pl-3 pr-24 border border-[#5D3C28] rounded-3xl bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
               />
