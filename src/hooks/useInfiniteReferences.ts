@@ -45,5 +45,6 @@ export default function useGetInfiniteReferences(
         }));
       return { items };
     },
+    staleTime: 60 * 1000,
   });
 }

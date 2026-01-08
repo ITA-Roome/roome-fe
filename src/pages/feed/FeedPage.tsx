@@ -13,6 +13,8 @@ import { useToggleReferenceLike } from "@/hooks/useToggleReferenceLike";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { motion } from "framer-motion";
+
 function getAspectRatio(id: number) {
   const ratios = ["aspect-[3/4]", "aspect-[1/1]", "aspect-[4/5]"];
   return ratios[id % ratios.length];
@@ -48,18 +50,25 @@ export default function FeedPage() {
           items={flat}
           keySelector={(it) => String(it.referenceId)}
           renderItem={(it) => (
-            <PhotoCard
-              id={it.referenceId}
-              title={it.nickname}
-              imageUrl={it.imageUrlList?.[0] ?? ""}
-              price={0}
-              showInfo={false}
-              isLiked={it.isLiked}
-              onLike={() => toggleLike(it.referenceId)}
-              onClick={() => navigate(`/feed/${it.referenceId}`)}
-              ratio="auto"
-              className={getAspectRatio(it.referenceId)}
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <PhotoCard
+                id={it.referenceId}
+                title={it.nickname}
+                imageUrl={it.imageUrlList?.[0] ?? ""}
+                price={0}
+                showInfo={false}
+                isLiked={it.isLiked}
+                onLike={() => toggleLike(it.referenceId)}
+                onClick={() => navigate(`/feed/${it.referenceId}`)}
+                ratio="auto"
+                className={getAspectRatio(it.referenceId)}
+              />
+            </motion.div>
           )}
           hasNextPage={!!hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
