@@ -150,8 +150,8 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen relative">
-      <div className="pt-24 max-w-md mx-auto px-5 pb-40">
+    <div className="relative">
+      <div className="pt-20 max-w-md mx-auto px-5 pb-6">
         {/* 이미지 */}
         <section className="w-full flex justify-center mt-6">
           {/* 바깥 래퍼: 버튼이 안 잘리게 */}

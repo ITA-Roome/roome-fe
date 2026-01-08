@@ -131,10 +131,6 @@ const router = createBrowserRouter([
         element: <FeedDetailPage />,
       },
       {
-        path: "board",
-        element: <BoardPage />,
-      },
-      {
         path: "shop",
         element: <ShopPage />,
       },
@@ -165,6 +161,10 @@ const router = createBrowserRouter([
       {
         path: "chat",
         element: <ChatPage />,
+      },
+      {
+        path: "board",
+        element: <BoardPage />,
       },
       {
         path: "board/like",

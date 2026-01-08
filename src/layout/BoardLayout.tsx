@@ -19,10 +19,10 @@ function BoardLayout() {
     )?.[1] ?? undefined;
 
   return (
-    <div className="min-h-screen">
+    <div className="h-dvh flex flex-col">
       <ScrollToTop />
       <BoardHeader title={title} />
-      <main className="px-4">
+      <main className="flex-1 min-h-0 overflow-hidden px-4 pb-18">
         <Outlet />
       </main>
       <Footer />

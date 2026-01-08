@@ -108,7 +108,7 @@ export default function BoardPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="relative isolate pt-16 max-w-md mx-auto px-5">
+      <div className="relative pt-5 isolate max-w-md mx-auto px-5">
         {/* 3개의 4칸 카드 */}
         <div className="grid grid-cols-2 gap-6">
           {boards.map((board) => (

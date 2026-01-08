@@ -5,9 +5,10 @@ import { Message } from "@/pages/chat/ChatPage";
 
 type Props = {
   messages: Message[];
+  className?: string;
 };
 
-export default function MessageList({ messages }: Props) {
+export default function MessageList({ messages, className = "" }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,7 +26,10 @@ export default function MessageList({ messages }: Props) {
   }, [messages]);
 
   return (
-    <div ref={listRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+    <div
+      ref={listRef}
+      className={`flex-1 overflow-y-auto px-4 py-6 space-y-4 ${className}`}
+    >
       {messages.map((msg, i) =>
         msg.role === "user" ? (
           <UserMessage key={i} content={msg.content} />

@@ -9,9 +9,6 @@ export type Message = {
   content: string;
 };
 
-const HEADER = 64;
-const FOOTER = 80;
-
 const STORAGE_KEY = "chatMessages";
 
 /**
@@ -114,37 +111,33 @@ export default function ChatPage() {
   };
 
   return (
-    <div
-      className="max-w-md mx-auto flex flex-col"
-      style={{
-        // 전체 높이에서 Header + Footer 제거 → ChatPage 영역 확보
-        height: `calc(100vh - ${HEADER + FOOTER}px)`,
-      }}
-    >
-      {/* 위~입력창 사이가 채팅 영역 */}
-      <div className="flex-1 overflow-hidden flex flex-col whitespace-pre-line">
-        <MessageList messages={messages} />
+    <div className="h-full flex flex-col">
+      {/* 채팅 영역 */}
+      <div className="flex-1 min-h-0 overflow-y-auto whitespace-pre-line px-4">
+        <MessageList messages={messages} className="h-full" />
       </div>
 
-      {/* 옵션 버튼 */}
-      {options.length > 0 && (
-        <div className="px-4 pb-2 flex flex-wrap gap-2">
-          {options.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => handleOptionClick(opt)}
-              className="px-3 py-2 rounded-full border border-primary-700 text-sm bg-white active:bg-primary-50"
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="shrink-0">
+        {/* 옵션 버튼 */}
+        {options.length > 0 && (
+          <div className="px-4 pb-2 flex flex-wrap gap-2">
+            {options.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => handleOptionClick(opt)}
+                className="px-3 py-2 rounded-full border border-primary-700 text-sm bg-white active:bg-primary-50"
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        )}
 
-      {/* 입력창 */}
-      <div className="px-4 py-3">
-        <ChatInput onSend={handleSend} disabled={loading} />
+        {/* 입력창 */}
+        <div className="px-4 py-3">
+          <ChatInput onSend={handleSend} disabled={loading} />
+        </div>
       </div>
     </div>
   );

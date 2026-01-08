@@ -47,57 +47,55 @@ export default function SettingPage() {
   };
 
   return (
-    <div className="min-h-screen relative">
-      <div className="pt-24 max-w-md mx-auto px-5 pb-40">
-        {/* 프로필 영역 */}
-        <div className="flex flex-col items-center mt-6">
-          <div className="w-40 h-40 bg-[#D4CFC8] rounded-full overflow-hidden">
-            {profileImage ? (
-              <img
-                src={profileImage}
-                alt={`${nickname}의 프로필 이미지`}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <img
-                src={RoomeDefault}
-                alt="기본 프로필 이미지"
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
-          <p className="mt-4 text-[16px] text-[#5D3C28]">{nickname}</p>
+    <div className="max-w-md mx-auto px-5">
+      {/* 프로필 영역 */}
+      <div className="flex flex-col items-center mt-20">
+        <div className="w-40 h-40 bg-[#D4CFC8] rounded-full overflow-hidden">
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt={`${nickname}의 프로필 이미지`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <img
+              src={RoomeDefault}
+              alt="기본 프로필 이미지"
+              className="w-full h-full object-cover"
+            />
+          )}
         </div>
-
-        {/* 메뉴 리스트 (닉네임과 로그아웃 사이 가운데 배치) */}
-        <div className="mt-16 flex flex-col gap-6">
-          <button
-            className="w-full py-3 rounded-3xl bg-primary-700 text-white text-[15px]"
-            onClick={() => navigate("/setting/profile")}
-          >
-            프로필 관리
-          </button>
-
-          <button
-            className="w-full py-3 rounded-3xl bg-primary-700 text-white text-[15px]"
-            onClick={() => navigate("/setting/account")}
-          >
-            계정 정보
-          </button>
-
-          <button
-            className="w-full py-3 rounded-3xl bg-primary-700 text-white text-[15px]"
-            onClick={() => navigate("/setting/contact")}
-          >
-            문의하기
-          </button>
-        </div>
+        <p className="mt-4 text-[16px] text-[#5D3C28]">{nickname}</p>
       </div>
 
-      {/* 로그아웃 버튼: 페이지 하단 고정 */}
-      <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-full max-w-md px-5">
+      {/* 메뉴 리스트 (닉네임과 로그아웃 사이 가운데 배치) */}
+      <div className="mt-12 flex flex-col gap-4">
         <button
-          className="w-full py-3 rounded-3xl bg-primary-700 text-white text-[15px]"
+          className="w-full h-12 rounded-3xl bg-primary-700 text-white text-[15px]"
+          onClick={() => navigate("/setting/profile")}
+        >
+          프로필 관리
+        </button>
+
+        <button
+          className="w-full h-12 rounded-3xl bg-primary-700 text-white text-[15px]"
+          onClick={() => navigate("/setting/account")}
+        >
+          계정 정보
+        </button>
+
+        <button
+          className="w-full h-12 rounded-3xl bg-primary-700 text-white text-[15px]"
+          onClick={() => navigate("/setting/contact")}
+        >
+          문의하기
+        </button>
+      </div>
+
+      {/* 로그아웃 버튼 */}
+      <div className="mt-12 mb-6">
+        <button
+          className="w-full h-12 rounded-3xl bg-point text-primary-700 text-[15px]"
           onClick={handleLogout}
         >
           로그아웃

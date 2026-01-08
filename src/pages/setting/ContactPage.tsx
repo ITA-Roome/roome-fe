@@ -68,8 +68,8 @@ export default function ContactPage() {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <div className="pt-24 max-w-md mx-auto px-5 pb-40">
+    <div>
+      <div className="pt-24 max-w-md mx-auto px-5">
         <div className="relative max-w-sm mx-auto w-full" ref={wrapperRef}>
           <div
             className="border border-[#C7B5A1] rounded-lg px-4 py-3 flex justify-between items-center cursor-pointer bg-[#FFFDF4]"
