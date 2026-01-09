@@ -45,11 +45,9 @@ export default function ReferenceUploadPage() {
   const [products, setProducts] = useState<RegisteredProduct[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
-  // 제품 목록의 objectUrl 관리를 위한 ref
   const productsRef = useRef<RegisteredProduct[]>(products);
   productsRef.current = products;
 
-  // 컴포넌트 언마운트 시 제품 목록의 objectUrl 정리
   useEffect(() => {
     return () => {
       productsRef.current.forEach((product) => {
@@ -211,11 +209,11 @@ export default function ReferenceUploadPage() {
             </label>
             <div className="flex-1 min-h-[140px] rounded-[8px] border border-primary-700 flex flex-col items-center justify-center bg-white overflow-hidden relative">
               {image ? (
-                <div className="w-full h-[100px] relative group min-h-[100px]">
+                <div className="w-full h-full relative group">
                   <img
                     src={imageUrl}
                     alt="Preview"
-                    className="w-full h-[140px] object-cover"
+                    className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
                     <button

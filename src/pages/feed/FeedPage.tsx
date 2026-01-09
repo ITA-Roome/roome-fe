@@ -84,15 +84,25 @@ export default function FeedPage() {
         )}
       </section>
 
-      <button
+      <motion.button
         onClick={() => navigate("/feed/upload")}
-        className="fixed bottom-[100px] right-5 z-50 drop-shadow-lg active:scale-95 transition-transform"
+        className="fixed bottom-[100px] right-7 z-50 drop-shadow-lg"
         style={{
           marginRight: "calc((100vw - min(100vw, 448px)) / 2)",
         }}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{
+          type: "spring",
+          stiffness: 260,
+          damping: 20,
+          delay: 0.3,
+        }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
       >
         <ReferenceWriteIcon className="w-15 h-auto" />
-      </button>
+      </motion.button>
     </div>
   );
 }

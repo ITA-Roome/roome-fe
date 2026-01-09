@@ -64,7 +64,7 @@ export default function ProductRegistration({ onClose, onRegister }: Props) {
 
       <div className="flex-1 overflow-y-auto px-6 py-6 pb-10 font-body3 text-primary-700">
         <div className="flex flex-col gap-7">
-          <div className="w-full h-[200px] rounded-[16px] border border-primary-700 flex flex-col items-center justify-center bg-white overflow-hidden relative">
+          <div className="w-full min-h-[140px] rounded-[8px] border border-primary-700 flex flex-col items-center justify-center bg-white overflow-hidden relative">
             {regImage ? (
               <div className="w-full h-full relative group">
                 <img
