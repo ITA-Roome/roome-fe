@@ -42,7 +42,7 @@ export default function ShopPage() {
     }
   }, [sortOption]);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useGetInfiniteProductsList(limit, searchQuery, selectedKeywords, order);
 
   const flat = useMemo(() => data?.items ?? [], [data]);
@@ -78,7 +78,10 @@ export default function ShopPage() {
       />
 
       <div className="mt-4 pb-20">
-        {flat.length === 0 && !isFetchingNextPage ? (
+        {flat.length === 0 &&
+        !isFetchingNextPage &&
+        !isLoading &&
+        searchQuery ? (
           <SearchEmptyState />
         ) : (
           <InfiniteScrollGrid
@@ -106,7 +109,7 @@ export default function ShopPage() {
             )}
             loadMore={fetchNextPage}
             hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
+            isFetchingNextPage={isFetchingNextPage || isLoading}
           />
         )}
       </div>

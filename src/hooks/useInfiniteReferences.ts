@@ -11,13 +11,13 @@ type SelectedData = {
 };
 
 export default function useGetInfiniteReferences(
-  keyWord: string = "bed",
+  keyWord?: string,
 ): UseInfiniteQueryResult<SelectedData, unknown> {
   return useInfiniteQuery<
     CommonResponse<ReferenceListResponse>,
     unknown,
     SelectedData,
-    string[],
+    (string | undefined)[],
     number
   >({
     queryKey: ["references", "list", keyWord],

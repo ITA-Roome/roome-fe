@@ -25,11 +25,6 @@ export const ReferenceApi = {
     const { data } = await apiClient.post<CommonResponse<void>>(
       "/api/references",
       formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
     );
     return data;
   },

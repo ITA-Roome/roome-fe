@@ -26,7 +26,7 @@ export default function FeedPage() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useGetInfiniteReferences(search || undefined);
 
   const flat = useMemo(() => data?.items ?? [], [data]);
@@ -48,7 +48,7 @@ export default function FeedPage() {
       </section>
 
       <section className="mt-3">
-        {flat.length === 0 && !isFetchingNextPage && search ? (
+        {flat.length === 0 && !isFetchingNextPage && !isLoading && search ? (
           <SearchEmptyState />
         ) : (
           <MasonryInfiniteGrid
@@ -76,7 +76,7 @@ export default function FeedPage() {
               </motion.div>
             )}
             hasNextPage={!!hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
+            isFetchingNextPage={isFetchingNextPage || isLoading}
             loadMore={() => fetchNextPage()}
             gap="gap-4"
             Skeletons={<GridSkeleton />}

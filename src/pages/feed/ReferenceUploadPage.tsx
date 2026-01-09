@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg?react";
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
@@ -29,10 +29,36 @@ export default function ReferenceUploadPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (!image) {
+      setImageUrl(undefined);
+      return;
+    }
+    const url = URL.createObjectURL(image);
+    setImageUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [image]);
 
   const [isRegisteringProduct, setIsRegisteringProduct] = useState(false);
   const [products, setProducts] = useState<RegisteredProduct[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  // 제품 목록의 objectUrl 관리를 위한 ref
+  const productsRef = useRef<RegisteredProduct[]>(products);
+  productsRef.current = products;
+
+  // 컴포넌트 언마운트 시 제품 목록의 objectUrl 정리
+  useEffect(() => {
+    return () => {
+      productsRef.current.forEach((product) => {
+        if (product.imageUrl) {
+          URL.revokeObjectURL(product.imageUrl);
+        }
+      });
+    };
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -47,6 +73,10 @@ export default function ReferenceUploadPage() {
 
   const handleDeleteProduct = (id: number) => {
     if (window.confirm("제품을 삭제하시겠습니까?")) {
+      const productToDelete = products.find((p) => p.id === id);
+      if (productToDelete?.imageUrl) {
+        URL.revokeObjectURL(productToDelete.imageUrl);
+      }
       setProducts((prev) => prev.filter((p) => p.id !== id));
     }
   };
@@ -183,7 +213,7 @@ export default function ReferenceUploadPage() {
               {image ? (
                 <div className="w-full h-[100px] relative group min-h-[100px]">
                   <img
-                    src={URL.createObjectURL(image)}
+                    src={imageUrl}
                     alt="Preview"
                     className="w-full h-[140px] object-cover"
                   />

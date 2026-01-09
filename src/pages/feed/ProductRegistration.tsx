@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg?react";
 import ImageUploadIcon from "@/assets/icons/image_upload.svg?react";
 import { RegisteredProduct } from "@/types/product";
@@ -14,6 +14,17 @@ export default function ProductRegistration({ onClose, onRegister }: Props) {
   const [regBrand, setRegBrand] = useState("");
   const [regTags, setRegTags] = useState("");
   const [regUrl, setRegUrl] = useState("");
+  const [regImageUrl, setRegImageUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (!regImage) {
+      setRegImageUrl(undefined);
+      return;
+    }
+    const url = URL.createObjectURL(regImage);
+    setRegImageUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [regImage]);
 
   const handleRegImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -26,10 +37,14 @@ export default function ProductRegistration({ onClose, onRegister }: Props) {
       alert("제품 명을 입력해주세요.");
       return;
     }
+    const persistentImageUrl = regImage
+      ? URL.createObjectURL(regImage)
+      : undefined;
+
     const newProduct: RegisteredProduct = {
       id: Date.now(),
       image: regImage,
-      imageUrl: regImage ? URL.createObjectURL(regImage) : undefined,
+      imageUrl: persistentImageUrl,
       name: regName,
       brand: regBrand,
       tags: regTags,
@@ -53,7 +68,7 @@ export default function ProductRegistration({ onClose, onRegister }: Props) {
             {regImage ? (
               <div className="w-full h-full relative group">
                 <img
-                  src={URL.createObjectURL(regImage)}
+                  src={regImageUrl}
                   alt="Preview"
                   className="w-full h-full object-cover"
                 />
