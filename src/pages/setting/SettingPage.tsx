@@ -3,12 +3,16 @@ import { useEffect, useState } from "react";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
+import ConfirmModal from "@/components/setting/ConfirmModal";
 
 export default function SettingPage() {
   const navigate = useNavigate();
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [nickname, setNickname] = useState<string>("");
+
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -26,7 +30,9 @@ export default function SettingPage() {
   }, []);
 
   const handleLogout = async () => {
+    if (logoutLoading) return;
     try {
+      setLogoutLoading(true);
       const res = await AuthApi.logout();
 
       if (!res.isSuccess) {
@@ -34,15 +40,18 @@ export default function SettingPage() {
         return;
       }
 
+      // 스토리지 전체 정리
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
-
-      // 세션스토리지 전체 정리
       sessionStorage.clear();
 
-      navigate("/", { replace: true });
+      navigate("/login", { replace: true });
     } catch (error) {
       console.error(error);
+      alert("로그아웃 중 오류가 발생했습니다.");
+    } finally {
+      setLogoutLoading(false);
+      setLogoutConfirmOpen(false);
     }
   };
 
@@ -96,11 +105,25 @@ export default function SettingPage() {
       <div className="mt-12 mb-6">
         <button
           className="w-full h-12 rounded-3xl bg-point text-primary-700 text-[15px]"
-          onClick={handleLogout}
+          onClick={() => setLogoutConfirmOpen(true)}
         >
           로그아웃
         </button>
       </div>
+
+      <ConfirmModal
+        open={logoutConfirmOpen}
+        title="로그아웃"
+        description="정말 로그아웃하시겠습니까?"
+        confirmText={logoutLoading ? "처리 중..." : "확인"}
+        cancelText="취소"
+        onConfirm={() => handleLogout()}
+        onCancel={() => {
+          if (logoutLoading) return;
+          setLogoutConfirmOpen(false);
+        }}
+        closeOnBackdrop={!logoutLoading}
+      />
     </div>
   );
 }
