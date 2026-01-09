@@ -7,6 +7,7 @@ import Step2Mood from "@/components/steps/Step2Mood";
 import Step3Age from "@/components/steps/Step3Age";
 import Step4Gender from "@/components/steps/Step4Gender";
 import Step5Result from "@/components/steps/Step5Result";
+import Step6Explanation from "@/components/steps/Step6Explanation";
 
 const TOTAL_STEPS = 5;
 
@@ -57,7 +58,7 @@ export default function OnboardingPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, TOTAL_STEPS));
+  const nextStep = () => setStep((prev) => Math.min(prev + 1, 6));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
@@ -133,10 +134,13 @@ export default function OnboardingPage() {
           moodLabel={form.moodType}
           spaceLabel={form.spaceType}
           onPrev={prevStep}
-          onSubmit={handleSubmit}
+          onSubmit={nextStep}
           currentStep={step}
           totalSteps={TOTAL_STEPS}
         />
+      )}
+      {step === 6 && (
+        <Step6Explanation onPrev={prevStep} onSubmit={handleSubmit} />
       )}
     </div>
   );
