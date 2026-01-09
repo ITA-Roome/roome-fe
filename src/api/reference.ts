@@ -19,6 +19,21 @@ export const ReferenceApi = {
     return data;
   },
 
+  createReference: async (
+    formData: FormData,
+  ): Promise<CommonResponse<void>> => {
+    const { data } = await apiClient.post<CommonResponse<void>>(
+      "/api/references",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return data;
+  },
+
   fetchReferenceDetail: async (
     referenceId: number,
   ): Promise<CommonResponse<ReferenceDetail>> => {

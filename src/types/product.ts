@@ -117,3 +117,14 @@ export type ProductListResponse = {
 export type ToggleLikeResponse = {
   liked: boolean;
 };
+
+// 유저가 직접 등록한 상품 타입
+export type RegisteredProduct = {
+  id: number; // 임시 ID (timestamp etc)
+  image: File | null;
+  imageUrl?: string; // Preview URL
+  name: string;
+  brand: string;
+  tags: string;
+  url: string;
+};

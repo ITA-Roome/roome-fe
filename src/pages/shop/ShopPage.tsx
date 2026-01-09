@@ -10,10 +10,11 @@ import { useMemo, useState } from "react";
 
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
-import SearchInput from "@/components/search/search/SearchInput";
+import SearchInput from "@/components/search/SearchInput";
 import ShopFilterPanel, {
   SortOption,
 } from "../../components/feed&shop/dropdown/ShopFilterPanel";
+import SearchEmptyState from "@/components/search/SearchEmptyState";
 
 import { useNavigate } from "react-router-dom";
 import { useToggleProductLike } from "@/hooks/useToggleProductLike";
@@ -78,9 +79,7 @@ export default function ShopPage() {
 
       <div className="mt-4 pb-20">
         {flat.length === 0 && !isFetchingNextPage ? (
-          <div className="py-20 text-center text-gray-500">
-            조건에 맞는 상품이 없습니다.
-          </div>
+          <SearchEmptyState />
         ) : (
           <InfiniteScrollGrid
             items={flat}

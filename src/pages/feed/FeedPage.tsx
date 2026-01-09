@@ -3,15 +3,17 @@ import {
   fetchRecentSearch,
   deleteRecentSearch,
 } from "@/api/search";
+import SearchEmptyState from "@/components/search/SearchEmptyState";
 
 import MasonryInfiniteGrid from "@/components/feed&shop/grid/MasonryInfiniteGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
-import SearchInput from "@/components/search/search/SearchInput";
+import SearchInput from "@/components/search/SearchInput";
 import GridSkeleton from "@/components/skeletons/GridSkeleton";
 import useGetInfiniteReferences from "@/hooks/useInfiniteReferences";
 import { useToggleReferenceLike } from "@/hooks/useToggleReferenceLike";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ReferenceWriteIcon from "@/assets/icons/reference_write.svg?react";
 
 import { motion } from "framer-motion";
 
@@ -25,7 +27,7 @@ export default function FeedPage() {
   const navigate = useNavigate();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetInfiniteReferences(search);
+    useGetInfiniteReferences(search || undefined);
 
   const flat = useMemo(() => data?.items ?? [], [data]);
 
@@ -46,37 +48,51 @@ export default function FeedPage() {
       </section>
 
       <section className="mt-3">
-        <MasonryInfiniteGrid
-          items={flat}
-          keySelector={(it) => String(it.referenceId)}
-          renderItem={(it) => (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <PhotoCard
-                id={it.referenceId}
-                title={it.nickname}
-                imageUrl={it.imageUrlList?.[0] ?? ""}
-                price={0}
-                showInfo={false}
-                isLiked={it.isLiked}
-                onLike={() => toggleLike(it.referenceId)}
-                onClick={() => navigate(`/feed/${it.referenceId}`)}
-                ratio="auto"
-                className={getAspectRatio(it.referenceId)}
-              />
-            </motion.div>
-          )}
-          hasNextPage={!!hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          loadMore={() => fetchNextPage()}
-          gap="gap-4"
-          Skeletons={<GridSkeleton />}
-        />
+        {flat.length === 0 && !isFetchingNextPage && search ? (
+          <SearchEmptyState />
+        ) : (
+          <MasonryInfiniteGrid
+            items={flat}
+            keySelector={(it) => String(it.referenceId)}
+            renderItem={(it) => (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <PhotoCard
+                  id={it.referenceId}
+                  title={it.nickname}
+                  imageUrl={it.imageUrlList?.[0] ?? ""}
+                  price={0}
+                  showInfo={false}
+                  isLiked={it.isLiked}
+                  onLike={() => toggleLike(it.referenceId)}
+                  onClick={() => navigate(`/feed/${it.referenceId}`)}
+                  ratio="auto"
+                  className={getAspectRatio(it.referenceId)}
+                />
+              </motion.div>
+            )}
+            hasNextPage={!!hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            loadMore={() => fetchNextPage()}
+            gap="gap-4"
+            Skeletons={<GridSkeleton />}
+          />
+        )}
       </section>
+
+      <button
+        onClick={() => navigate("/feed/upload")}
+        className="fixed bottom-[100px] right-5 z-50 drop-shadow-lg active:scale-95 transition-transform"
+        style={{
+          marginRight: "calc((100vw - min(100vw, 448px)) / 2)",
+        }}
+      >
+        <ReferenceWriteIcon className="w-15 h-auto" />
+      </button>
     </div>
   );
 }

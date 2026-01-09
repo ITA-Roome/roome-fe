@@ -23,6 +23,7 @@ import ShopPage from "@/pages/shop/ShopPage";
 import AuthLayout from "@/layout/AuthLayout";
 import FeedDetailPage from "@/pages/feed/FeedDetailPage";
 import ShopDetailPage from "@/pages/shop/ShopDetailPage";
+import ReferenceUploadPage from "@/pages/feed/ReferenceUploadPage";
 import ChatBoardPage from "@/pages/board/ChatBoardPage";
 import LikeBoardPage from "@/pages/board/LikeBoardPage";
 import ReferenceBoardPage from "@/pages/board/ReferenceBoardPage";
@@ -112,6 +113,15 @@ const router = createBrowserRouter([
         element: <SignupEmailPage />,
       },
     ],
+  },
+  {
+    path: "/feed/upload",
+    element: (
+      <ProtectedRoute>
+        <ReferenceUploadPage />
+      </ProtectedRoute>
+    ),
+    errorElement: <NotFoundPage />,
   },
   {
     path: "/",
