@@ -5,11 +5,24 @@ import { AuthApi } from "../../api/auth";
 
 export default function SignupEmailPage() {
   const navigate = useNavigate();
+
   const [nickname, setNickname] = useState("");
   const [nicknameChecked, setNicknameChecked] = useState(false);
   const [nicknameMessage, setNicknameMessage] = useState("");
   const [nicknameLoading, setNicknameLoading] = useState(false);
+
+  // 이메일 요건 : xxxxxx@xxx.xxx
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // 전화번호 요건 : 010-xxxx-xxxx (010-4자리-4자리)
+  const phonePattern = /^010-\d{4}-\d{4}$/;
+  // 비밀번호 요건: 영문/숫자/특수문자 포함 + 8자 이상
+  const PASSWORD_REGEX =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{};:'",.<>/?\\|`~]).{8,}$/;
+
+  const LETTER_REGEX = /[A-Za-z]/;
+  const NUMBER_REGEX = /\d/;
+  const SPECIAL_CHAR_REGEX = /[!@#$%^&*()_\-+=[\]{};:'",.<>/?\\|`~]/;
+
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
@@ -17,16 +30,19 @@ export default function SignupEmailPage() {
   const [emailVerified, setEmailVerified] = useState(false);
   const [codeMessage, setCodeMessage] = useState("");
   const [codeLoading, setCodeLoading] = useState(false);
-  const phonePattern = /^010-\d{4}-\d{4}$/;
+
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
+
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isMatch, setIsMatch] = useState(true);
 
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState("");
 
+  // 닉네임 입력 확인 및 중복확인
   const handleCheckNickname = async () => {
     const trimmedNickname = nickname.trim();
     if (!trimmedNickname) {
@@ -66,6 +82,7 @@ export default function SignupEmailPage() {
     }
   };
 
+  // 이메일 형식 확인
   const handleEmailChange = (value: string) => {
     setEmail(value);
     setEmailVerified(false);
@@ -78,6 +95,7 @@ export default function SignupEmailPage() {
     );
   };
 
+  // 전화번호 형식 확인
   const handlePhoneChange = (value: string) => {
     const digitsOnly = value.replace(/\D/g, "").slice(0, 11);
     let formatted = digitsOnly;
@@ -101,6 +119,9 @@ export default function SignupEmailPage() {
     }
   };
 
+  // 이메일 인증하기
+  // 인증하기 버튼 -> 이메일 유무 확인 -> (true) -> 이메일 다시 입력
+  //                            -> (false) -> 인증번호 발송
   const handleRequestEmailVerification = async () => {
     const trimmedEmail = email.trim();
 
@@ -115,6 +136,16 @@ export default function SignupEmailPage() {
     setVerifyCode("");
 
     try {
+      // 1) 이메일 존재 여부 확인
+      const { data: existData } = await AuthApi.checkEmailExists(trimmedEmail);
+      if (existData.isSuccess && existData.data?.isExist) {
+        setEmailError(
+          "이미 존재하는 이메일입니다. 다른 이메일로 다시 시도해주세요.",
+        );
+        return;
+      }
+
+      // 2) 존재하지 않는 이메일이면 인증 코드 발송
       await AuthApi.requestEmailVerification({ email: trimmedEmail });
       alert("인증 코드를 보냈습니다.");
     } catch (error) {
@@ -131,6 +162,7 @@ export default function SignupEmailPage() {
     }
   };
 
+  // 인증번호 확인
   const handleConfirmVerification = async () => {
     const trimmedEmail = email.trim();
     const trimmedCode = verifyCode.trim();
@@ -171,38 +203,69 @@ export default function SignupEmailPage() {
     }
   };
 
+  // 비밀번호 일치 확인
   const handleConfirmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPasswordConfirm(value);
     setIsMatch(value === password);
   };
 
+  // 비밀번호 입력 시 형식 및 일치 여부 확인
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextPassword = e.target.value;
+    setPassword(nextPassword);
+    // 입력 즉시 형식 검사 (8자 이상 + 영문 + 숫자 + 특수문자)
+    if (nextPassword.length === 0) {
+      setPasswordError("");
+    } else {
+      const missing: string[] = [];
+      if (nextPassword.length < 8) missing.push("8자 이상");
+      if (!LETTER_REGEX.test(nextPassword)) missing.push("영문");
+      if (!NUMBER_REGEX.test(nextPassword)) missing.push("숫자");
+      if (!SPECIAL_CHAR_REGEX.test(nextPassword)) missing.push("특수문자");
+
+      if (missing.length > 0) {
+        setPasswordError(`다음 요건을 만족해주세요: ${missing.join(", ")}`);
+      } else {
+        setPasswordError("");
+      }
+    }
+
+    // 비밀번호가 바뀌면 확인란과 다시 비교해 일치 여부를 최신화
+    setIsMatch(passwordConfirm === nextPassword);
+  };
+
+  // 회원가입 버튼 클릭
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 닉네임 공백 여부 확인
     const trimmedNickname = nickname.trim();
-    const trimmedEmail = email.trim();
-
     if (!trimmedNickname) {
       setNicknameMessage("닉네임을 입력해주세요.");
       return;
     }
 
+    // 닉네임 중복 확인이 끝났는지 체크
     if (!nicknameChecked) {
       setNicknameMessage("닉네임 중복 확인을 완료해주세요.");
       return;
     }
 
+    // 이메일 형식 검사
+    const trimmedEmail = email.trim();
     if (!EMAIL_REGEX.test(trimmedEmail)) {
       setEmailError("올바른 이메일 주소를 입력해주세요.");
       return;
     }
 
+    // 이메일 인증 완료 여부 확인
     if (!emailVerified) {
       setCodeMessage("이메일 인증을 완료해주세요.");
       return;
     }
 
+    // 전화번호 형식 검사
     if (!phonePattern.test(phone)) {
       setPhoneError(
         "전화번호가 올바른 형식으로 입력되지 않았습니다. 다시 확인해주세요.",
@@ -210,45 +273,79 @@ export default function SignupEmailPage() {
       return;
     }
 
-    if (!password) {
-      setSignupError("비밀번호를 입력해주세요.");
+    // 비밀번호 형식 검사 (8자 이상 + 영문 + 숫자 + 특수문자)
+    if (!PASSWORD_REGEX.test(password)) {
+      setSignupError(
+        "비밀번호 형식이 올바르지 않습니다. 영문, 숫자, 특수문자를 포함해 8자 이상 입력해주세요.",
+      );
       return;
     }
 
+    // 비밀번호와 확인란 일치 여부 검사
     if (!isMatch) {
       setSignupError("비밀번호가 일치하지 않습니다.");
       return;
     }
 
+    // API 요청 시작 상태 처리
     setSignupLoading(true);
     setSignupError("");
 
     try {
-      const { data } = await AuthApi.signup({
+      // 회원가입 API 호출
+      const { data, status } = await AuthApi.signup({
         email: trimmedEmail,
         nickname: trimmedNickname,
         password,
         phoneNumber: phone,
       });
 
-      if (!data.isSuccess) {
+      // 201이면 성공 처리
+      if (status === 201 && data.isSuccess) {
+        alert("회원가입이 완료되었습니다. 로그인해 주세요.");
+        navigate("/");
+        return;
+      }
+
+      // 201이 아니거나 isSuccess가 false인 경우 서버 메시지 표시
+      setSignupError(
+        data.message ?? "회원가입에 실패했습니다. 다시 시도해주세요.",
+      );
+    } catch (error) {
+      // axios 에러만 선별해 응답 코드별로 메시지 분기
+      if (axios.isAxiosError(error) && error.response) {
+        const { status, data } = error.response;
+
+        // 400: 비밀번호 형식 불일치 또는 이메일 미인증
+        if (status === 400) {
+          setSignupError(
+            data?.message ??
+              "비밀번호 형식이 올바르지 않거나 이메일 인증이 완료되지 않았습니다.",
+          );
+          return;
+        }
+
+        // 409: 이미 존재하는 이메일
+        if (status === 409) {
+          setSignupError(data?.message ?? "이미 등록된 이메일입니다.");
+          return;
+        }
+
+        // 그 외 코드 : 공통 에러 처리
         setSignupError(
-          data.message ?? "회원가입에 실패했습니다. 다시 시도해주세요.",
+          data?.message ?? "회원가입에 실패했습니다. 다시 시도해주세요.",
         );
         return;
       }
 
-      alert("회원가입이 완료되었습니다. 로그인해 주세요.");
-      navigate("/");
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setSignupError(
-          error.response?.data?.message ??
-            "회원가입에 실패했습니다. 다시 시도해주세요.",
-        );
-      } else {
-        setSignupError("알 수 없는 오류가 발생했습니다.");
+      // 인터셉터에서 Error로 변환된 경우 메시지를 그대로 노출
+      if (error instanceof Error && error.message) {
+        setSignupError(error.message);
+        return;
       }
+
+      // 네트워크/기타 알 수 없는 에러
+      setSignupError("알 수 없는 오류가 발생했습니다.");
     } finally {
       setSignupLoading(false);
     }
@@ -271,10 +368,12 @@ export default function SignupEmailPage() {
                 type="text"
                 value={nickname}
                 onChange={(e) => {
-                  setNickname(e.target.value);
+                  const next = e.target.value.slice(0, 8);
+                  setNickname(next);
                   setNicknameChecked(false);
                   setNicknameMessage("");
                 }}
+                maxLength={8}
                 placeholder="닉네임을 입력해주세요"
                 className="w-full h-[50px] pl-3 pr-24 border border-[#5D3C28] rounded-3xl bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
               />
@@ -287,16 +386,16 @@ export default function SignupEmailPage() {
                 {nicknameLoading ? "확인 중..." : "중복 확인"}
               </button>
             </div>
+            {nicknameMessage && (
+              <p
+                className={`text-xs mt-1 ${
+                  nicknameChecked ? "text-green-600" : "text-red-500"
+                }`}
+              >
+                {nicknameMessage}
+              </p>
+            )}
           </div>
-          {nicknameMessage && (
-            <p
-              className={`text-xs mt-1 ${
-                nicknameChecked ? "text-green-600" : "text-red-500"
-              }`}
-            >
-              {nicknameMessage}
-            </p>
-          )}
 
           {/* 이메일 */}
           <div className="relative">
@@ -315,9 +414,6 @@ export default function SignupEmailPage() {
                     : "border-[#5D3C28] focus:ring-[#5D3C28]"
                 } placeholder-[#8D7569]`}
               />
-              {emailError && (
-                <p className="text-red-500 text-xs mt-1">{emailError}</p>
-              )}
               <button
                 type="button"
                 onClick={handleRequestEmailVerification}
@@ -327,6 +423,9 @@ export default function SignupEmailPage() {
                 {emailLoading ? "발송 중..." : "인증하기"}
               </button>
             </div>
+            {emailError && (
+              <p className="text-red-500 text-xs mt-1">{emailError}</p>
+            )}
           </div>
 
           {/* 인증번호 */}
@@ -390,10 +489,13 @@ export default function SignupEmailPage() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               placeholder="비밀번호"
               className="w-full h-[50px] p-3 border border-[#5D3C28] rounded-3xl bg-white focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
             />
+            {passwordError && (
+              <p className="text-red-500 text-xs mt-1">{passwordError}</p>
+            )}
           </div>
 
           {/* 비밀번호 확인 */}
@@ -401,11 +503,6 @@ export default function SignupEmailPage() {
             <label className="block text-[#5D3C28] text-sm mb-1">
               비밀번호 확인
             </label>
-            {!isMatch && passwordConfirm.length > 0 && (
-              <p className="text-red-500 text-xs mb-1">
-                비밀번호가 일치하지 않습니다.
-              </p>
-            )}
             <input
               type="password"
               value={passwordConfirm}
@@ -417,6 +514,11 @@ export default function SignupEmailPage() {
                   : "border-red-500 focus:ring-red-400"
               } placeholder-[#8D7569]`}
             />
+            {!isMatch && passwordConfirm.length > 0 && (
+              <p className="text-red-500 text-xs mt-1">
+                비밀번호가 일치하지 않습니다.
+              </p>
+            )}
           </div>
 
           {/* 회원가입 버튼 */}

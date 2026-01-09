@@ -21,10 +21,10 @@ function SettingLayout() {
   )?.[1];
 
   return (
-    <div className="min-h-screen">
+    <div className="h-dvh flex flex-col">
       <ScrollToTop />
       <SettingHeader title={title} />
-      <main className="px-4">
+      <main className="flex-1 overflow-y-auto px-4 pb-12">
         <Outlet />
       </main>
       <Footer />

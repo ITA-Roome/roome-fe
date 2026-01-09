@@ -1,11 +1,12 @@
 import { apiClient } from "@/lib/apiClient";
+import { CommonResponse } from "@/types/auth";
 import type { ChatMessageRequest, ChatMessageResponse } from "@/types/chatbot";
 
 export const ChatApi = {
-  sendRecommendation: async (
+  chatMessage: async (
     payload: ChatMessageRequest,
-  ): Promise<ChatMessageResponse> => {
-    const { data } = await apiClient.post<ChatMessageResponse>(
+  ): Promise<CommonResponse<ChatMessageResponse>> => {
+    const { data } = await apiClient.post<CommonResponse<ChatMessageResponse>>(
       "/api/chat/message",
       payload,
     );

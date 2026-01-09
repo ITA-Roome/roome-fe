@@ -56,6 +56,7 @@ export type CommonResponse<T = undefined> = {
 };
 
 export type NicknameCheckResponse = CommonResponse<{ isExist: boolean }>;
+export type EmailExistResponse = CommonResponse<{ isExist: boolean }>;
 export type EmailVerificationRequest = { email: string };
 export type EmailVerificationConfirmRequest = {
   email: string;
