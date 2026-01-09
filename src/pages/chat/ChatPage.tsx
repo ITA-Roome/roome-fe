@@ -86,9 +86,6 @@ export default function ChatPage() {
       setLoading(true);
 
       try {
-        console.log("sessionId", sessionId);
-        console.log("inputType", inputType);
-        console.log("message", trimmed);
         const res = await ChatApi.chatMessage({
           sessionId,
           inputType,
@@ -98,7 +95,10 @@ export default function ChatPage() {
         setSessionId(res.data?.sessionId ?? null);
         setOptions(res.data?.options ?? []);
 
-        setMessages((prev) => [...prev, { role: "bot", content: res.message }]);
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", content: res.data?.message ?? "..." },
+        ]);
       } catch (error) {
         console.error("챗봇 호출 실패:", error);
         setMessages((prev) => [
