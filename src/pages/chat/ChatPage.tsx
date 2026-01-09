@@ -60,6 +60,13 @@ export default function ChatPage() {
     }
   }, [storageKey, defaultBotMessages]);
 
+  useEffect(() => {
+    // 대화가 복원된 뒤 옵션이 비어 있으면 기본 질문 두 개를 노출
+    if (isHydrated && options.length === 0) {
+      setOptions(["어떤 공간을 꾸미고 싶으신가요?", "찾으시는 제품이 있나요?"]);
+    }
+  }, [isHydrated, options.length]);
+
   // 2) 복원 후에만 저장 (Strict Mode 중복 실행 방지)
   useEffect(() => {
     if (!isHydrated) return; // 초기 빈 상태로 덮어쓰는 것 방지
@@ -79,14 +86,17 @@ export default function ChatPage() {
       setLoading(true);
 
       try {
-        const res = await ChatApi.sendRecommendation({
+        console.log("sessionId", sessionId);
+        console.log("inputType", inputType);
+        console.log("message", trimmed);
+        const res = await ChatApi.chatMessage({
           sessionId,
           inputType,
           message: trimmed,
         });
 
-        setSessionId(res.sessionId);
-        setOptions(res.options ?? []);
+        setSessionId(res.data?.sessionId ?? null);
+        setOptions(res.data?.options ?? []);
 
         setMessages((prev) => [...prev, { role: "bot", content: res.message }]);
       } catch (error) {

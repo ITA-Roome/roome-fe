@@ -25,11 +25,11 @@ export type ChatMessageRequest = {
 };
 
 export type ChatMessageResponse = {
+  sessionId: string;
   type: ChatResponseType;
   message: string;
   options?: string[];
   data?: {
     products?: ChatProduct[];
   };
-  sessionId: string;
 };
