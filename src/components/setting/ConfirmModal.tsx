@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 type ConfirmModalProps = {
@@ -39,23 +39,28 @@ export default function ConfirmModal({
   const [value, setValue] = useState(input?.defaultValue ?? "");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // open될 때 input 초기화(원하면 유지도 가능)
+  const valueRef = useRef(value);
+
   useEffect(() => {
-    if (open) setValue(input?.defaultValue ?? "");
-  }, [open, input?.defaultValue]);
+    valueRef.current = value;
+  }, [value]);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCancel();
+      if (e.key === "Enter") {
+        const current = valueRef.current.trim();
+        if (input?.required && !current) return;
+        onConfirm(input ? current : undefined);
+      }
+    },
+    [onCancel, onConfirm, input],
+  );
 
   useEffect(() => {
     if (!open) return;
 
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCancel();
-      if (e.key === "Enter") {
-        // Enter로 confirm
-        if (input?.required && !value.trim()) return;
-        onConfirm(input ? value : undefined);
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -66,10 +71,10 @@ export default function ConfirmModal({
     }
 
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = prevOverflow;
     };
-  }, [open, onCancel, onConfirm, input, value]);
+  }, [open, handleKeyDown, input?.autoFocus]);
 
   if (!open) return null;
 
