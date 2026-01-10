@@ -9,17 +9,7 @@ import ProductRegistration from "./ProductRegistration";
 import { ReferenceApi } from "@/api/reference";
 import ReferenceUploadSuccess from "./ReferenceUploadSuccess";
 import { compressImage } from "@/utils/imageCompression";
-
-const MOOD_MAP: Record<string, string> = {
-  포근한: "COZY",
-  심플한: "SIMPLE",
-  아늑한: "SNUG",
-  깔끔한: "NEAT",
-  시크한: "CHIC",
-  귀여운: "CUTE",
-};
-
-const MOOD_TAGS = Object.keys(MOOD_MAP);
+import { MOOD_MAP, MOOD_TAGS } from "@/constants/common";
 
 export default function ReferenceUploadPage() {
   const navigate = useNavigate();

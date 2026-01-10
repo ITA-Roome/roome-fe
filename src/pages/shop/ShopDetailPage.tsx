@@ -1,14 +1,5 @@
-import { useMemo, useState, useRef, useLayoutEffect } from "react";
-import { useParams } from "react-router-dom";
-import clsx from "clsx";
-
-import BookmarkIcon from "@/assets/icons/bookmark.svg?react";
-import BookmarkFillIcon from "@/assets/icons/bookmark-fill.svg?react";
-import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
-import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
-import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
-import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
-import RoomeExport from "@/assets/RoomeLogo/roome_export.svg?react";
+import { useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { useToggleProductLike } from "@/hooks/useToggleProductLike";
 import { useToggleProductScrap } from "@/hooks/useToggleProductScrap";
@@ -16,27 +7,23 @@ import { useProductDetail } from "@/hooks/useProductDetail";
 import { useQuery } from "@tanstack/react-query";
 import { ProductApi } from "@/api/product";
 
+import PageContainer from "@/components/layout/PageContainer";
+import DetailImage from "@/components/detail/DetailImage";
+import DetailHeader from "@/components/detail/DetailHeader";
+import DetailProfile from "@/components/detail/DetailProfile";
+import DetailDescription from "@/components/detail/DetailDescription";
+import DetailRelatedGrid from "@/components/detail/DetailRelatedGrid";
+
 export default function ShopDetailPage() {
   const { productId } = useParams<{ productId: string }>();
+  const navigate = useNavigate();
 
   const id = useMemo(() => {
     const n = Number(productId);
     return Number.isFinite(n) ? n : null;
   }, [productId]);
 
-  const [isDescOpen, setIsDescOpen] = useState(false);
-  const [isOverflow, setIsOverflow] = useState(false);
-  const descRef = useRef<HTMLParagraphElement>(null);
-
   const { data: product, isLoading, error } = useProductDetail(id);
-
-  useLayoutEffect(() => {
-    if (descRef.current) {
-      setIsOverflow(
-        descRef.current.scrollHeight > descRef.current.clientHeight,
-      );
-    }
-  }, [product?.description]);
 
   const { mutate: toggleLike, isPending: isTogglingLike } =
     useToggleProductLike();
@@ -51,17 +38,17 @@ export default function ShopDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 text-primary-700">
+      <PageContainer className="text-primary-700">
         <p className="font-body2">상품 정보를 불러오는 중입니다...</p>
-      </div>
+      </PageContainer>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 text-primary-700">
+      <PageContainer className="text-primary-700">
         <p className="font-body2">상품 정보를 찾을 수 없습니다.</p>
-      </div>
+      </PageContainer>
     );
   }
 
@@ -77,111 +64,33 @@ export default function ShopDetailPage() {
     })) || [];
 
   return (
-    <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 text-primary-700">
-      <section>
-        <div className="relative rounded-2xl aspect-4/3 overflow-hidden">
-          {product.thumbnailUrl && (
-            <img
-              src={product.thumbnailUrl}
-              alt={product.name}
-              className="w-full h-full object-contain"
-            />
-          )}
-        </div>
-      </section>
+    <PageContainer>
+      <DetailImage
+        src={product.thumbnailUrl || ""}
+        alt={product.name}
+        showBadge={false}
+      />
 
-      <section className="mt-3">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h2 className="font-heading2 wrap-break-words">{product.name}</h2>
-            <h2 className="font-heading1 line-clamp-2">{formattedPrice}</h2>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <button type="button" aria-label="공유" className="p-2">
-              <RoomeExport className="w-6 h-6" />
-            </button>
-            <button
-              type="button"
-              aria-label={product.isScrapped ? "스크랩 취소" : "스크랩"}
-              className="p-2"
-              disabled={isTogglingScrap}
-              onClick={() => toggleScrap(product.id)}
-            >
-              {product.isScrapped ? (
-                <BookmarkFillIcon className="w-6 h-6 text-primary-700" />
-              ) : (
-                <BookmarkIcon className="w-6 h-6 text-primary-50" />
-              )}
-            </button>
-
-            <button
-              type="button"
-              aria-label={product.isLiked ? "좋아요 취소" : "좋아요"}
-              className="p-2"
-              disabled={isTogglingLike}
-              onClick={() => toggleLike(product.id)}
-            >
-              {product.isLiked ? (
-                <FavoriteFillIcon className="w-6 h-6 text-point" />
-              ) : (
-                <FavoriteIcon className="w-6 h-6 text-primary-50" />
-              )}
-            </button>
-          </div>
-        </div>
-      </section>
+      <DetailHeader
+        title={product.name}
+        subtitle={formattedPrice}
+        isLiked={product.isLiked}
+        isScrapped={product.isScrapped}
+        isTogglingLike={isTogglingLike}
+        isTogglingScrap={isTogglingScrap}
+        onToggleLike={() => toggleLike(product.id)}
+        onToggleScrap={() => toggleScrap(product.id)}
+        onShare={() => {}}
+      />
 
       {product.shop && (
-        <section className="mt-15">
-          <div className="flex items-center gap-3">
-            {product.shop.logoUrl && (
-              <img
-                src={product.shop.logoUrl}
-                alt={product.shop.name}
-                className="w-11 h-11 rounded-full object-cover"
-              />
-            )}
-            <div>
-              <p className="font-body1">{product.shop.name}</p>
-            </div>
-          </div>
-        </section>
+        <DetailProfile
+          imageUrl={product.shop.logoUrl}
+          name={product.shop.name}
+        />
       )}
 
-      <section className="mt-6">
-        <p
-          ref={descRef}
-          className={clsx(
-            "mt-2 font-body3 text-primary-700",
-            isDescOpen ? "" : "line-clamp-2",
-          )}
-        >
-          {product.description}
-        </p>
-
-        {isOverflow && (
-          <div className="mt-2 flex justify-center">
-            <button
-              type="button"
-              onClick={() => setIsDescOpen((prev) => !prev)}
-              className="flex items-center gap-x-2 font-caption text-primary-700"
-            >
-              {isDescOpen ? (
-                <>
-                  <ArrowUpIcon className="w-3 h-3" />
-                  <span>설명 접기</span>
-                </>
-              ) : (
-                <>
-                  <ArrowDownIcon className="w-3 h-3" />
-                  <span>설명 더보기</span>
-                </>
-              )}
-            </button>
-          </div>
-        )}
-      </section>
+      <DetailDescription description={product.description} />
 
       {product.productUrl && (
         <section className="mt-10 px-8">
@@ -196,57 +105,28 @@ export default function ShopDetailPage() {
         </section>
       )}
 
-      <section className="mt-15">
-        <p className="mb-3 font-body3 text-primary-700">관련 제품들</p>
+      <DetailRelatedGrid
+        title="관련 제품들"
+        items={relatedProducts
+          .filter((item) => item.id !== undefined)
+          .map((item) => ({
+            id: item.id!,
+            imageUrl: item.imageUrl,
+            name: item.name,
+          }))}
+        emptyMessage="관련 상품이 없습니다."
+        onItemClick={(id) => navigate(`/shop/${id}`)}
+      />
 
-        {relatedProducts.length === 0 ? (
-          <p className="font-caption text-primary-400">관련 상품이 없습니다.</p>
-        ) : (
-          <div className="grid grid-cols-3 gap-3">
-            {relatedProducts.slice(0, 6).map((item) => (
-              <div
-                key={item.id}
-                className="aspect-4/3 rounded-xl overflow-hidden bg-white"
-              >
-                {item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="w-full h-full object-contain"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="mt-15">
-        <p className="mb-3 font-body3 text-primary-700">관련 레퍼런스들</p>
-
-        {relatedReferences.length === 0 ? (
-          <p className="font-caption text-primary-400">
-            관련 레퍼런스가 없습니다.
-          </p>
-        ) : (
-          <div className="grid grid-cols-3 gap-3">
-            {relatedReferences.slice(0, 6).map((item) => (
-              <div
-                key={item.id}
-                className="aspect-4/3 rounded-xl overflow-hidden bg-white"
-              >
-                {item.thumbnailUrl && (
-                  <img
-                    src={item.thumbnailUrl}
-                    alt="reference"
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
+      <DetailRelatedGrid
+        title="관련 레퍼런스들"
+        items={relatedReferences.map((item) => ({
+          id: item.id,
+          imageUrl: item.thumbnailUrl,
+        }))}
+        emptyMessage="관련 레퍼런스가 없습니다."
+        onItemClick={(id) => navigate(`/feed/${id}`)}
+      />
+    </PageContainer>
   );
 }

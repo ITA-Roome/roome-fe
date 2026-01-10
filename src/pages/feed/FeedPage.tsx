@@ -4,6 +4,7 @@ import {
   deleteRecentSearch,
 } from "@/api/search";
 import SearchEmptyState from "@/components/search/SearchEmptyState";
+import EmptyListState from "@/components/common/EmptyListState";
 
 import MasonryInfiniteGrid from "@/components/feed&shop/grid/MasonryInfiniteGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
@@ -16,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import ReferenceWriteIcon from "@/assets/icons/reference_write.svg?react";
 
 import { motion } from "framer-motion";
+import PageContainer from "@/components/layout/PageContainer";
+import FadeIn from "@/components/common/FadeIn";
 
 function getAspectRatio(id: number) {
   const ratios = ["aspect-[3/4]", "aspect-[1/1]", "aspect-[4/5]"];
@@ -34,7 +37,7 @@ export default function FeedPage() {
   const { mutate: toggleLike } = useToggleReferenceLike();
 
   return (
-    <div className="relative isolate pt-16 max-w-md mx-auto px-5">
+    <PageContainer>
       <section className="relative z-30">
         <SearchInput
           onSubmit={setSearch}
@@ -48,19 +51,18 @@ export default function FeedPage() {
       </section>
 
       <section className="mt-3">
-        {flat.length === 0 && !isFetchingNextPage && !isLoading && search ? (
-          <SearchEmptyState />
+        {flat.length === 0 && !isFetchingNextPage && !isLoading ? (
+          search ? (
+            <SearchEmptyState />
+          ) : (
+            <EmptyListState message="등록된 게시글이 없습니다." />
+          )
         ) : (
           <MasonryInfiniteGrid
             items={flat}
             keySelector={(it) => String(it.referenceId)}
             renderItem={(it) => (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
+              <FadeIn>
                 <PhotoCard
                   id={it.referenceId}
                   title={it.nickname}
@@ -73,13 +75,13 @@ export default function FeedPage() {
                   ratio="auto"
                   className={getAspectRatio(it.referenceId)}
                 />
-              </motion.div>
+              </FadeIn>
             )}
             hasNextPage={!!hasNextPage}
             isFetchingNextPage={isFetchingNextPage || isLoading}
             loadMore={() => fetchNextPage()}
             gap="gap-4"
-            Skeletons={<GridSkeleton />}
+            Skeletons={<GridSkeleton columns="grid-cols-2" />}
           />
         )}
       </section>
@@ -103,6 +105,6 @@ export default function FeedPage() {
       >
         <ReferenceWriteIcon className="w-15 h-auto" />
       </motion.button>
-    </div>
+    </PageContainer>
   );
 }

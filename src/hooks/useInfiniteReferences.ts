@@ -26,7 +26,7 @@ export default function useGetInfiniteReferences(
       ReferenceApi.fetchReferences({
         keyWord,
         page: pageParam,
-        size: 21,
+        size: 22,
       }),
     getNextPageParam: (lastPage, allPages) => {
       const isLast = lastPage.data?.last ?? true;
