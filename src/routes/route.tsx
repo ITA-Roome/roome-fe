@@ -23,6 +23,7 @@ import ShopPage from "@/pages/shop/ShopPage";
 import AuthLayout from "@/layout/AuthLayout";
 import FeedDetailPage from "@/pages/feed/FeedDetailPage";
 import ShopDetailPage from "@/pages/shop/ShopDetailPage";
+import ReferenceUploadPage from "@/pages/feed/ReferenceUploadPage";
 import ChatBoardPage from "@/pages/board/ChatBoardPage";
 import LikeBoardPage from "@/pages/board/LikeBoardPage";
 import ReferenceBoardPage from "@/pages/board/ReferenceBoardPage";
@@ -114,6 +115,15 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/feed/upload",
+    element: (
+      <ProtectedRoute>
+        <ReferenceUploadPage />
+      </ProtectedRoute>
+    ),
+    errorElement: <NotFoundPage />,
+  },
+  {
     path: "/",
     element: (
       <ProtectedRoute>
@@ -129,10 +139,6 @@ const router = createBrowserRouter([
       {
         path: "feed/:productId",
         element: <FeedDetailPage />,
-      },
-      {
-        path: "board",
-        element: <BoardPage />,
       },
       {
         path: "shop",
@@ -165,6 +171,10 @@ const router = createBrowserRouter([
       {
         path: "chat",
         element: <ChatPage />,
+      },
+      {
+        path: "board",
+        element: <BoardPage />,
       },
       {
         path: "board/like",

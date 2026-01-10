@@ -7,45 +7,17 @@ import Step2Mood from "@/components/steps/Step2Mood";
 import Step3Age from "@/components/steps/Step3Age";
 import Step4Gender from "@/components/steps/Step4Gender";
 import Step5Result from "@/components/steps/Step5Result";
+import Step6Explanation from "@/components/steps/Step6Explanation";
+import { AGE_MAP, GENDER_MAP, SPACE_MAP, MOOD_MAP } from "@/constants/common";
+import { motion, AnimatePresence } from "framer-motion";
 
 const TOTAL_STEPS = 5;
-
-const AGE_MAP = {
-  "10대": "TEENAGER",
-  "20대": "TWENTIES",
-  "30대": "THIRTIES",
-  "40대": "FORTIES",
-  "50대": "FIFTIES",
-  "60대": "SIXTIES",
-};
-
-const GENDER_MAP = {
-  남성: "MALE",
-  여성: "FEMALE",
-  기타: "OTHER",
-};
-
-const SPACE_MAP = {
-  방: "ROOM",
-  원룸: "ONE_ROOM",
-  거실: "LIVING_ROOM",
-  주방: "KITCHEN",
-  화장실: "BATHROOM",
-  침실: "BEDROOM",
-};
-
-const MOOD_MAP = {
-  포근한: "COZY",
-  심플한: "SIMPLE",
-  아늑한: "SNUG",
-  깔끔한: "NEAT",
-  시크한: "CHIC",
-  귀여운: "CUTE",
-};
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(0);
+
   const [form, setForm] = useState<OnboardingPayload>({
     ageGroup: "",
     gender: "",
@@ -57,8 +29,15 @@ export default function OnboardingPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, TOTAL_STEPS));
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
+  const nextStep = () => {
+    setDirection(1);
+    setStep((prev) => Math.min(prev + 1, 6));
+  };
+
+  const prevStep = () => {
+    setDirection(-1);
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
 
   const handleSubmit = async () => {
     try {
@@ -86,58 +65,104 @@ export default function OnboardingPage() {
     }
   };
 
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 50 : -50,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? 50 : -50,
+      opacity: 0,
+    }),
+  };
+
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          <Step1Space
+            value={form.spaceType}
+            onSelect={updateField("spaceType")}
+            onNext={nextStep}
+            onPrev={() => navigate(-1)}
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
+          />
+        );
+      case 2:
+        return (
+          <Step2Mood
+            value={form.moodType}
+            onSelect={updateField("moodType")}
+            onNext={nextStep}
+            onPrev={prevStep}
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
+          />
+        );
+      case 3:
+        return (
+          <Step3Age
+            value={form.ageGroup}
+            onSelect={updateField("ageGroup")}
+            onNext={nextStep}
+            onPrev={prevStep}
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
+          />
+        );
+      case 4:
+        return (
+          <Step4Gender
+            value={form.gender}
+            onSelect={updateField("gender")}
+            onNext={nextStep}
+            onPrev={prevStep}
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
+          />
+        );
+      case 5:
+        return (
+          <Step5Result
+            moodLabel={form.moodType}
+            spaceLabel={form.spaceType}
+            onPrev={prevStep}
+            onSubmit={nextStep}
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
+          />
+        );
+      case 6:
+        return <Step6Explanation onPrev={prevStep} onSubmit={handleSubmit} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center ">
-      {step === 1 && (
-        <Step1Space
-          value={form.spaceType}
-          onSelect={updateField("spaceType")}
-          onNext={nextStep}
-          onPrev={() => navigate(-1)}
-          currentStep={step}
-          totalSteps={TOTAL_STEPS}
-        />
-      )}
-      {step === 2 && (
-        <Step2Mood
-          value={form.moodType}
-          onSelect={updateField("moodType")}
-          onNext={nextStep}
-          onPrev={prevStep}
-          currentStep={step}
-          totalSteps={TOTAL_STEPS}
-        />
-      )}
-      {step === 3 && (
-        <Step3Age
-          value={form.ageGroup}
-          onSelect={updateField("ageGroup")}
-          onNext={nextStep}
-          onPrev={prevStep}
-          currentStep={step}
-          totalSteps={TOTAL_STEPS}
-        />
-      )}
-      {step === 4 && (
-        <Step4Gender
-          value={form.gender}
-          onSelect={updateField("gender")}
-          onNext={nextStep}
-          onPrev={prevStep}
-          currentStep={step}
-          totalSteps={TOTAL_STEPS}
-        />
-      )}
-      {step === 5 && (
-        <Step5Result
-          moodLabel={form.moodType}
-          spaceLabel={form.spaceType}
-          onPrev={prevStep}
-          onSubmit={handleSubmit}
-          currentStep={step}
-          totalSteps={TOTAL_STEPS}
-        />
-      )}
+    <div className="min-h-screen flex items-center justify-center">
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={step}
+          custom={direction}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            x: { type: "spring", stiffness: 300, damping: 30 },
+            opacity: { duration: 0.2 },
+          }}
+          className="w-full flex justify-center"
+        >
+          {renderStep()}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

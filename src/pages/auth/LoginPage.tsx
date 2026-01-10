@@ -91,16 +91,28 @@ export default function LoginPage() {
     } catch (error) {
       if (axios.isAxiosError<LoginErrorResponse>(error)) {
         const { status, data } = error.response ?? {};
+
         if (status === 401) {
-          setError(
-            data?.message ?? "이메일 또는 비밀번호가 올바르지 않습니다.",
-          );
-        } else {
-          setError("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+          setError(data?.message ?? "비밀번호가 일치하지 않습니다.");
+          return;
         }
-      } else {
-        setError("알 수 없는 오류가 발생했습니다.");
+
+        if (status === 404) {
+          setError(data?.message ?? "해당 이메일의 사용자를 찾을 수 없습니다.");
+          return;
+        }
+
+        setError(
+          data?.message ?? "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
+        );
+        return;
       }
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
+      );
     } finally {
       setLoading(false);
     }
@@ -151,28 +163,30 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4 px-2.5">
           <div className="relative">
-            <input
-              type="email"
-              value={email}
-              onChange={handleEmailChange}
-              placeholder="이메일 입력"
-              className={`w-full h-[50px] p-3 pr-10 bg-white border rounded-3xl focus:outline-none focus:ring-2 ${
-                emailError
-                  ? "border-red-500 focus:ring-red-400"
-                  : "border-[#5D3C28] focus:ring-[#5D3C28]"
-              } placeholder-[#8D7569]`}
-            />
+            <div className="relative">
+              <input
+                type="email"
+                value={email}
+                onChange={handleEmailChange}
+                placeholder="이메일 입력"
+                className={`w-full h-[50px] p-3 pr-10 bg-white border rounded-3xl focus:outline-none focus:ring-2 ${
+                  emailError
+                    ? "border-red-500 focus:ring-red-400"
+                    : "border-[#5D3C28] focus:ring-[#5D3C28]"
+                } placeholder-[#8D7569]`}
+              />
+              {email && (
+                <button
+                  type="button"
+                  onClick={() => handleClear("email")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5D3C28] text-xl"
+                >
+                  ×
+                </button>
+              )}
+            </div>
             {emailError && (
               <p className="text-red-500 text-xs mt-1">{emailError}</p>
-            )}
-            {email && (
-              <button
-                type="button"
-                onClick={() => handleClear("email")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5D3C28] text-xl"
-              >
-                ×
-              </button>
             )}
           </div>
 
@@ -184,7 +198,6 @@ export default function LoginPage() {
               placeholder="비밀번호 입력"
               className="w-full h-[50px] p-3 pr-10 bg-white border border-[#5D3C28] rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#5D3C28] placeholder-[#8D7569]"
             />
-
             {password && (
               <button
                 type="button"

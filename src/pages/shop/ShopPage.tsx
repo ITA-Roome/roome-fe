@@ -10,23 +10,29 @@ import { useMemo, useState } from "react";
 
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
-import SearchInput from "@/components/search/search/SearchInput";
+import SearchInput from "@/components/search/SearchInput";
 import ShopFilterPanel, {
   SortOption,
 } from "../../components/feed&shop/dropdown/ShopFilterPanel";
+import SearchEmptyState from "@/components/search/SearchEmptyState";
+import EmptyListState from "@/components/common/EmptyListState";
 
 import { useNavigate } from "react-router-dom";
 import { useToggleProductLike } from "@/hooks/useToggleProductLike";
 
+import PageContainer from "@/components/layout/PageContainer";
+import FadeIn from "@/components/common/FadeIn";
+
 export default function ShopPage() {
   const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState<SortOption>("인기순");
+  const [sortOption, setSortOption] = useState<SortOption | null>(null);
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   const navigate = useNavigate();
   const limit = 21;
 
   const order: ProductOrder = useMemo(() => {
+    if (!sortOption) return "RECOMMENDED";
     switch (sortOption) {
       case "인기순":
         return "POPULAR";
@@ -39,7 +45,11 @@ export default function ShopPage() {
     }
   }, [sortOption]);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const handleSort = (option: SortOption) => {
+    setSortOption((prev) => (prev === option ? null : option));
+  };
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useGetInfiniteProductsList(limit, searchQuery, selectedKeywords, order);
 
   const flat = useMemo(() => data?.items ?? [], [data]);
@@ -52,7 +62,7 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="relative isolate pt-16 max-w-md mx-auto px-5">
+    <PageContainer bottomPadding={false}>
       <section className="relative z-30">
         <SearchInput
           value={inputValue}
@@ -71,37 +81,40 @@ export default function ShopPage() {
         selected={selectedKeywords}
         onSelect={setSelectedKeywords}
         sort={sortOption}
-        onSort={setSortOption}
+        onSort={handleSort}
       />
 
       <div className="mt-4 pb-20">
-        {flat.length === 0 && !isFetchingNextPage ? (
-          <div className="py-20 text-center text-gray-500">
-            조건에 맞는 상품이 없습니다.
-          </div>
+        {flat.length === 0 && !isFetchingNextPage && !isLoading ? (
+          searchQuery ? (
+            <SearchEmptyState />
+          ) : (
+            <EmptyListState message="등록된 상품이 없습니다." />
+          )
         ) : (
           <InfiniteScrollGrid
             items={flat}
             keySelector={(item) => item.id}
             renderItem={(item) => (
-              <PhotoCard
-                key={item.id}
-                id={item.id}
-                imageUrl={item.thumbnailUrl}
-                title={item.name}
-                price={item.price}
-                subtitle={item.shop.name}
-                isLiked={item.isLiked}
-                onLike={() => toggleLike(item.id)}
-                onClick={() => navigate(`/shop/${item.id}`)}
-              />
+              <FadeIn key={item.id}>
+                <PhotoCard
+                  id={item.id}
+                  imageUrl={item.thumbnailUrl}
+                  title={item.name}
+                  price={item.price}
+                  subtitle={item.shop.name}
+                  isLiked={item.isLiked}
+                  onLike={() => toggleLike(item.id)}
+                  onClick={() => navigate(`/shop/${item.id}`)}
+                />
+              </FadeIn>
             )}
             loadMore={fetchNextPage}
             hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
+            isFetchingNextPage={isFetchingNextPage || isLoading}
           />
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -3,59 +3,61 @@ import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
 import TabMenu from "@/components/board/TabMenu";
 import { UserApi } from "@/api/user";
-import type { UserLikeProduct, UserLikeReference } from "@/types/user";
+import type { UserScrapProduct, UserScrapReference } from "@/types/user";
 import { ProductApi } from "@/api/product";
 import { ReferenceApi } from "@/api/reference";
 
 export default function LikeBoardPage() {
   const [tab, setTab] = useState<"reference" | "product">("reference");
-  const [likedProducts, setLikedProducts] = useState<UserLikeProduct[]>([]);
-  const [likedReferences, setLikedReferences] = useState<UserLikeReference[]>(
+  const [scrapProducts, setScrapProducts] = useState<UserScrapProduct[]>([]);
+  const [scrapReferences, setScrapReferences] = useState<UserScrapReference[]>(
     [],
   );
 
-  const fetchLikedProducts = useCallback(async () => {
+  const fetchScrapProducts = useCallback(async () => {
     try {
-      const res = await UserApi.fetchUserLikedProducts();
+      const res = await UserApi.fetchUserScrapProducts();
 
       if (!res.isSuccess || !res.data) {
         console.error("좋아요 상품 조회 실패:", res.message);
-        setLikedProducts([]);
+        setScrapProducts([]);
         return;
       }
 
-      setLikedProducts(res.data.userLikeProductList ?? []);
+      setScrapProducts(res.data.userScrapProductList ?? []);
     } catch (error) {
       console.error("좋아요 상품 조회 중 오류:", error);
     }
   }, []);
 
-  const fetchLikedReferences = useCallback(async () => {
+  const fetchScrapReferences = useCallback(async () => {
     try {
-      const res = await UserApi.fetchUserLikedReferences();
+      const res = await UserApi.fetchUserScrapReferences();
       if (!res.isSuccess || !res.data) {
         console.error("좋아요 레퍼런스 조회 실패:", res.message);
-        setLikedReferences([]);
+        setScrapReferences([]);
         return;
       }
 
-      setLikedReferences(res.data.userLikeReferenceList ?? []);
+      setScrapReferences(res.data.userScrapReferenceList ?? []);
     } catch (err) {
       console.error("좋아요 레퍼런스 조회 중 오류:", err);
     }
   }, []);
 
   useEffect(() => {
-    fetchLikedProducts();
-    fetchLikedReferences();
-  }, [fetchLikedProducts, fetchLikedReferences]);
+    fetchScrapProducts();
+    fetchScrapReferences();
+  }, [fetchScrapProducts, fetchScrapReferences]);
 
   const handleProductToggleLike = useCallback(async (productId: number) => {
     try {
       const res = await ProductApi.toggleProductLike(productId);
-      if (!res?.liked) {
-        setLikedProducts((prev) => prev.filter((p) => p.id !== productId));
-      }
+      setScrapProducts((prev) =>
+        prev.map((p) =>
+          p.id === productId ? { ...p, isLiked: res?.liked ?? p.isLiked } : p,
+        ),
+      );
     } catch (error) {
       console.error("좋아요 토글 실패: ", error);
     }
@@ -64,11 +66,13 @@ export default function LikeBoardPage() {
   const handleReferenceToggleLike = useCallback(async (referenceId: number) => {
     try {
       const res = await ReferenceApi.toggleReferenceLike(referenceId);
-      if (!res?.liked) {
-        setLikedReferences((prev) =>
-          prev.filter((p) => p.referenceId !== referenceId),
-        );
-      }
+      setScrapReferences((prev) =>
+        prev.map((p) =>
+          p.referenceId === referenceId
+            ? { ...p, isLiked: res?.liked ?? p.isLiked }
+            : p,
+        ),
+      );
     } catch (error) {
       console.error("좋아요 토글 실패: ", error);
     }
@@ -80,13 +84,13 @@ export default function LikeBoardPage() {
 
       {tab === "product" && (
         <>
-          {likedProducts.length === 0 ? (
+          {scrapProducts.length === 0 ? (
             <p className="py-16 text-center text-primary-700">
-              좋아요한 상품이 없습니다!
+              스트랩한 상품이 없습니다!
             </p>
           ) : (
             <InfiniteScrollGrid
-              items={likedProducts}
+              items={scrapProducts}
               keySelector={(it) => it.id}
               renderItem={(it) => (
                 <PhotoCard
@@ -94,7 +98,7 @@ export default function LikeBoardPage() {
                   title={it.name}
                   price={it.price}
                   imageUrl={it.imageList?.[0]}
-                  isLiked={true}
+                  isLiked={it.isLiked}
                   onLike={() => handleProductToggleLike(it.id)}
                   showInfo={true}
                 />
@@ -110,13 +114,13 @@ export default function LikeBoardPage() {
 
       {tab === "reference" && (
         <>
-          {likedReferences.length === 0 ? (
+          {scrapReferences.length === 0 ? (
             <p className="py-16 text-center text-primary-700">
-              좋아요한 레퍼런스가 없습니다!
+              스트랩한 레퍼런스가 없습니다!
             </p>
           ) : (
             <InfiniteScrollGrid
-              items={likedReferences}
+              items={scrapReferences}
               keySelector={(it) => it.referenceId}
               renderItem={(it) => (
                 <PhotoCard
@@ -124,7 +128,7 @@ export default function LikeBoardPage() {
                   title={it.nickname}
                   price={0}
                   imageUrl={it.imageUrlList?.[0]}
-                  isLiked={true}
+                  isLiked={it.isLiked}
                   onLike={() => handleReferenceToggleLike(it.referenceId)}
                   showInfo={false}
                 />

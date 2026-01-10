@@ -29,6 +29,12 @@ const AUTH_FREE_PATHS = [
   "/api/auth/kakao/callback",
 ];
 
+const NO_REISSUE_PATHS = [
+  "/api/auth/logout",
+  "/api/auth/withdraw",
+  "/api/auth/password/confirm",
+];
+
 apiClient.interceptors.request.use((config) => {
   if (config.data instanceof FormData) {
     delete config.headers["Content-Type"];
@@ -75,7 +81,8 @@ apiClient.interceptors.response.use(
       status === 401 &&
       config &&
       !config._retry &&
-      !AUTH_FREE_PATHS.some((p) => config.url?.includes(p))
+      !AUTH_FREE_PATHS.some((p) => config.url?.includes(p)) &&
+      !NO_REISSUE_PATHS.some((p) => config.url?.includes(p))
     ) {
       config._retry = true;
 

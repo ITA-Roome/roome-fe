@@ -1,4 +1,4 @@
-import OnboardingResultIcon from "@/assets/onboarding/Onboarding_result.svg?react";
+import OnboardingResultIcon from "@/assets/onboarding/result/Onboarding_result.svg?react";
 import OnboardingLayout from "./OnboardingLayout";
 
 type Step5ResultProps = {

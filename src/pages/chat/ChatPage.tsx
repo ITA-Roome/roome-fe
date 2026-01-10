@@ -9,9 +9,6 @@ export type Message = {
   content: string;
 };
 
-const HEADER = 64;
-const FOOTER = 80;
-
 const STORAGE_KEY = "chatMessages";
 
 /**
@@ -63,6 +60,13 @@ export default function ChatPage() {
     }
   }, [storageKey, defaultBotMessages]);
 
+  useEffect(() => {
+    // 대화가 복원된 뒤 옵션이 비어 있으면 기본 질문 두 개를 노출
+    if (isHydrated && options.length === 0) {
+      setOptions(["어떤 공간을 꾸미고 싶으신가요?", "찾으시는 제품이 있나요?"]);
+    }
+  }, [isHydrated, options.length]);
+
   // 2) 복원 후에만 저장 (Strict Mode 중복 실행 방지)
   useEffect(() => {
     if (!isHydrated) return; // 초기 빈 상태로 덮어쓰는 것 방지
@@ -82,16 +86,19 @@ export default function ChatPage() {
       setLoading(true);
 
       try {
-        const res = await ChatApi.sendRecommendation({
+        const res = await ChatApi.chatMessage({
           sessionId,
           inputType,
           message: trimmed,
         });
 
-        setSessionId(res.sessionId);
-        setOptions(res.options ?? []);
+        setSessionId(res.data?.sessionId ?? null);
+        setOptions(res.data?.options ?? []);
 
-        setMessages((prev) => [...prev, { role: "bot", content: res.message }]);
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", content: res.data?.message ?? "..." },
+        ]);
       } catch (error) {
         console.error("챗봇 호출 실패:", error);
         setMessages((prev) => [
@@ -114,37 +121,33 @@ export default function ChatPage() {
   };
 
   return (
-    <div
-      className="max-w-md mx-auto flex flex-col"
-      style={{
-        // 전체 높이에서 Header + Footer 제거 → ChatPage 영역 확보
-        height: `calc(100vh - ${HEADER + FOOTER}px)`,
-      }}
-    >
-      {/* 위~입력창 사이가 채팅 영역 */}
-      <div className="flex-1 overflow-hidden flex flex-col whitespace-pre-line">
-        <MessageList messages={messages} />
+    <div className="h-full flex flex-col">
+      {/* 채팅 영역 */}
+      <div className="flex-1 min-h-0 overflow-y-auto whitespace-pre-line px-4">
+        <MessageList messages={messages} className="h-full" />
       </div>
 
-      {/* 옵션 버튼 */}
-      {options.length > 0 && (
-        <div className="px-4 pb-2 flex flex-wrap gap-2">
-          {options.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => handleOptionClick(opt)}
-              className="px-3 py-2 rounded-full border border-primary-700 text-sm bg-white active:bg-primary-50"
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="shrink-0">
+        {/* 옵션 버튼 */}
+        {options.length > 0 && (
+          <div className="px-4 pb-2 flex flex-wrap gap-2">
+            {options.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => handleOptionClick(opt)}
+                className="px-3 py-2 rounded-full border border-primary-700 text-sm bg-white active:bg-primary-50"
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        )}
 
-      {/* 입력창 */}
-      <div className="px-4 py-3">
-        <ChatInput onSend={handleSend} disabled={loading} />
+        {/* 입력창 */}
+        <div className="px-4 py-3">
+          <ChatInput onSend={handleSend} disabled={loading} />
+        </div>
       </div>
     </div>
   );

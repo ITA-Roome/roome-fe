@@ -1,16 +1,6 @@
 import { useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import clsx from "clsx";
-
-import BookmarkIcon from "@/assets/icons/bookmark.svg?react";
-import BookmarkFillIcon from "@/assets/icons/bookmark-fill.svg?react";
-import FavoriteIcon from "@/assets/icons/navBar/favorite.svg?react";
-import FavoriteFillIcon from "@/assets/icons/navBar/favorite-fill.svg?react";
-import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
-import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
-import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
 import CommentLogo from "@/assets/RoomeLogo/comment_icon.svg?react";
-import RoomeExport from "@/assets/RoomeLogo/roome_export.svg?react";
 
 import { useReferenceDetail } from "@/hooks/useReferenceDetail";
 import { useComments } from "@/hooks/comment/useComments";
@@ -21,6 +11,13 @@ import { useToggleReferenceLike } from "@/hooks/useToggleReferenceLike";
 import { useToggleReferenceScrap } from "@/hooks/useToggleReferenceScrap";
 import ChatInput from "@/components/chatbot/ChatInput";
 
+import PageContainer from "@/components/layout/PageContainer";
+import DetailImage from "@/components/detail/DetailImage";
+import DetailHeader from "@/components/detail/DetailHeader";
+import DetailProfile from "@/components/detail/DetailProfile";
+import DetailDescription from "@/components/detail/DetailDescription";
+import DetailRelatedGrid from "@/components/detail/DetailRelatedGrid";
+
 export default function FeedDetailPage() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
@@ -30,7 +27,6 @@ export default function FeedDetailPage() {
     return Number.isFinite(n) ? n : null;
   }, [productId]);
 
-  const [isDescOpen, setIsDescOpen] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
 
@@ -98,17 +94,17 @@ export default function FeedDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="relative isolate pt-16 max-w-md mx-auto pb-24 bg-primary-50 text-primary-700">
+      <PageContainer className="bg-primary-50 text-primary-700">
         <p className="font-body2">레퍼런스 정보를 불러오는 중입니다...</p>
-      </div>
+      </PageContainer>
     );
   }
 
   if (error || !reference) {
     return (
-      <div className="relative isolate pt-16 max-w-md mx-auto px-7 pb-24 bg-primary-50 text-primary-700">
+      <PageContainer className="bg-primary-50 text-primary-700">
         <p className="font-body2">레퍼런스 정보를 찾을 수 없습니다.</p>
-      </div>
+      </PageContainer>
     );
   }
 
@@ -116,136 +112,37 @@ export default function FeedDetailPage() {
   const referenceItems = reference.referenceItems || [];
 
   return (
-    <div className="relative isolate pt-16 max-w-md mx-auto px-5 pb-24 text-primary-700">
-      <section>
-        <div className="relative rounded-2xl aspect-4/3 overflow-hidden">
-          {mainImage && (
-            <img
-              src={mainImage}
-              alt={reference.name}
-              className="w-full h-full object-cover"
-            />
-          )}
-          <button
-            type="button"
-            aria-label="badge"
-            className="absolute right-3 top-3"
-          >
-            <RoomeFillIcon />
-          </button>
-        </div>
-      </section>
+    <PageContainer>
+      <DetailImage src={mainImage} alt={reference.name} showBadge={true} />
 
-      <section className="mt-3">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h2 className="font-heading1">{reference.name}</h2>
-          </div>
+      <DetailHeader
+        title={reference.name}
+        isLiked={reference.isLiked}
+        isScrapped={reference.isScrapped}
+        isTogglingLike={isTogglingLike}
+        isTogglingScrap={isTogglingScrap}
+        onToggleLike={() => toggleLike(reference.referenceId)}
+        onToggleScrap={() => toggleScrap(reference.referenceId)}
+        onShare={() => {}}
+      />
 
-          <div className="flex items-center gap-1">
-            <button type="button" aria-label="공유" className="p-2">
-              <RoomeExport className="w-6 h-6 text-primary-700 fill-none" />
-            </button>
-            <button
-              type="button"
-              aria-label={reference.isScrapped ? "스크랩 취소" : "스크랩"}
-              className="p-2"
-              disabled={isTogglingScrap}
-              onClick={() => toggleScrap(reference.referenceId)}
-            >
-              {reference.isScrapped ? (
-                <BookmarkFillIcon className="w-6 h-6 text-primary-700" />
-              ) : (
-                <BookmarkIcon className="w-6 h-6 text-primary-50" />
-              )}
-            </button>
-            <button
-              type="button"
-              aria-label={reference.isLiked ? "좋아요 취소" : "좋아요"}
-              className="p-2"
-              disabled={isTogglingLike}
-              onClick={() => toggleLike(reference.referenceId)}
-            >
-              {reference.isLiked ? (
-                <FavoriteFillIcon className="w-6 h-6 text-point" />
-              ) : (
-                <FavoriteIcon className="w-6 h-6 text-primary-50" />
-              )}
-            </button>
-          </div>
-        </div>
-      </section>
+      <DetailProfile
+        name={reference.userName}
+        imageUrl={reference.userProfileUrl}
+      />
 
-      <section className="mt-15">
-        <div className="flex items-center gap-3">
-          {reference.userProfileUrl && (
-            <img
-              src={reference.userProfileUrl}
-              alt={reference.userName}
-              className="w-11 h-11 rounded-full object-cover"
-            />
-          )}
-          <div>
-            <p className="font-body1">{reference.userName}</p>
-          </div>
-        </div>
-      </section>
+      <DetailDescription description={reference.description} />
 
-      <section className="mt-6">
-        <p
-          className={clsx(
-            "font-body3 text-primary-700",
-            isDescOpen ? "" : "line-clamp-2",
-          )}
-        >
-          {reference.description}
-        </p>
-
-        <div className="mt-2 flex justify-center">
-          <button
-            type="button"
-            onClick={() => setIsDescOpen((prev) => !prev)}
-            className="flex items-center gap-x-2 font-caption text-primary-700"
-          >
-            {isDescOpen ? (
-              <>
-                <ArrowUpIcon className="w-3 h-3" />
-                <span>설명 접기</span>
-              </>
-            ) : (
-              <>
-                <ArrowDownIcon className="w-3 h-3" />
-                <span>설명 더보기</span>
-              </>
-            )}
-          </button>
-        </div>
-      </section>
-
-      <section className="mt-15">
-        <p className="mb-3 font-body3 text-primary-700">사용된 가구</p>
-        {referenceItems.length === 0 ? (
-          <p className="font-caption text-primary-400">관련 가구가 없습니다.</p>
-        ) : (
-          <div className="grid grid-cols-3 gap-3">
-            {referenceItems.slice(0, 6).map((item) => (
-              <div
-                key={item.productId}
-                className="aspect-4/3 rounded-xl overflow-hidden bg-primary-200 cursor-pointer"
-                onClick={() => navigate(`/shop/${item.productId}`)}
-              >
-                {item.thumbnailUrl && (
-                  <img
-                    src={item.thumbnailUrl}
-                    alt={item.productName}
-                    className="w-full h-full object-cover"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+      <DetailRelatedGrid
+        title="사용된 가구"
+        items={referenceItems.map((item) => ({
+          id: item.productId,
+          imageUrl: item.thumbnailUrl,
+          name: item.productName,
+        }))}
+        emptyMessage="관련 가구가 없습니다."
+        onItemClick={(productId) => navigate(`/shop/${productId}`)}
+      />
 
       <section className="mt-15">
         <p className="mb-3 font-body3 text-primary-700">댓글</p>
@@ -309,6 +206,6 @@ export default function FeedDetailPage() {
           </div>
         )}
       </section>
-    </div>
+    </PageContainer>
   );
 }

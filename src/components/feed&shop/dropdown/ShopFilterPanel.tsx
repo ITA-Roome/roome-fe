@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ArrowDownIcon from "@/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg?react";
+import { AnimatePresence, motion } from "framer-motion";
 
 import Cozy from "@/assets/filter/Cozy.svg?react";
 import Living from "@/assets/filter/Living.svg?react";
@@ -35,7 +36,7 @@ const FILTER_ICONS: Record<
 interface ShopFilterPanelProps {
   selected: string[];
   onSelect: (selected: string[]) => void;
-  sort: SortOption;
+  sort: SortOption | null;
   onSort: (sort: SortOption) => void;
 }
 
@@ -72,58 +73,67 @@ export default function ShopFilterPanel({
         </button>
       </div>
 
-      {isOpen && (
-        <div className="animate-fade-in-down">
-          <section className="mt-1">
-            <div className="grid grid-cols-3 gap-2">
-              {KEYWORDS.map((label) => {
-                const on = selected.includes(label);
-                const Icon = FILTER_ICONS[label];
-                return (
-                  <button
-                    key={label}
-                    type="button"
-                    onClick={() => toggleKeyword(label)}
-                    className={[
-                      "flex items-center justify-center w-full gap-1 px-1 py-2 rounded-full font-caption transition-all",
-                      on
-                        ? "bg-primary-700 text-white border border-primary-700"
-                        : "bg-white text-primary-700 border border-primary-200",
-                    ].join(" ")}
-                  >
-                    {Icon && <Icon className="w-4 h-4" />}
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-          <section className="mt-4 mb-6">
-            <div className="flex gap-2 justify-start">
-              {(["인기순", "최신순", "가격순"] as SortOption[]).map((label) => {
-                const on = sort === label;
-                const Icon = FILTER_ICONS[label];
-                return (
-                  <button
-                    key={label}
-                    type="button"
-                    onClick={() => onSort(label)}
-                    className={[
-                      "flex items-center justify-center w-[75px] gap-1 px-1 py-2 rounded-full font-caption transition-all",
-                      on
-                        ? "bg-primary-700 text-white border border-primary-700"
-                        : "bg-white text-primary-700 border border-primary-200",
-                    ].join(" ")}
-                  >
-                    {Icon && <Icon className="w-4 h-4" />}
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+          >
+            <section className="mt-1">
+              <div className="grid grid-cols-3 gap-2">
+                {KEYWORDS.map((label) => {
+                  const on = selected.includes(label);
+                  const Icon = FILTER_ICONS[label];
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => toggleKeyword(label)}
+                      className={[
+                        "flex items-center justify-center w-full gap-1 px-1 py-2 rounded-full font-caption transition-all",
+                        on
+                          ? "bg-primary-700 text-white border border-primary-700"
+                          : "bg-white text-primary-700 border border-primary-200",
+                      ].join(" ")}
+                    >
+                      {Icon && <Icon className="w-4 h-4" />}
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+            <section className="mt-4 mb-6">
+              <div className="flex gap-2 justify-start">
+                {(["인기순", "최신순", "가격순"] as SortOption[]).map(
+                  (label) => {
+                    const on = sort === label;
+                    const Icon = FILTER_ICONS[label];
+                    return (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => onSort(label)}
+                        className={[
+                          "flex items-center justify-center w-[75px] gap-1 px-1 py-2 rounded-full font-caption transition-all",
+                          on
+                            ? "bg-primary-700 text-white border border-primary-700"
+                            : "bg-white text-primary-700 border border-primary-200",
+                        ].join(" ")}
+                      >
+                        {Icon && <Icon className="w-4 h-4" />}
+                        {label}
+                      </button>
+                    );
+                  },
+                )}
+              </div>
+            </section>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

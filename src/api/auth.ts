@@ -4,6 +4,7 @@ import {
   LoginRequest,
   LoginResponse,
   NicknameCheckResponse,
+  EmailExistResponse,
   OAuthCodeRequest,
   OAuthLoginResponse,
   SignupRequest,
@@ -33,6 +34,10 @@ export const AuthApi = {
     apiClient.get<NicknameCheckResponse>("/api/auth/check-nickname", {
       params: { nickname },
     }),
+  checkEmailExists: (email: string) =>
+    apiClient.get<EmailExistResponse>("/api/auth/check-email", {
+      params: { email },
+    }),
   requestEmailVerification: (payload: EmailVerificationRequest) =>
     apiClient.post<CommonResponse<void>>(
       "/api/auth/email-verification",
@@ -47,6 +52,13 @@ export const AuthApi = {
     apiClient.post<SignupResponse>("/api/auth/signup", payload),
   logout: async (): Promise<CommonResponse<null>> => {
     const { data } = await apiClient.post("/api/auth/logout");
+    return data;
+  },
+  passwordConfirm: async (password: string): Promise<CommonResponse<void>> => {
+    const { data } = await apiClient.post<CommonResponse<void>>(
+      "/api/auth/password/confirm",
+      { password },
+    );
     return data;
   },
   changePassword: async (

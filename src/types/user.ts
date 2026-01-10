@@ -23,7 +23,7 @@ export type ProductTag = {
   name: string;
 };
 
-export type UserLikeProduct = {
+export type UserScrapProduct = {
   id: number;
   name: string;
   category: string;
@@ -33,24 +33,31 @@ export type UserLikeProduct = {
   thumbnailKey: string;
   imageList: string[];
   tagList: ProductTag[];
+  likeCount: number;
+  scrapCount: number;
+  isLiked: boolean;
+  isScrapped: boolean;
   createdAt: string;
   updatedAt: string;
 };
 
-export type UserLikeProductResponse = {
-  userLikeProductList: UserLikeProduct[];
+export type UserScrapProductResponse = {
+  userScrapProductList: UserScrapProduct[];
 };
 
-export type UserLikeReference = {
+export type UserScrapReference = {
   referenceId: number;
   nickname: string;
   userId: number;
   imageUrlList: string[];
   scrapCount: number;
+  likeCount: number;
+  isScrapped: boolean;
+  isLiked: boolean;
 };
 
-export type UserLikeReferenceResponse = {
-  userLikeReferenceList: UserLikeReference[];
+export type UserScrapReferenceResponse = {
+  userScrapReferenceList: UserScrapReference[];
 };
 
 export type UserProfile = {

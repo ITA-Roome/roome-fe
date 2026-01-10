@@ -11,13 +11,13 @@ type SelectedData = {
 };
 
 export default function useGetInfiniteReferences(
-  keyWord: string = "bed",
+  keyWord?: string,
 ): UseInfiniteQueryResult<SelectedData, unknown> {
   return useInfiniteQuery<
     CommonResponse<ReferenceListResponse>,
     unknown,
     SelectedData,
-    string[],
+    (string | undefined)[],
     number
   >({
     queryKey: ["references", "list", keyWord],
@@ -26,7 +26,7 @@ export default function useGetInfiniteReferences(
       ReferenceApi.fetchReferences({
         keyWord,
         page: pageParam,
-        size: 21,
+        size: 22,
       }),
     getNextPageParam: (lastPage, allPages) => {
       const isLast = lastPage.data?.last ?? true;
@@ -45,5 +45,6 @@ export default function useGetInfiniteReferences(
         }));
       return { items };
     },
+    staleTime: 60 * 1000,
   });
 }

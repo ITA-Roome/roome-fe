@@ -1,10 +1,15 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
+import { isAxiosError } from "axios";
 
-import ProfileChangeIcon from "@/assets/icons/imgChange.svg?react";
+import ProfileChangeIcon from "@/assets/icons/imgChange.svg";
+import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
+
   const [originalNickname, setOriginalNickname] = useState("");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
 
@@ -15,6 +20,7 @@ export default function ProfilePage() {
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -118,6 +124,8 @@ export default function ProfilePage() {
 
   // 저장 요청
   const handleSave = async () => {
+    setSaveError(null);
+
     try {
       const formData = new FormData();
       formData.append("nickname", nickname);
@@ -129,7 +137,7 @@ export default function ProfilePage() {
       const res = await UserApi.updateUserProfile(formData);
 
       if (!res.isSuccess) {
-        alert(res.message);
+        setSaveError(res.message || "프로필 저장에 실패했습니다.");
         return;
       }
 
@@ -138,43 +146,60 @@ export default function ProfilePage() {
       setProfileImage(null);
 
       alert("프로필이 저장되었습니다!");
-    } catch (error) {
-      console.error("프로필 저장 실패:", error);
-      alert("프로필 저장 중 오류가 발생했습니다.");
+      navigate("/setting");
+    } catch (err: unknown) {
+      let message = "프로필 저장 중 오류가 발생했습니다.";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
+
+      if (isAxiosError(err)) {
+        message = err.response?.data?.message ?? message;
+      }
+
+      setSaveError(message);
     }
   };
 
   return (
-    <div className="min-h-screen relative">
-      <div className="pt-24 max-w-md mx-auto px-5 pb-40">
+    <div className="relative">
+      <div className="pt-20 max-w-md mx-auto px-5 pb-6">
         {/* 이미지 */}
-        <section className="flex flex-col items-center mt-6">
-          <div
-            onClick={handleImageClick}
-            className="relative w-[180px] h-[180px] rounded-full overflow-hidden bg-[#D7C7B5] cursor-pointer"
-          >
-            <img
-              src={previewImage ?? undefined}
-              alt="프로필 이미지 미리보기"
-              className="w-full h-full object-cover"
-            />
+        <section className="w-full flex justify-center mt-6">
+          {/* 바깥 래퍼: 버튼이 안 잘리게 */}
+          <div className="relative w-[180px] h-[180px] mx-auto overflow-visible">
+            {/* 원형 클리핑은 여기서만 */}
+            <div className="w-full h-full rounded-full overflow-hidden bg-[#D7C7B5]">
+              <img
+                src={previewImage ?? RoomeDefault}
+                alt="프로필 이미지 미리보기"
+                className="w-full h-full object-contain" // 원본 안 잘리게면 contain
+                // 꽉 채우고 싶으면 object-cover
+              />
+            </div>
 
+            {/* 버튼은 바깥 래퍼에 올려서 안 잘림 */}
             <button
               type="button"
-              className="absolute bottom-4 right-6 w-10 h-10 rounded-xl bg-primary-400 border flex items-center justify-center shadow-sm pointer-events-none"
+              onClick={handleImageClick}
+              className="absolute -bottom-2 right-1 w-10 h-10 rounded-xl bg-white z-30"
             >
-              <ProfileChangeIcon className="w-6 h-6" />
+              <img
+                src={ProfileChangeIcon}
+                alt="프로필 이미지 변경"
+                className="w-full h-full object-contain"
+              />
             </button>
-          </div>
 
-          <input
-            id="profileImageInput"
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImageChange}
-          />
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              className="hidden"
+            />
+          </div>
         </section>
 
         {/* 닉네임 */}
@@ -200,7 +225,6 @@ export default function ProfilePage() {
               {nicknameLoading ? "확인 중..." : "중복 확인"}
             </button>
           </div>
-
           {nicknameMessage && (
             <p
               className={`text-xs mt-1 ${nicknameChecked ? "text-green-600" : "text-red-500"}`}
@@ -212,6 +236,9 @@ export default function ProfilePage() {
 
         {/* 저장 버튼 */}
         <div className="mt-12">
+          {saveError && (
+            <p className="mb-2 text-sm text-red-500">{saveError}</p>
+          )}
           <button
             onClick={handleSave}
             disabled={!isSaveEnabled}
