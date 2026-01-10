@@ -8,9 +8,14 @@ import type { CommonResponse } from "@/types/common";
 import type { ProductItem, ProductListResponse } from "@/types/product";
 import { productKeys } from "@/constants/queryKeys";
 
-export type ProductOrder = "LATEST" | "PRICE_ASC" | "PRICE_DESC" | "POPULAR";
+export type ProductOrder =
+  | "LATEST"
+  | "PRICE_ASC"
+  | "PRICE_DESC"
+  | "POPULAR"
+  | "RECOMMENDED";
 
-const orderToSort = (order: ProductOrder): string[] => {
+const orderToSort = (order: ProductOrder): string[] | undefined => {
   switch (order) {
     case "PRICE_ASC":
       return ["price,ASC"];
@@ -19,8 +24,10 @@ const orderToSort = (order: ProductOrder): string[] => {
     case "POPULAR":
       return ["popularity,DESC", "id,DESC"];
     case "LATEST":
-    default:
       return ["id,DESC"];
+    case "RECOMMENDED":
+    default:
+      return undefined;
   }
 };
 

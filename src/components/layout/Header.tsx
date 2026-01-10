@@ -12,7 +12,7 @@ export default function Header() {
     (pathname.startsWith("/shop/") && pathname !== "/shop");
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center px-6 h-16 bg-white">
+    <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex items-center justify-center px-6 h-16 bg-white border-b border-primary-50/10">
       {isDetailPage && (
         <button
           type="button"

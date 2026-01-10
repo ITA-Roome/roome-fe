@@ -29,19 +29,19 @@ export default function Footer() {
             keyWord: "",
             page: pageParam,
             size: 21,
+            sort: ["id,DESC"],
           }),
         initialPageParam: 0,
         staleTime: 60 * 1000,
       });
     } else if (path === "/shop") {
-      // Default params from ShopPage
-      const order: ProductOrder = "POPULAR";
+      const order: ProductOrder = "LATEST";
       const limit = 21;
       const keyWord = undefined;
 
       queryClient.prefetchInfiniteQuery({
         queryKey: productKeys.list({
-          search: "",
+          search: undefined,
           order,
           limit,
           mood: undefined,
@@ -54,7 +54,7 @@ export default function Footer() {
             keyWord,
             mood: undefined,
             usage: undefined,
-            sort: ["popularity,DESC", "id,DESC"],
+            sort: ["id,DESC"],
           }),
         initialPageParam: 0,
         staleTime: 60_000,
