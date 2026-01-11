@@ -8,6 +8,7 @@ import type { UserProfile } from "@/types/user";
 
 import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
 import ConfirmModal from "@/components/setting/ConfirmModal";
+import PageContainer from "@/components/layout/PageContainer";
 
 export default function AccountPage() {
   const navigate = useNavigate();
@@ -134,8 +135,8 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="relative">
-      <div className="pt-18 max-w-md mx-auto px-3 pb-6">
+    <PageContainer className="h-dvh font-semibold">
+      <div className="flex h-full flex-col">
         <main className="flex flex-col items-center">
           {/* 여기만 폭 제한 */}
           <div className="w-full max-w-sm px-8">
@@ -155,7 +156,7 @@ export default function AccountPage() {
                   />
                 )}
               </div>
-              <p className="mt-4 text-sm text-[#5D3C28]">
+              <p className="mt-4 text-sm text-primary-700">
                 {isLoading
                   ? "불러오는 중 ..."
                   : (userInfo?.nickname ?? "닉네임을 불러오지 못했어요.")}
@@ -171,32 +172,32 @@ export default function AccountPage() {
               {detailItems.map((item) => (
                 <div
                   key={item.label}
-                  className="flex justify-between items-center pb-3 border-b border-[#C7B5A1]"
+                  className="flex justify-between items-center pb-3 border-b border-primary-200"
                 >
-                  <span>{item.label}</span>
-                  <span>{item.value}</span>
+                  <span className="text-primary-700">{item.label}</span>
+                  <span className="text-primary-200">{item.value}</span>
                 </div>
               ))}
             </section>
           </div>
-
-          <section className="w-full mt-10 space-y-3">
-            <button
-              type="button"
-              onClick={() => setShowConfirmStep1(true)}
-              className="w-full h-12 rounded-3xl bg-primary-700 text-[#FFFDF4] text-[14px]"
-            >
-              회원 탈퇴
-            </button>
-            <button
-              type="button"
-              onClick={handleChangePassword}
-              className="w-full h-12 rounded-3xl bg-primary-700 text-[#FFFDF4] text-[14px]"
-            >
-              비밀번호 변경
-            </button>
-          </section>
         </main>
+
+        <section className="mt-auto w-full space-y-3">
+          <button
+            type="button"
+            onClick={() => setShowConfirmStep1(true)}
+            className="w-full h-13 rounded-full bg-primary-700 text-[#FFFDF4] text-[14px]"
+          >
+            회원 탈퇴
+          </button>
+          <button
+            type="button"
+            onClick={handleChangePassword}
+            className="w-full h-13 rounded-full bg-primary-700 text-[#FFFDF4] text-[14px]"
+          >
+            비밀번호 변경
+          </button>
+        </section>
       </div>
 
       <ConfirmModal
@@ -238,6 +239,6 @@ export default function AccountPage() {
           autoFocus: true,
         }}
       />
-    </div>
+    </PageContainer>
   );
 }

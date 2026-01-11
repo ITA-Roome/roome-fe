@@ -24,7 +24,7 @@ function SettingLayout() {
     <div className="h-dvh flex flex-col">
       <ScrollToTop />
       <SettingHeader title={title} />
-      <main className="flex-1 overflow-y-auto px-4 pb-12">
+      <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>
       <Footer />

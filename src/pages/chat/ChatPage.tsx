@@ -9,6 +9,7 @@ import {
   ChatProductResult,
   ChatMoodResult,
 } from "@/types/chatbot";
+import PageContainer from "@/components/layout/PageContainer";
 
 export type Message = {
   role: "user" | "bot";
@@ -168,38 +169,40 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* 채팅 영역 */}
-      <div className="flex-1 min-h-0 overflow-y-auto whitespace-pre-line px-4">
-        <MessageList
-          messages={messages}
-          className="h-full"
-          isLoading={loading}
-        />
-      </div>
+    <PageContainer className="h-dvh">
+      <div className="h-full flex flex-col overflow-hidden">
+        {/* 채팅 영역 */}
+        <div className="flex-1 min-h-0 overflow-y-auto whitespace-pre-line">
+          <MessageList
+            messages={messages}
+            className="h-full"
+            isLoading={loading}
+          />
+        </div>
 
-      <div className="shrink-0">
-        {/* 옵션 버튼 */}
-        {options.length > 0 && (
-          <div className="pt-2 px-4 pb-2 flex flex-wrap gap-2">
-            {options.map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => handleOptionClick(opt)}
-                className="px-3 py-2 rounded-full border border-primary-700 text-sm bg-white active:bg-primary-50"
-              >
-                {opt}
-              </button>
-            ))}
+        <div className="shrink-0">
+          {/* 옵션 버튼 */}
+          {options.length > 0 && (
+            <div className="pt-2 pb-2 flex flex-wrap gap-2">
+              {options.map((opt) => (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => handleOptionClick(opt)}
+                  className="px-3 py-2 rounded-full border border-primary-50 font-semibold text-sm text-primary-700 bg-white active:bg-primary-50"
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* 입력창 */}
+          <div className="py-1">
+            <ChatInput onSend={handleSend} disabled={loading} />
           </div>
-        )}
-
-        {/* 입력창 */}
-        <div className="px-4 py-3">
-          <ChatInput onSend={handleSend} disabled={loading} />
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

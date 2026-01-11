@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { InquiryApi } from "@/api/inquiry";
+import type { InquiryType } from "@/types/inquiry";
+import PageContainer from "@/components/layout/PageContainer";
 
-const inquiryTypeMap: Record<string, string> = {
+const inquiryTypeMap: Record<string, InquiryType> = {
   "계정/로그인 문제": "ACCOUNT_LOGIN",
   "오류 및 버그 신고": "BUG_REPORT",
   "제품 및 협업 문의": "PARTNERSHIP",
@@ -18,7 +20,7 @@ export default function ContactPage() {
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-  const inquiryTypes = [
+  const inquiryTypes: Array<keyof typeof inquiryTypeMap> = [
     "계정/로그인 문제",
     "오류 및 버그 신고",
     "제품 및 협업 문의",
@@ -27,7 +29,7 @@ export default function ContactPage() {
 
   const handleSubmit = async () => {
     if (!selectedType || !content.trim()) return;
-    const typeCode = inquiryTypeMap[selectedType] ?? "CUSTOM";
+    const typeCode = inquiryTypeMap[selectedType];
 
     setSubmitting(true);
     try {
@@ -67,35 +69,49 @@ export default function ContactPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const canSubmit = !!selectedType && !!content.trim() && !submitting;
+
   return (
-    <div>
-      <div className="pt-24 max-w-md mx-auto px-5">
-        <div className="relative max-w-sm mx-auto w-full" ref={wrapperRef}>
-          <div
-            className="border border-[#C7B5A1] rounded-lg px-4 py-3 flex justify-between items-center cursor-pointer bg-[#FFFDF4]"
+    <PageContainer>
+      <div className="px-6 pt-3">
+        {/* Dropdown */}
+        <div ref={wrapperRef} className="relative">
+          <button
+            type="button"
             onClick={() => setShowDropdown((prev) => !prev)}
+            className="
+              w-full h-[38px]
+              rounded-[6px]
+              bg-primary-50
+              px-4
+              flex items-center justify-between
+              text-primary-700 text-[12px]
+            "
           >
-            <span className="text-[#5D3C28] text-[14px]">
+            <span className="truncate">
               {selectedType || "문의 유형 선택하기"}
             </span>
+
             <span
-              className={`text-[#5D3C28] text-[20px] transition ${showDropdown ? "rotate-180" : ""}`}
+              className={`text-primary-700 text-[14px] transition-transform ${
+                showDropdown ? "rotate-180" : ""
+              }`}
             >
               ▼
             </span>
-          </div>
+          </button>
 
           {showDropdown && (
             <div
               className="
-              absolute left-0 right-0 top-[calc(100%+4px)]
-              border border-[#C7B5A1]
-              bg-[#FFFDF4]
-              rounded-lg
-              shadow-md
-              z-50
-              overflow-hidden
-            "
+                absolute left-0 top-[44px] w-full
+                bg-white
+                rounded-[10px]
+                border border-[#6D5A46]
+                shadow-[0_8px_20px_rgba(0,0,0,0.12)]
+                overflow-hidden
+                z-50
+              "
             >
               {inquiryTypes.map((type) => (
                 <button
@@ -106,9 +122,10 @@ export default function ContactPage() {
                     setShowDropdown(false);
                   }}
                   className="
-                    w-full text-left px-4 py-3
-                    text-[14px] text-[#5D3C28]
-                    hover:bg-[#EFE6DB]
+                    w-full text-left
+                    px-4 py-2
+                    text-[12px] text-[#5D3C28]
+                    hover:bg-[#FFF8E1]
                   "
                 >
                   {type}
@@ -123,30 +140,38 @@ export default function ContactPage() {
           onChange={(e) => setContent(e.target.value)}
           placeholder="문의 내용을 입력해주세요"
           className="
-            mt-5 w-full h-48
-            border border-[#C7B5A1]
-            rounded-lg
-            px-4 py-3
-            text-[#5D3C28]
-            bg-[#D7C7B5]/30
+            mt-4 w-full h-[300px]
+            rounded-[10px]
+            border border-primary-700
+            placeholder:text-primary-200
+            p-4
+            text-[13px] text-primary-700
+            placeholder:text-[#AFAFAF]
+            outline-none
             resize-none
-            focus:outline-none
-            text-[14px]
+            bg-white
           "
         />
 
-        <button
-          type="button"
-          disabled={!selectedType || !content.trim() || submitting}
-          onClick={handleSubmit}
-          className={`
-            w-full mt-4 py-3 rounded-3xl text-white text-[14px] transition
-            ${selectedType && content ? "bg-primary-700" : "bg-[#C7B5A1] opacity-50"}
-          `}
-        >
-          {submitting ? "제출 중..." : "문의 제출"}
-        </button>
+        {/* 오른쪽 작은 등록하기 버튼 */}
+        <div className="mt-3 w-full flex justify-end">
+          <button
+            type="button"
+            disabled={!canSubmit}
+            onClick={handleSubmit}
+            className="
+              h-[28px] px-4
+              rounded-full
+              text-[12px]
+              transition
+              disabled:opacity-40 disabled:cursor-not-allowed
+              bg-primary-200 text-white
+            "
+          >
+            {submitting ? "제출 중..." : "문의 제출"}
+          </button>
+        </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

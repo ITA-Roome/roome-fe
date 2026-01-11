@@ -22,7 +22,7 @@ function BoardLayout() {
     <div className="h-dvh flex flex-col">
       <ScrollToTop />
       <BoardHeader title={title} />
-      <main className="flex-1 min-h-0 overflow-hidden px-4 pb-18">
+      <main className="flex-1 min-h-0 overflow-y-auto">
         <Outlet />
       </main>
       <Footer />

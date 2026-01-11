@@ -4,6 +4,7 @@ import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
 import ConfirmModal from "@/components/setting/ConfirmModal";
+import PageContainer from "@/components/layout/PageContainer";
 
 export default function SettingPage() {
   const navigate = useNavigate();
@@ -56,9 +57,9 @@ export default function SettingPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto px-5">
+    <PageContainer>
       {/* 프로필 영역 */}
-      <div className="flex flex-col items-center mt-20">
+      <div className="flex flex-col items-center mt-6">
         <div className="w-40 h-40 bg-[#D4CFC8] rounded-full overflow-hidden">
           {profileImage ? (
             <img
@@ -74,27 +75,29 @@ export default function SettingPage() {
             />
           )}
         </div>
-        <p className="mt-4 text-[16px] text-[#5D3C28]">{nickname}</p>
+        <p className="mt-4 font-semibold text-[15px] text-primary-700">
+          {nickname}
+        </p>
       </div>
 
       {/* 메뉴 리스트 (닉네임과 로그아웃 사이 가운데 배치) */}
       <div className="mt-12 flex flex-col gap-4">
         <button
-          className="w-full h-12 rounded-3xl bg-primary-700 text-white text-[15px]"
+          className="w-full h-13 rounded-full bg-primary-700 font-semibold text-white text-[15px]"
           onClick={() => navigate("/setting/profile")}
         >
           프로필 관리
         </button>
 
         <button
-          className="w-full h-12 rounded-3xl bg-primary-700 text-white text-[15px]"
+          className="w-full h-13 rounded-full bg-primary-700 font-semibold text-white text-[15px]"
           onClick={() => navigate("/setting/account")}
         >
           계정 정보
         </button>
 
         <button
-          className="w-full h-12 rounded-3xl bg-primary-700 text-white text-[15px]"
+          className="w-full h-13 rounded-full bg-primary-700 font-semibold text-white text-[15px]"
           onClick={() => navigate("/setting/inquiry")}
         >
           문의하기
@@ -104,7 +107,7 @@ export default function SettingPage() {
       {/* 로그아웃 버튼 */}
       <div className="mt-12 mb-6">
         <button
-          className="w-full h-12 rounded-3xl bg-point text-primary-700 text-[15px]"
+          className="w-full h-13 rounded-full bg-point text-primary-700 font-semibold text-[15px]"
           onClick={() => setLogoutConfirmOpen(true)}
         >
           로그아웃
@@ -124,6 +127,6 @@ export default function SettingPage() {
         }}
         closeOnBackdrop={!logoutLoading}
       />
-    </div>
+    </PageContainer>
   );
 }

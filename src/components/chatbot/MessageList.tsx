@@ -33,7 +33,7 @@ export default function MessageList({
   return (
     <div
       ref={listRef}
-      className={`flex-1 overflow-y-auto px-4 py-6 space-y-4 ${className}`}
+      className={`flex-1 overflow-y-auto py-6 space-y-4 ${className}`}
     >
       {messages.map((msg, i) =>
         msg.role === "user" ? (
