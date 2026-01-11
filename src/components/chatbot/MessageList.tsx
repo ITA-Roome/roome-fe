@@ -34,7 +34,11 @@ export default function MessageList({ messages, className = "" }: Props) {
         msg.role === "user" ? (
           <UserMessage key={i} content={msg.content} />
         ) : (
-          <BotMessage key={i} content={msg.content} />
+          <BotMessage
+            key={i}
+            content={msg.content}
+            resultData={msg.resultData}
+          />
         ),
       )}
     </div>

@@ -10,12 +10,25 @@ export enum ChatResponseType {
   RESULT = "RESULT",
 }
 
+// 결과 data가 올 때 product/reference 분리
+export enum ChatMoodType {
+  PRODUCT = "PRODUCT",
+}
+
 export type ChatProduct = {
   productId: number;
   name: string;
   price: number;
   imageUrl: string;
-  reason: string;
+  reason?: string;
+  advantage?: string;
+  mood?: string;
+  recommendedPlace?: string;
+};
+
+export type ChatResultData = {
+  chatMode?: string;
+  products?: ChatProduct[];
 };
 
 export type ChatMessageRequest = {
@@ -30,6 +43,7 @@ export type ChatMessageResponse = {
   message: string;
   options?: string[];
   data?: {
+    chatMode: ChatMoodType;
     products?: ChatProduct[];
   };
 };
