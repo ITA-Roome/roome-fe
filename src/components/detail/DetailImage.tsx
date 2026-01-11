@@ -1,5 +1,3 @@
-import RoomeFillIcon from "@/assets/RoomeLogo/roome-fill.svg?react";
-
 interface DetailImageProps {
   src: string;
   alt: string;
@@ -22,9 +20,7 @@ export default function DetailImage({
             type="button"
             aria-label="badge"
             className="absolute right-3 top-3"
-          >
-            <RoomeFillIcon />
-          </button>
+          ></button>
         )}
       </div>
     </section>
