@@ -68,21 +68,3 @@ export type UserProfile = {
   phoneNumber: string;
   email: string;
 };
-
-// 유저가 업로드한 레퍼런스 1개
-export type UserUploadedReference = {
-  referenceId: number;
-  name: string;
-  nickname: string;
-  userId: number;
-  imageUrlList: string[];
-  scrapCount: number;
-  likeCount: number;
-  isScrapped: boolean;
-  isLiked: boolean;
-};
-
-// 유저 업로드 레퍼런스 리스트 응답
-export type UserUploadedReferenceResponse = {
-  userUploadedReferenceList: UserUploadedReference[];
-};

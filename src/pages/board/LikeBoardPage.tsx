@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
 import TabMenu from "@/components/board/TabMenu";
@@ -9,8 +8,6 @@ import { ProductApi } from "@/api/product";
 import { ReferenceApi } from "@/api/reference";
 
 export default function LikeBoardPage() {
-  const navigate = useNavigate();
-
   const [tab, setTab] = useState<"reference" | "product">("reference");
   const [scrapProducts, setScrapProducts] = useState<UserScrapProduct[]>([]);
   const [scrapReferences, setScrapReferences] = useState<UserScrapReference[]>(
@@ -104,7 +101,6 @@ export default function LikeBoardPage() {
                   isLiked={it.isLiked}
                   onLike={() => handleProductToggleLike(it.id)}
                   showInfo={true}
-                  onClick={() => navigate(`/shop/${it.id}`)}
                 />
               )}
               columns="grid-cols-3"
@@ -135,7 +131,6 @@ export default function LikeBoardPage() {
                   isLiked={it.isLiked}
                   onLike={() => handleReferenceToggleLike(it.referenceId)}
                   showInfo={false}
-                  onClick={() => navigate(`/feed/${it.referenceId}`)}
                 />
               )}
               columns="grid-cols-3"

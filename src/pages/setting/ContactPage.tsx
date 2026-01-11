@@ -44,7 +44,7 @@ export default function ContactPage() {
       alert("문의가 등록되었습니다!");
       setContent("");
       setSelectedType("");
-      navigate("/setting/inquiry", { replace: true });
+      navigate("/setting", { replace: true });
     } catch (err) {
       console.error("문의 등록 실패:", err);
       alert("문의 등록 중 오류가 발생했습니다.");

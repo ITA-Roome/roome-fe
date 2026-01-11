@@ -95,7 +95,7 @@ export default function SettingPage() {
 
         <button
           className="w-full h-12 rounded-3xl bg-primary-700 text-white text-[15px]"
-          onClick={() => navigate("/setting/inquiry")}
+          onClick={() => navigate("/setting/contact")}
         >
           문의하기
         </button>

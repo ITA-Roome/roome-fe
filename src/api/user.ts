@@ -6,9 +6,7 @@ import {
   UserScrapProductResponse,
   UserScrapReferenceResponse,
   UserProfile,
-  UserUploadedReferenceResponse,
 } from "@/types/user";
-import { InquiryListResponse } from "@/types/inquiry";
 
 export const UserApi = {
   onboardingSubmit: (payload: OnboardingPayload) =>
@@ -37,15 +35,6 @@ export const UserApi = {
     return data;
   },
 
-  fetchUserUploadedReferences: async (): Promise<
-    CommonResponse<UserUploadedReferenceResponse>
-  > => {
-    const { data } = await apiClient.get<
-      CommonResponse<UserUploadedReferenceResponse>
-    >("/api/user/references");
-    return data;
-  },
-
   fetchUserProfile: async (): Promise<CommonResponse<UserProfile>> => {
     const { data } =
       await apiClient.get<CommonResponse<UserProfile>>("/api/user/profile");
@@ -58,13 +47,6 @@ export const UserApi = {
     const { data } = await apiClient.patch<CommonResponse<UserProfile>>(
       "/api/user/profile",
       formData,
-    );
-    return data;
-  },
-
-  getInquiries: async (): Promise<InquiryListResponse> => {
-    const { data } = await apiClient.get<InquiryListResponse>(
-      "/api/user/inquiries",
     );
     return data;
   },

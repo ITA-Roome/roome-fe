@@ -33,7 +33,6 @@ import SettingPage from "@/pages/setting/SettingPage";
 import ProfilePage from "@/pages/setting/ProfilePage";
 import AccountPage from "@/pages/setting/AccountPage";
 import ChangePasswordPage from "@/pages/setting/ChangePasswordPage";
-import InquiryPage from "@/pages/setting/InquiryPage";
 import ContactPage from "@/pages/setting/ContactPage";
 
 function ProtectedRoute({ children }: PropsWithChildren) {
@@ -217,11 +216,7 @@ const router = createBrowserRouter([
         element: <ChangePasswordPage />,
       },
       {
-        path: "setting/inquiry",
-        element: <InquiryPage />,
-      },
-      {
-        path: "setting/inquiry/contact",
+        path: "setting/contact",
         element: <ContactPage />,
       },
     ],
