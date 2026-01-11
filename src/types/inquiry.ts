@@ -51,9 +51,13 @@ export const formatYYMMDD = (iso: string) => {
 const inquiryTypeLabel = (t: string) => {
   switch (t) {
     case "BUG_REPORT":
-      return "버그 신고";
+      return "오류 및 버그 신고";
     case "CUSTOM":
       return "기타 문의";
+    case "ACCOUNT_LOGIN":
+      return "계정/로그인 문제";
+    case "":
+      return "제품 및 협업 문의";
     default:
       return t; // 서버 값 그대로라도 보여주기
   }

@@ -112,7 +112,7 @@ export default function BoardPage() {
     },
     {
       title: "내가 공유한 레퍼런스",
-      images: referenceImages.slice(0, 4),
+      images: referenceImages,
       path: "/board/reference",
     },
   ];
