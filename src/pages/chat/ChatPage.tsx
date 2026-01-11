@@ -2,11 +2,16 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 import MessageList from "@/components/chatbot/MessageList";
 import ChatInput from "@/components/chatbot/ChatInput";
 import { ChatApi } from "@/api/chatbot";
-import { ChatInputType } from "@/types/chatbot";
+import {
+  ChatInputType,
+  ChatResponseType,
+  ChatResultData,
+} from "@/types/chatbot";
 
 export type Message = {
   role: "user" | "bot";
   content: string;
+  resultData?: ChatResultData;
 };
 
 const STORAGE_KEY = "chatMessages";
@@ -63,7 +68,7 @@ export default function ChatPage() {
   useEffect(() => {
     // 대화가 복원된 뒤 옵션이 비어 있으면 기본 질문 두 개를 노출
     if (isHydrated && options.length === 0) {
-      setOptions(["어떤 공간을 꾸미고 싶으신가요?", "찾으시는 제품이 있나요?"]);
+      setOptions(["인테리어 추천", "제품 추천"]);
     }
   }, [isHydrated, options.length]);
 
@@ -92,12 +97,28 @@ export default function ChatPage() {
           message: trimmed,
         });
 
+        const botContent =
+          res.data?.type === ChatResponseType.RESULT && res.data.data
+            ? (res.data.message ?? "추천 결과입니다.")
+            : (res.data?.message ?? "답변을 가져오지 못했습니다.");
+
         setSessionId(res.data?.sessionId ?? null);
-        setOptions(res.data?.options ?? []);
+        setOptions(
+          res.data?.type === ChatResponseType.RESULT
+            ? []
+            : (res.data?.options ?? []),
+        );
 
         setMessages((prev) => [
           ...prev,
-          { role: "bot", content: res.data?.message ?? "..." },
+          {
+            role: "bot",
+            content: botContent,
+            resultData:
+              res.data?.type === ChatResponseType.RESULT
+                ? res.data.data
+                : undefined,
+          },
         ]);
       } catch (error) {
         console.error("챗봇 호출 실패:", error);
