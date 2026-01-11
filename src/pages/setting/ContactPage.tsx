@@ -5,7 +5,7 @@ import { InquiryApi } from "@/api/inquiry";
 const inquiryTypeMap: Record<string, string> = {
   "계정/로그인 문제": "ACCOUNT_LOGIN",
   "오류 및 버그 신고": "BUG_REPORT",
-  "제품 및 협업 문의": "PRODUCT_COLLAB",
+  "제품 및 협업 문의": "PARTNERSHIP",
   "직접 작성": "CUSTOM",
 };
 
