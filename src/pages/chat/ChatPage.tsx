@@ -6,6 +6,8 @@ import {
   ChatInputType,
   ChatResponseType,
   ChatResultData,
+  ChatProductResult,
+  ChatMoodResult,
 } from "@/types/chatbot";
 
 export type Message = {
@@ -82,6 +84,25 @@ export default function ChatPage() {
     }
   }, [messages, isHydrated, storageKey]);
 
+  // 제품 추천인지 체크
+  const isProductResult = (data: unknown): data is ChatProductResult => {
+    return (
+      typeof data === "object" &&
+      data !== null &&
+      "products" in data &&
+      Array.isArray((data as ChatProductResult).products)
+    );
+  };
+
+  // 인테리어 추천인지 체크
+  const isMoodResult = (data: unknown): data is ChatMoodResult => {
+    return (
+      typeof data === "object" &&
+      data !== null &&
+      ("title" in data || "imageUrlList" in data)
+    );
+  };
+
   const sendToBot = useCallback(
     async (UserMessage: string, inputType: ChatInputType) => {
       const trimmed = UserMessage.trim();
@@ -102,6 +123,14 @@ export default function ChatPage() {
             ? (res.data.message ?? "추천 결과입니다.")
             : (res.data?.message ?? "답변을 가져오지 못했습니다.");
 
+        let resultData: ChatResultData | undefined;
+
+        if (isProductResult(res.data?.data)) {
+          resultData = res.data.data;
+        } else if (isMoodResult(res.data?.data)) {
+          resultData = res.data.data;
+        }
+
         setSessionId(res.data?.sessionId ?? null);
         setOptions(
           res.data?.type === ChatResponseType.RESULT
@@ -114,10 +143,7 @@ export default function ChatPage() {
           {
             role: "bot",
             content: botContent,
-            resultData:
-              res.data?.type === ChatResponseType.RESULT
-                ? res.data.data
-                : undefined,
+            resultData,
           },
         ]);
       } catch (error) {
@@ -145,13 +171,17 @@ export default function ChatPage() {
     <div className="h-full flex flex-col">
       {/* 채팅 영역 */}
       <div className="flex-1 min-h-0 overflow-y-auto whitespace-pre-line px-4">
-        <MessageList messages={messages} className="h-full" />
+        <MessageList
+          messages={messages}
+          className="h-full"
+          isLoading={loading}
+        />
       </div>
 
       <div className="shrink-0">
         {/* 옵션 버튼 */}
         {options.length > 0 && (
-          <div className="px-4 pb-2 flex flex-wrap gap-2">
+          <div className="pt-2 px-4 pb-2 flex flex-wrap gap-2">
             {options.map((opt) => (
               <button
                 key={opt}
