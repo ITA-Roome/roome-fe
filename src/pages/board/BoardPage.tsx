@@ -73,9 +73,20 @@ export default function BoardPage() {
       // 좋아요 썸네일 4칸 조합
       setLikePreviewImages(buildLikePreview(refImgs, prodImgs));
 
+      // 내가 공유한 레퍼런스
+      const myRefRes = await UserApi.fetchUserUploadedReferences();
+
+      const myRefImages =
+        myRefRes.isSuccess && myRefRes.data
+          ? ((myRefRes.data?.userUploadedReferenceList ?? [])
+              .map((r) => r.imageUrlList?.[0])
+              .filter(Boolean) as string[])
+          : [];
+
+      setReferenceImages(myRefImages.slice(0, 4));
+
       // 상담/레퍼런스는 API 준비되기 전까지 기존 더미 유지
       setConsultImages([chat1, chat2, chat3, chat2]);
-      setReferenceImages([chat1, chat2, chat3, chat1]);
     } catch (err) {
       console.error(err);
       setReferenceImages([]);
@@ -90,7 +101,7 @@ export default function BoardPage() {
   // 전체 보드 구성
   const boards: BoardItem[] = [
     {
-      title: "좋아요",
+      title: "내가 스트랩한 상품/레퍼런스",
       images: likePreviewImages,
       path: "/board/like",
     },

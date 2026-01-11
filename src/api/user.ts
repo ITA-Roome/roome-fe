@@ -6,6 +6,7 @@ import {
   UserScrapProductResponse,
   UserScrapReferenceResponse,
   UserProfile,
+  UserUploadedReferenceResponse,
 } from "@/types/user";
 import { InquiryListResponse } from "@/types/inquiry";
 
@@ -33,6 +34,15 @@ export const UserApi = {
     const { data } = await apiClient.get<
       CommonResponse<UserScrapReferenceResponse>
     >("/api/user/scraps/reference");
+    return data;
+  },
+
+  fetchUserUploadedReferences: async (): Promise<
+    CommonResponse<UserUploadedReferenceResponse>
+  > => {
+    const { data } = await apiClient.get<
+      CommonResponse<UserUploadedReferenceResponse>
+    >("/api/user/references");
     return data;
   },
 
