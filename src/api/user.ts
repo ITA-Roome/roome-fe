@@ -7,6 +7,7 @@ import {
   UserScrapReferenceResponse,
   UserProfile,
 } from "@/types/user";
+import { InquiryListResponse } from "@/types/inquiry";
 
 export const UserApi = {
   onboardingSubmit: (payload: OnboardingPayload) =>
@@ -47,6 +48,13 @@ export const UserApi = {
     const { data } = await apiClient.patch<CommonResponse<UserProfile>>(
       "/api/user/profile",
       formData,
+    );
+    return data;
+  },
+
+  getInquiries: async (): Promise<InquiryListResponse> => {
+    const { data } = await apiClient.get<InquiryListResponse>(
+      "/api/user/inquiries",
     );
     return data;
   },
