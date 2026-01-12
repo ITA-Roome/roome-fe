@@ -4,6 +4,7 @@ import ConsultCard from "@/components/board/ConsultCard";
 import img1 from "@/assets/icons/bed.svg";
 import img2 from "@/assets/icons/desk.svg";
 import img3 from "@/assets/icons/light.svg";
+import PageContainer from "@/components/layout/PageContainer";
 
 interface ConsultItem {
   id: number;
@@ -58,24 +59,24 @@ export default function ChatBoardPage() {
   ];
 
   return (
-    <div className="max-w-md mx-auto px-5 min-h-screen space-y-6">
-      <InfiniteScrollGrid
-        items={dummyConsultItems}
-        keySelector={(it) => it.id}
-        renderItem={(it) => (
-          <ConsultCard
-            title={it.title}
-            details={it.details}
-            images={it.images}
-          />
-        )}
-        columns="grid-cols-1"
-        gap="gap-6"
-        hasNextPage={false}
-        loadMore={() => {}}
-      />
-
-      <div className="h-20" />
-    </div>
+    <PageContainer>
+      <div className="min-h-screen space-y-6">
+        <InfiniteScrollGrid
+          items={dummyConsultItems}
+          keySelector={(it) => it.id}
+          renderItem={(it) => (
+            <ConsultCard
+              title={it.title}
+              details={it.details}
+              images={it.images}
+            />
+          )}
+          columns="grid-cols-1"
+          gap="gap-6"
+          hasNextPage={false}
+          loadMore={() => {}}
+        />
+      </div>
+    </PageContainer>
   );
 }

@@ -7,6 +7,7 @@ import { UserApi } from "@/api/user";
 import type { UserScrapProduct, UserScrapReference } from "@/types/user";
 import { ProductApi } from "@/api/product";
 import { ReferenceApi } from "@/api/reference";
+import PageContainer from "@/components/layout/PageContainer";
 
 export default function LikeBoardPage() {
   const navigate = useNavigate();
@@ -82,70 +83,76 @@ export default function LikeBoardPage() {
   }, []);
 
   return (
-    <div className="max-w-md mx-auto px-5 min-h-screen">
-      <TabMenu tab={tab} onChange={setTab} />
+    <PageContainer className="h-dvh">
+      <div className="flex h-full flex-col overflow-hidden">
+        <div className="shrink-0">
+          <TabMenu tab={tab} onChange={setTab} />
+        </div>
 
-      {tab === "product" && (
-        <>
-          {scrapProducts.length === 0 ? (
-            <p className="py-16 text-center text-primary-700">
-              스트랩한 상품이 없습니다!
-            </p>
-          ) : (
-            <InfiniteScrollGrid
-              items={scrapProducts}
-              keySelector={(it) => it.id}
-              renderItem={(it) => (
-                <PhotoCard
-                  id={it.id}
-                  title={it.name}
-                  price={it.price}
-                  imageUrl={it.imageList?.[0]}
-                  isLiked={it.isLiked}
-                  onLike={() => handleProductToggleLike(it.id)}
-                  showInfo={true}
-                  onClick={() => navigate(`/shop/${it.id}`)}
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          {tab === "product" && (
+            <>
+              {scrapProducts.length === 0 ? (
+                <p className="py-16 text-center text-primary-700">
+                  스크랩한 상품이 없습니다!
+                </p>
+              ) : (
+                <InfiniteScrollGrid
+                  items={scrapProducts}
+                  keySelector={(it) => it.id}
+                  renderItem={(it) => (
+                    <PhotoCard
+                      id={it.id}
+                      title={it.name}
+                      price={it.price}
+                      imageUrl={it.imageList?.[0]}
+                      isLiked={it.isLiked}
+                      onLike={() => handleProductToggleLike(it.id)}
+                      showInfo={true}
+                      onClick={() => navigate(`/shop/${it.id}`)}
+                    />
+                  )}
+                  columns="grid-cols-3"
+                  gap="gap-4"
+                  hasNextPage={false}
+                  loadMore={() => {}}
                 />
               )}
-              columns="grid-cols-3"
-              gap="gap-4"
-              hasNextPage={false}
-              loadMore={() => {}}
-            />
+            </>
           )}
-        </>
-      )}
 
-      {tab === "reference" && (
-        <>
-          {scrapReferences.length === 0 ? (
-            <p className="py-16 text-center text-primary-700">
-              스트랩한 레퍼런스가 없습니다!
-            </p>
-          ) : (
-            <InfiniteScrollGrid
-              items={scrapReferences}
-              keySelector={(it) => it.referenceId}
-              renderItem={(it) => (
-                <PhotoCard
-                  id={it.referenceId}
-                  title={it.nickname}
-                  price={0}
-                  imageUrl={it.imageUrlList?.[0]}
-                  isLiked={it.isLiked}
-                  onLike={() => handleReferenceToggleLike(it.referenceId)}
-                  showInfo={false}
-                  onClick={() => navigate(`/feed/${it.referenceId}`)}
+          {tab === "reference" && (
+            <>
+              {scrapReferences.length === 0 ? (
+                <p className="py-16 text-center text-primary-700">
+                  스크랩한 레퍼런스가 없습니다!
+                </p>
+              ) : (
+                <InfiniteScrollGrid
+                  items={scrapReferences}
+                  keySelector={(it) => it.referenceId}
+                  renderItem={(it) => (
+                    <PhotoCard
+                      id={it.referenceId}
+                      title={it.nickname}
+                      price={0}
+                      imageUrl={it.imageUrlList?.[0]}
+                      isLiked={it.isLiked}
+                      onLike={() => handleReferenceToggleLike(it.referenceId)}
+                      showInfo={false}
+                      onClick={() => navigate(`/feed/${it.referenceId}`)}
+                    />
+                  )}
+                  columns="grid-cols-3"
+                  gap="gap-4"
+                  hasNextPage={false}
+                  loadMore={() => {}}
                 />
               )}
-              columns="grid-cols-3"
-              gap="gap-4"
-              hasNextPage={false}
-              loadMore={() => {}}
-            />
+            </>
           )}
-        </>
-      )}
-    </div>
+        </div>
+      </div>
+    </PageContainer>
   );
 }

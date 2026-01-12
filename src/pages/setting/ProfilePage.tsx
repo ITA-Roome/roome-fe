@@ -6,6 +6,7 @@ import { isAxiosError } from "axios";
 
 import ProfileChangeIcon from "@/assets/icons/imgChange.svg";
 import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
+import PageContainer from "@/components/layout/PageContainer";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -163,79 +164,83 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="relative">
-      <div className="pt-20 max-w-md mx-auto px-5 pb-6">
-        {/* 이미지 */}
-        <section className="w-full flex justify-center mt-6">
-          {/* 바깥 래퍼: 버튼이 안 잘리게 */}
-          <div className="relative w-[180px] h-[180px] mx-auto overflow-visible">
-            {/* 원형 클리핑은 여기서만 */}
-            <div className="w-full h-full rounded-full overflow-hidden bg-[#D7C7B5]">
-              <img
-                src={previewImage ?? RoomeDefault}
-                alt="프로필 이미지 미리보기"
-                className="w-full h-full object-contain" // 원본 안 잘리게면 contain
-                // 꽉 채우고 싶으면 object-cover
+    <PageContainer className="h-dvh">
+      <div className="flex h-full flex-col">
+        <div>
+          {/* 이미지 */}
+          <section className="w-full flex justify-center mt-6">
+            {/* 바깥 래퍼: 버튼이 안 잘리게 */}
+            <div className="relative w-[180px] h-[180px] mx-auto overflow-visible">
+              {/* 원형 클리핑은 여기서만 */}
+              <div className="w-full h-full rounded-full overflow-hidden bg-[#D7C7B5]">
+                <img
+                  src={previewImage ?? RoomeDefault}
+                  alt="프로필 이미지 미리보기"
+                  className="w-full h-full object-contain" // 원본 안 잘리게면 contain
+                  // 꽉 채우고 싶으면 object-cover
+                />
+              </div>
+
+              {/* 버튼은 바깥 래퍼에 올려서 안 잘림 */}
+              <button
+                type="button"
+                onClick={handleImageClick}
+                className="absolute -bottom-2 right-1 w-10 h-10 rounded-xl bg-white z-30"
+              >
+                <img
+                  src={ProfileChangeIcon}
+                  alt="프로필 이미지 변경"
+                  className="w-full h-full object-contain"
+                />
+              </button>
+
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
               />
             </div>
+          </section>
 
-            {/* 버튼은 바깥 래퍼에 올려서 안 잘림 */}
-            <button
-              type="button"
-              onClick={handleImageClick}
-              className="absolute -bottom-2 right-1 w-10 h-10 rounded-xl bg-white z-30"
-            >
-              <img
-                src={ProfileChangeIcon}
-                alt="프로필 이미지 변경"
-                className="w-full h-full object-contain"
+          {/* 닉네임 */}
+          <div className="mt-10">
+            <label className="block text-primary-200 text-sm mb-1">
+              닉네임 변경하기
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={nickname}
+                onChange={handleNicknameChange}
+                className="w-full h-12 border text-primary-200 rounded-3xl pl-3 pr-24"
               />
-            </button>
 
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-              className="hidden"
-            />
+              <button
+                onClick={handleCheckNickname}
+                disabled={
+                  nickname.trim() === "" ||
+                  nickname === originalNickname ||
+                  nicknameLoading
+                }
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary-200 text-white px-3 py-1 rounded-3xl disabled:opacity-40"
+              >
+                {nicknameLoading ? "확인 중..." : "중복 확인"}
+              </button>
+            </div>
+            {nicknameMessage && (
+              <p
+                className={`text-xs mt-1 ${nicknameChecked ? "text-green-600" : "text-red-500"}`}
+              >
+                {nicknameMessage}
+              </p>
+            )}
           </div>
-        </section>
-
-        {/* 닉네임 */}
-        <div className="mt-10">
-          <label className="block text-[#5D3C28] text-sm mb-1">닉네임</label>
-          <div className="relative">
-            <input
-              type="text"
-              value={nickname}
-              onChange={handleNicknameChange}
-              className="w-full h-12 border rounded-3xl pl-3 pr-24"
-            />
-
-            <button
-              onClick={handleCheckNickname}
-              disabled={
-                nickname.trim() === "" ||
-                nickname === originalNickname ||
-                nicknameLoading
-              }
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#8D7569] text-white px-3 py-1 rounded-3xl disabled:opacity-40"
-            >
-              {nicknameLoading ? "확인 중..." : "중복 확인"}
-            </button>
-          </div>
-          {nicknameMessage && (
-            <p
-              className={`text-xs mt-1 ${nicknameChecked ? "text-green-600" : "text-red-500"}`}
-            >
-              {nicknameMessage}
-            </p>
-          )}
         </div>
 
         {/* 저장 버튼 */}
-        <div className="mt-12">
+        <div className="mt-auto">
           {saveError && (
             <p className="mb-2 text-sm text-red-500">{saveError}</p>
           )}
@@ -252,6 +257,6 @@ export default function ProfilePage() {
           </button>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
