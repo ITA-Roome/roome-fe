@@ -303,7 +303,7 @@ export default function SignupEmailPage() {
       // 201이면 성공 처리
       if (status === 201 && data.isSuccess) {
         alert("회원가입이 완료되었습니다. 로그인해 주세요.");
-        navigate("/");
+        navigate("/login");
         return;
       }
 

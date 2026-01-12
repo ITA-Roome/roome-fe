@@ -11,6 +11,7 @@ type OnboardingLayoutProps = {
   currentStep: number;
   totalSteps: number;
   centerTitle?: boolean;
+  overflowHidden?: boolean;
 };
 
 export default function OnboardingLayout({
@@ -22,6 +23,7 @@ export default function OnboardingLayout({
   currentStep,
   totalSteps,
   centerTitle = false,
+  overflowHidden = false,
 }: OnboardingLayoutProps) {
   return (
     <div className="flex flex-col h-[calc(100vh-80px)] w-full max-w-[320px] relative justify-between py-6">
@@ -43,7 +45,11 @@ export default function OnboardingLayout({
         </h2>
       </div>
 
-      <div className="flex-1 w-full flex flex-col items-center justify-start overflow-y-auto no-scrollbar">
+      <div
+        className={`flex-1 w-full flex flex-col items-center justify-start ${
+          overflowHidden ? "overflow-hidden" : "overflow-y-auto no-scrollbar"
+        }`}
+      >
         {children}
       </div>
 

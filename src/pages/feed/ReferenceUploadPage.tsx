@@ -125,7 +125,7 @@ export default function ReferenceUploadPage() {
       <div className="flex-1 overflow-y-auto px-6 py-6 font-body3 text-primary-700 pb-10">
         <div className="flex flex-col gap-8">
           <div className="flex items-start gap-2">
-            <label className="w-[84px] pt-[14px] font-body3 text-primary-700 shrink-0">
+            <label className="w-[90px] pt-[14px] font-body3 text-primary-700 shrink-0">
               제목
             </label>
             <input
@@ -138,7 +138,7 @@ export default function ReferenceUploadPage() {
           </div>
 
           <div className="flex items-start gap-2">
-            <label className="w-[88px] pt-[14px] font-body3 text-primary-700 shrink-0">
+            <label className="w-[90px] pt-[14px] font-body3 text-primary-700 shrink-0">
               레퍼런스 설명
             </label>
             <textarea
@@ -150,7 +150,7 @@ export default function ReferenceUploadPage() {
           </div>
 
           <div className="flex items-start gap-2 relative z-20">
-            <label className="w-[84px] pt-[14px] font-body3 text-primary-700 shrink-0">
+            <label className="w-[90px] pt-[14px] font-body3 text-primary-700 shrink-0">
               무드 태그
             </label>
             <div className="flex-1 relative">
@@ -194,7 +194,7 @@ export default function ReferenceUploadPage() {
           </div>
 
           <div className="flex items-start gap-2">
-            <label className="w-[84px] pt-[14px] font-body3 text-primary-700 shrink-0">
+            <label className="w-[90px] pt-[14px] font-body3 text-primary-700 shrink-0">
               사진 업로드
             </label>
             <div className="flex-1 min-h-[140px] rounded-[8px] border border-primary-700 flex flex-col items-center justify-center bg-white overflow-hidden relative">
