@@ -83,21 +83,21 @@ export default function SettingPage() {
       {/* 메뉴 리스트 (닉네임과 로그아웃 사이 가운데 배치) */}
       <div className="mt-12 flex flex-col gap-4">
         <button
-          className="w-full h-13 rounded-full bg-primary-700 font-semibold text-white text-[15px]"
+          className="w-full h-12 rounded-full bg-primary-700 font-semibold text-white text-[15px]"
           onClick={() => navigate("/setting/profile")}
         >
           프로필 관리
         </button>
 
         <button
-          className="w-full h-13 rounded-full bg-primary-700 font-semibold text-white text-[15px]"
+          className="w-full h-12 rounded-full bg-primary-700 font-semibold text-white text-[15px]"
           onClick={() => navigate("/setting/account")}
         >
           계정 정보
         </button>
 
         <button
-          className="w-full h-13 rounded-full bg-primary-700 font-semibold text-white text-[15px]"
+          className="w-full h-12 rounded-full bg-primary-700 font-semibold text-white text-[15px]"
           onClick={() => navigate("/setting/inquiry")}
         >
           문의하기
@@ -107,7 +107,7 @@ export default function SettingPage() {
       {/* 로그아웃 버튼 */}
       <div className="mt-12 mb-6">
         <button
-          className="w-full h-13 rounded-full bg-point text-primary-700 font-semibold text-[15px]"
+          className="w-full h-12 rounded-full bg-point text-primary-700 font-semibold text-[15px]"
           onClick={() => setLogoutConfirmOpen(true)}
         >
           로그아웃

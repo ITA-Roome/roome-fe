@@ -94,7 +94,7 @@ export default function LikeBoardPage() {
             <>
               {scrapProducts.length === 0 ? (
                 <p className="py-16 text-center text-primary-700">
-                  스트랩한 상품이 없습니다!
+                  스크랩한 상품이 없습니다!
                 </p>
               ) : (
                 <InfiniteScrollGrid
@@ -125,7 +125,7 @@ export default function LikeBoardPage() {
             <>
               {scrapReferences.length === 0 ? (
                 <p className="py-16 text-center text-primary-700">
-                  스트랩한 레퍼런스가 없습니다!
+                  스크랩한 레퍼런스가 없습니다!
                 </p>
               ) : (
                 <InfiniteScrollGrid

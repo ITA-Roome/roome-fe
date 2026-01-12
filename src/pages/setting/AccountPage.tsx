@@ -186,14 +186,14 @@ export default function AccountPage() {
           <button
             type="button"
             onClick={() => setShowConfirmStep1(true)}
-            className="w-full h-13 rounded-full bg-primary-700 text-[#FFFDF4] text-[14px]"
+            className="w-full h-12 rounded-full bg-primary-700 text-[#FFFDF4] text-[14px]"
           >
             회원 탈퇴
           </button>
           <button
             type="button"
             onClick={handleChangePassword}
-            className="w-full h-13 rounded-full bg-primary-700 text-[#FFFDF4] text-[14px]"
+            className="w-full h-12 rounded-full bg-primary-700 text-[#FFFDF4] text-[14px]"
           >
             비밀번호 변경
           </button>

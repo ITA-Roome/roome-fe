@@ -36,6 +36,8 @@ export default function ChangePasswordPage() {
     confirmPw.trim().length > 0 &&
     newPw === confirmPw;
 
+  const canSubmitChange = isPasswordValid && canChange;
+
   useEffect(() => {
     const loadUserData = async () => {
       try {
@@ -78,7 +80,7 @@ export default function ChangePasswordPage() {
   };
 
   const handlePasswordChange = async () => {
-    if (!canChange) return;
+    if (!canSubmitChange) return;
     setSubmitLoading(true);
     setErrorMessage("");
     try {
