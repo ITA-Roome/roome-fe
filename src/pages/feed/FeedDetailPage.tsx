@@ -10,7 +10,6 @@ import { useDeleteComment } from "@/hooks/comment/useDeleteComment";
 import { useToggleReferenceLike } from "@/hooks/useToggleReferenceLike";
 import { useToggleReferenceScrap } from "@/hooks/useToggleReferenceScrap";
 import ChatInput from "@/components/chatbot/ChatInput";
-import BottomSheet from "@/components/common/BottomSheet";
 
 import PageContainer from "@/components/layout/PageContainer";
 import DetailImage from "@/components/detail/DetailImage";
@@ -31,7 +30,6 @@ export default function FeedDetailPage() {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
 
   const [editContent, setEditContent] = useState("");
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
 
   const { data: reference, isLoading, error } = useReferenceDetail(id);
 
@@ -61,15 +59,11 @@ export default function FeedDetailPage() {
   const handleEditStart = (commentId: number, currentContent: string) => {
     setEditingCommentId(commentId);
     setEditContent(currentContent);
-    setIsEditSheetOpen(true);
   };
 
   const handleEditCancel = () => {
-    setIsEditSheetOpen(false);
-    setTimeout(() => {
-      setEditingCommentId(null);
-      setEditContent("");
-    }, 200);
+    setEditingCommentId(null);
+    setEditContent("");
   };
 
   const handleEditSubmit = (commentId: number) => {
@@ -83,7 +77,6 @@ export default function FeedDetailPage() {
       },
       {
         onSuccess: () => {
-          setIsEditSheetOpen(false);
           setEditingCommentId(null);
           setEditContent("");
         },
@@ -189,47 +182,40 @@ export default function FeedDetailPage() {
                     )}
                   </div>
 
-                  <p className="font-caption text-primary-700 whitespace-pre-wrap leading-tight mt-0.5">
-                    {c.content}
-                  </p>
+                  {editingCommentId === c.id ? (
+                    <div className="mt-2">
+                      <textarea
+                        className="w-full h-24 p-3 border border-primary-200 rounded-lg resize-none focus:outline-none focus:border-primary-500 font-body3 text-primary-700 bg-white"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        placeholder="댓글을 입력해주세요"
+                      />
+                      <div className="flex justify-end gap-2 mt-2">
+                        <button
+                          onClick={handleEditCancel}
+                          className="px-3 py-1.5 bg-primary-100 text-primary-700 rounded text-xs font-medium"
+                        >
+                          취소
+                        </button>
+                        <button
+                          onClick={() => handleEditSubmit(c.id)}
+                          className="px-3 py-1.5 bg-primary-700 text-white rounded text-xs font-medium"
+                        >
+                          저장
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="font-caption text-primary-700 whitespace-pre-wrap leading-tight mt-0.5">
+                      {c.content}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
       </section>
-
-      <BottomSheet
-        isOpen={isEditSheetOpen}
-        onClose={handleEditCancel}
-        className="pb-8"
-      >
-        <div className="flex flex-col gap-4">
-          <h3 className="font-heading3 text-primary-700">댓글 수정</h3>
-          <textarea
-            className="w-full h-32 p-3 border border-primary-200 rounded-lg resize-none focus:outline-none focus:border-primary-500 font-body3 text-primary-700"
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-            placeholder="댓글을 입력해주세요"
-          />
-          <div className="flex gap-3">
-            <button
-              onClick={handleEditCancel}
-              className="flex-1 py-3 bg-primary-100 text-primary-700 rounded-lg font-body2"
-            >
-              취소
-            </button>
-            <button
-              onClick={() =>
-                editingCommentId && handleEditSubmit(editingCommentId)
-              }
-              className="flex-1 py-3 bg-primary-700 text-white rounded-lg font-body2"
-            >
-              저장
-            </button>
-          </div>
-        </div>
-      </BottomSheet>
     </PageContainer>
   );
 }
