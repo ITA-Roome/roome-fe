@@ -62,7 +62,7 @@ export default function ReferenceUploadSuccess({ onFinish }: Props) {
             }}
             className="w-[60%] max-w-[260px] relative z-20"
           >
-            <OnboardingResultIcon className="w-full h-auto" />
+            <OnboardingResultIcon className="w-full h-auto max-h-full object-contain" />
           </motion.div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 
 import axios from "axios";
+import PageContainer from "@/components/layout/PageContainer";
 
 export default function ChangePasswordPage() {
   const [step, setStep] = useState<1 | 2>(1);
@@ -34,6 +35,8 @@ export default function ChangePasswordPage() {
     newPw.trim().length > 0 &&
     confirmPw.trim().length > 0 &&
     newPw === confirmPw;
+
+  const canSubmitChange = isPasswordValid && canChange;
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -77,7 +80,7 @@ export default function ChangePasswordPage() {
   };
 
   const handlePasswordChange = async () => {
-    if (!canChange) return;
+    if (!canSubmitChange) return;
     setSubmitLoading(true);
     setErrorMessage("");
     try {
@@ -110,22 +113,28 @@ export default function ChangePasswordPage() {
     }
   };
 
-  if (loading) return <div className="pt-24 text-center">로딩 중...</div>;
+  if (loading) {
+    return (
+      <PageContainer>
+        <div className="pt-24 text-center">로딩 중...</div>
+      </PageContainer>
+    );
+  }
 
   return (
-    <div className="min-h-screen px-5 pt-24">
+    <PageContainer>
       {/* STEP 1 */}
       {step === 1 && (
-        <div className="max-w-sm mx-auto">
-          <label className="text-sm text-[#5D3C28]">기존 비밀번호</label>
+        <div className="max-w-sm mx-auto mt-10">
+          <label className="text-sm text-primary-200">기존 비밀번호</label>
           <input
             type="password"
             value={oldPw}
             onChange={(e) => setOldPw(e.target.value)}
             className={
-              "w-full mt-2 border border-[#C7B5A1] rounded-3xl px-4 py-3"
+              "w-full mt-2 border border-primary-700 rounded-3xl px-4 py-3 placeholder:text-primary-200"
             }
-            placeholder="기존 비밀번호를 입력해주세요."
+            placeholder="비밀번호 입력"
           />
           {errorMessage && (
             <p className="text-xs text-red-500">{errorMessage}</p>
@@ -133,7 +142,7 @@ export default function ChangePasswordPage() {
           <button
             onClick={handlePasswordConfirm}
             disabled={!canVerifyOldPw || verifyLoading}
-            className={`w-full mt-4 py-3 rounded-3xl text-white transition ${
+            className={`w-full mt-7 py-3 rounded-3xl font-semibold text-white transition ${
               canVerifyOldPw && !verifyLoading
                 ? "bg-primary-700"
                 : "bg-[#C7B5A1] opacity-50"
@@ -146,16 +155,16 @@ export default function ChangePasswordPage() {
 
       {/* STEP 2 */}
       {step === 2 && (
-        <div className="max-w-sm mx-auto space-y-4">
+        <div className="flex min-h-[70vh] flex-col max-w-sm mx-auto space-y-4 mt-10">
           <div>
-            <label className="text-sm text-[#5D3C28]">
+            <label className="text-sm text-primary-200">
               새로운 비밀번호 – 최소 8자 이상 / 영문 / 숫자 / 특수문자 포함
             </label>
             <input
               type="password"
               value={newPw}
               onChange={(e) => setNewPw(e.target.value)}
-              className={`w-full mt-2 border rounded-3xl px-4 py-3 ${
+              className={`w-full mt-2 border border-primary-700 rounded-3xl px-4 py-3 placeholder:text-primary-200 ${
                 newPw && !isPasswordValid
                   ? "border-red-500"
                   : "border-[#C7B5A1]"
@@ -170,12 +179,12 @@ export default function ChangePasswordPage() {
           </div>
 
           <div>
-            <label className="text-sm text-[#5D3C28]">비밀번호 확인</label>
+            <label className="text-sm text-primary-200">비밀번호 확인</label>
             <input
               type="password"
               value={confirmPw}
               onChange={(e) => setConfirmPw(e.target.value)}
-              className={`w-full mt-2 border rounded-3xl px-4 py-3 ${
+              className={`w-full mt-2 border border-primary-700 rounded-3xl px-4 py-3 placeholder:text-primary-200 ${
                 confirmPw && !isPwMatch ? "border-red-500" : "border-[#C7B5A1]"
               }`}
               placeholder="다시 입력"
@@ -191,7 +200,7 @@ export default function ChangePasswordPage() {
           <button
             onClick={handlePasswordChange}
             disabled={!isChangeEnabled || submitLoading}
-            className={`w-full mt-8 py-3 rounded-3xl text-white transition ${
+            className={`mt-auto w-full mt-8 py-3 rounded-3xl font-semibold text-white transition ${
               isChangeEnabled && !submitLoading
                 ? "bg-primary-700"
                 : "bg-[#C7B5A1] opacity-50"
@@ -204,6 +213,6 @@ export default function ChangePasswordPage() {
           )}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

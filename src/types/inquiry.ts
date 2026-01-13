@@ -1,8 +1,14 @@
 import { CommonResponse } from "@/types/common";
 
+export type InquiryType =
+  | "BUG_REPORT"
+  | "CUSTOM"
+  | "ACCOUNT_LOGIN"
+  | "PARTNERSHIP";
+
 export type InquiryItem = {
   inquiryId: number;
-  inquiryType: "BUG_REPORT" | "CUSTOM" | string;
+  inquiryType: InquiryType | string;
   inquiryStatus: "OPEN" | "CLOSED" | string;
   inquiryContent: string;
   inquiryCreatedAt: string; // ISO string
@@ -56,7 +62,7 @@ const inquiryTypeLabel = (t: string) => {
       return "기타 문의";
     case "ACCOUNT_LOGIN":
       return "계정/로그인 문제";
-    case "":
+    case "PARTNERSHIP":
       return "제품 및 협업 문의";
     default:
       return t; // 서버 값 그대로라도 보여주기

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 // import type { UserLikeProduct } from "@/types/user";
 import { UserApi } from "@/api/user";
 
+import PageContainer from "@/components/layout/PageContainer";
+
 import chat1 from "@/assets/icons/bed.svg";
 import chat2 from "@/assets/icons/desk.svg";
 import chat3 from "@/assets/icons/light.svg";
@@ -101,7 +103,7 @@ export default function BoardPage() {
   // 전체 보드 구성
   const boards: BoardItem[] = [
     {
-      title: "내가 스트랩한 상품/레퍼런스",
+      title: "저장됨",
       images: likePreviewImages,
       path: "/board/like",
     },
@@ -118,54 +120,54 @@ export default function BoardPage() {
   ];
 
   return (
-    <div className="min-h-screen">
-      <div className="relative pt-5 isolate max-w-md mx-auto px-5">
-        {/* 3개의 4칸 카드 */}
-        <div className="grid grid-cols-2 gap-6">
-          {boards.map((board) => (
-            <div
-              key={board.title}
-              className="flex flex-col items-start cursor-pointer active:opacity-60 transition"
-              onClick={() => navigate(board.path)}
-            >
+    <PageContainer>
+      <div className="min-h-screen">
+        <div className="relative isolate mt-5">
+          {/* 3개의 4칸 카드 */}
+          <div className="grid grid-cols-2 gap-6">
+            {boards.map((board) => (
               <div
-                className="w-full aspect-square rounded-2xl overflow-hidden border border-[var(--color-primary-700)] bg-white grid grid-cols-2 grid-rows-2"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(var(--color-primary-700) 0 0),
-                    linear-gradient(var(--color-primary-700) 0 0)
-                  `,
-                  backgroundSize: "1px 100%, 100% 1px", // 세로줄 1px, 가로줄 1px
-                  backgroundPosition: "50% 0, 0 50%", // 세로 중앙, 가로 중앙
-                  backgroundRepeat: "no-repeat",
-                }}
+                key={board.title}
+                className="flex flex-col items-start cursor-pointer active:opacity-60 transition"
+                onClick={() => navigate(board.path)}
               >
-                {board.images.length > 0 ? (
-                  board.images.map((img, index) => (
-                    <img
-                      key={index}
-                      src={img}
-                      alt="preview"
-                      className="w-full h-full object-cover"
-                    />
-                  ))
-                ) : (
-                  <>
-                    <div className="bg-white" />
-                    <div className="bg-white" />
-                    <div className="bg-white" />
-                    <div className="bg-white" />
-                  </>
-                )}
+                <div
+                  className="w-full aspect-square rounded-2xl overflow-hidden border border-[var(--color-primary-700)] bg-white grid grid-cols-2 grid-rows-2"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(var(--color-primary-700) 0 0),
+                      linear-gradient(var(--color-primary-700) 0 0)
+                    `,
+                    backgroundSize: "1px 100%, 100% 1px", // 세로줄 1px, 가로줄 1px
+                    backgroundPosition: "50% 0, 0 50%", // 세로 중앙, 가로 중앙
+                    backgroundRepeat: "no-repeat",
+                  }}
+                >
+                  {board.images.length > 0 ? (
+                    board.images.map((img, index) => (
+                      <img
+                        key={index}
+                        src={img}
+                        alt="preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ))
+                  ) : (
+                    <>
+                      <div className="bg-white" />
+                      <div className="bg-white" />
+                      <div className="bg-white" />
+                      <div className="bg-white" />
+                    </>
+                  )}
+                </div>
+
+                <p className="mt-2 text-sm text-[#5D3C28]">{board.title}</p>
               </div>
-
-              <p className="mt-2 text-sm text-[#5D3C28]">{board.title}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-
-        <div className="h-20" />
       </div>
-    </div>
+    </PageContainer>
   );
 }

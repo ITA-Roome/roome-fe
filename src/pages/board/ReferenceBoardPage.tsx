@@ -6,6 +6,7 @@ import { ReferenceApi } from "@/api/reference";
 import type { UserUploadedReference } from "@/types/user";
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
 import PhotoCard from "@/components/feed&shop/grid/PhotoCard";
+import PageContainer from "@/components/layout/PageContainer";
 
 export default function ReferenceBoardPage() {
   const navigate = useNavigate();
@@ -46,35 +47,35 @@ export default function ReferenceBoardPage() {
   }, []);
 
   return (
-    <div className="max-w-md mx-auto px-5 min-h-screen">
-      {references.length === 0 ? (
-        <p className="py-16 text-center text-primary-700">
-          공유한 레퍼런스가 없습니다!
-        </p>
-      ) : (
-        <InfiniteScrollGrid
-          items={references}
-          keySelector={(it) => it.referenceId}
-          renderItem={(it) => (
-            <PhotoCard
-              id={it.referenceId}
-              title={it.name} // 필요하면 nickname으로 변경
-              price={0}
-              imageUrl={it.imageUrlList?.[0] ?? ""}
-              isLiked={it.isLiked}
-              onLike={() => handleReferenceToggleLike(it.referenceId)}
-              showInfo={false}
-              onClick={() => navigate(`/feed/${it.referenceId}`)}
-            />
-          )}
-          columns="grid-cols-3"
-          gap="gap-4"
-          hasNextPage={false}
-          loadMore={() => {}}
-        />
-      )}
-
-      <div className="h-20" />
-    </div>
+    <PageContainer>
+      <div className="min-h-screen mt-5">
+        {references.length === 0 ? (
+          <p className="py-16 text-center text-primary-700">
+            공유한 레퍼런스가 없습니다!
+          </p>
+        ) : (
+          <InfiniteScrollGrid
+            items={references}
+            keySelector={(it) => it.referenceId}
+            renderItem={(it) => (
+              <PhotoCard
+                id={it.referenceId}
+                title={it.name} // 필요하면 nickname으로 변경
+                price={0}
+                imageUrl={it.imageUrlList?.[0] ?? ""}
+                isLiked={it.isLiked}
+                onLike={() => handleReferenceToggleLike(it.referenceId)}
+                showInfo={false}
+                onClick={() => navigate(`/feed/${it.referenceId}`)}
+              />
+            )}
+            columns="grid-cols-3"
+            gap="gap-4"
+            hasNextPage={false}
+            loadMore={() => {}}
+          />
+        )}
+      </div>
+    </PageContainer>
   );
 }

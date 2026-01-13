@@ -2,11 +2,19 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 import MessageList from "@/components/chatbot/MessageList";
 import ChatInput from "@/components/chatbot/ChatInput";
 import { ChatApi } from "@/api/chatbot";
-import { ChatInputType } from "@/types/chatbot";
+import {
+  ChatInputType,
+  ChatResponseType,
+  ChatResultData,
+  ChatProductResult,
+  ChatMoodResult,
+} from "@/types/chatbot";
+import PageContainer from "@/components/layout/PageContainer";
 
 export type Message = {
   role: "user" | "bot";
   content: string;
+  resultData?: ChatResultData;
 };
 
 const STORAGE_KEY = "chatMessages";
@@ -63,7 +71,7 @@ export default function ChatPage() {
   useEffect(() => {
     // 대화가 복원된 뒤 옵션이 비어 있으면 기본 질문 두 개를 노출
     if (isHydrated && options.length === 0) {
-      setOptions(["어떤 공간을 꾸미고 싶으신가요?", "찾으시는 제품이 있나요?"]);
+      setOptions(["인테리어 추천", "제품 추천"]);
     }
   }, [isHydrated, options.length]);
 
@@ -76,6 +84,25 @@ export default function ChatPage() {
       console.error("대화 저장 실패:", err);
     }
   }, [messages, isHydrated, storageKey]);
+
+  // 제품 추천인지 체크
+  const isProductResult = (data: unknown): data is ChatProductResult => {
+    return (
+      typeof data === "object" &&
+      data !== null &&
+      "products" in data &&
+      Array.isArray((data as ChatProductResult).products)
+    );
+  };
+
+  // 인테리어 추천인지 체크
+  const isMoodResult = (data: unknown): data is ChatMoodResult => {
+    return (
+      typeof data === "object" &&
+      data !== null &&
+      ("title" in data || "imageUrlList" in data)
+    );
+  };
 
   const sendToBot = useCallback(
     async (UserMessage: string, inputType: ChatInputType) => {
@@ -92,12 +119,33 @@ export default function ChatPage() {
           message: trimmed,
         });
 
+        const botContent =
+          res.data?.type === ChatResponseType.RESULT && res.data.data
+            ? (res.data.message ?? "추천 결과입니다.")
+            : (res.data?.message ?? "답변을 가져오지 못했습니다.");
+
+        let resultData: ChatResultData | undefined;
+
+        if (isProductResult(res.data?.data)) {
+          resultData = res.data.data;
+        } else if (isMoodResult(res.data?.data)) {
+          resultData = res.data.data;
+        }
+
         setSessionId(res.data?.sessionId ?? null);
-        setOptions(res.data?.options ?? []);
+        setOptions(
+          res.data?.type === ChatResponseType.RESULT
+            ? []
+            : (res.data?.options ?? []),
+        );
 
         setMessages((prev) => [
           ...prev,
-          { role: "bot", content: res.data?.message ?? "..." },
+          {
+            role: "bot",
+            content: botContent,
+            resultData,
+          },
         ]);
       } catch (error) {
         console.error("챗봇 호출 실패:", error);
@@ -121,34 +169,40 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* 채팅 영역 */}
-      <div className="flex-1 min-h-0 overflow-y-auto whitespace-pre-line px-4">
-        <MessageList messages={messages} className="h-full" />
-      </div>
+    <PageContainer className="h-dvh">
+      <div className="h-full flex flex-col overflow-hidden">
+        {/* 채팅 영역 */}
+        <div className="flex-1 min-h-0 overflow-y-auto whitespace-pre-line">
+          <MessageList
+            messages={messages}
+            className="h-full"
+            isLoading={loading}
+          />
+        </div>
 
-      <div className="shrink-0">
-        {/* 옵션 버튼 */}
-        {options.length > 0 && (
-          <div className="px-4 pb-2 flex flex-wrap gap-2">
-            {options.map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => handleOptionClick(opt)}
-                className="px-3 py-2 rounded-full border border-primary-700 text-sm bg-white active:bg-primary-50"
-              >
-                {opt}
-              </button>
-            ))}
+        <div className="shrink-0">
+          {/* 옵션 버튼 */}
+          {options.length > 0 && (
+            <div className="pt-2 pb-2 flex flex-wrap gap-2">
+              {options.map((opt) => (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => handleOptionClick(opt)}
+                  className="px-3 py-2 rounded-full border border-primary-50 font-semibold text-sm text-primary-700 bg-white active:bg-primary-50"
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* 입력창 */}
+          <div className="py-1">
+            <ChatInput onSend={handleSend} disabled={loading} />
           </div>
-        )}
-
-        {/* 입력창 */}
-        <div className="px-4 py-3">
-          <ChatInput onSend={handleSend} disabled={loading} />
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

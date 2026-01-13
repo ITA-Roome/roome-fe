@@ -1,18 +1,23 @@
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg?react";
 import HeaderLogo from "@/assets/RoomeLogo/logo-header.svg?react";
 import SettingIcon from "@/assets/icons/settings.svg?react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 type BoardHeaderProps = { title?: string };
 
 export default function BoardHeader({ title }: BoardHeaderProps) {
+  const navigate = useNavigate();
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center px-6 h-16 bg-white relative">
+    <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex items-center justify-center px-6 h-16 bg-white border-b border-primary-50/10">
       <button
-        onClick={() => history.back()}
-        className="absolute left-4 top-1/2 -translate-y-1/2"
+        type="button"
+        onClick={() => navigate(-1)}
+        className="absolute left-2 p-2"
+        aria-label="뒤로 가기"
       >
-        <ArrowLeftIcon className="w-4 h-4" />
+        <ArrowLeftIcon className="w-4.5 h-4.5 text-primary-700" />
       </button>
 
       {title ? (

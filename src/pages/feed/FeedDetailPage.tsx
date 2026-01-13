@@ -28,6 +28,7 @@ export default function FeedDetailPage() {
   }, [productId]);
 
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+
   const [editContent, setEditContent] = useState("");
 
   const { data: reference, isLoading, error } = useReferenceDetail(id);
@@ -182,15 +183,24 @@ export default function FeedDetailPage() {
                   </div>
 
                   {editingCommentId === c.id ? (
-                    <div className="mt-1">
-                      <input
-                        className="w-full text-sm p-1 border rounded"
+                    <div className="mt-2">
+                      <textarea
+                        className="w-full h-24 p-3 border border-primary-200 rounded-lg resize-none focus:outline-none focus:border-primary-500 font-body3 text-primary-700 bg-white"
                         value={editContent}
                         onChange={(e) => setEditContent(e.target.value)}
+                        placeholder="댓글을 입력해주세요"
                       />
-                      <div className="flex gap-2 mt-2 font-caption justify-end">
-                        <button onClick={handleEditCancel}>취소</button>
-                        <button onClick={() => handleEditSubmit(c.id)}>
+                      <div className="flex justify-end gap-2 mt-2">
+                        <button
+                          onClick={handleEditCancel}
+                          className="px-3 py-1.5 bg-primary-100 text-primary-700 rounded text-xs font-medium"
+                        >
+                          취소
+                        </button>
+                        <button
+                          onClick={() => handleEditSubmit(c.id)}
+                          className="px-3 py-1.5 bg-primary-700 text-white rounded text-xs font-medium"
+                        >
                           저장
                         </button>
                       </div>
