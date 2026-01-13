@@ -9,33 +9,38 @@ export default function SplashPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setStep("LANDING");
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const checkAuth = async () => {
+    const initSplash = async () => {
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 2000));
       const token = localStorage.getItem("token");
+      let authResult = null;
+
       if (token) {
         try {
-          const { data } = await UserApi.checkOnboardingExistence();
-          const alreadyOnboarded =
-            data.data?.isExist ??
-            data.data?.exists ??
-            data.data?.hasOnboardingInformation ??
-            false;
-
-          navigate(alreadyOnboarded ? "/feed" : "/onboarding", {
-            replace: true,
-          });
-        } catch (error) {
-          console.error("Auth check failed", error);
+          authResult = await UserApi.checkOnboardingExistence().catch(
+            () => null,
+          );
+        } catch (e) {
+          console.error("Auth check internal error", e);
         }
       }
+      await minDelay;
+
+      if (token && authResult?.data) {
+        const alreadyOnboarded =
+          authResult.data.data?.isExist ??
+          authResult.data.data?.exists ??
+          authResult.data.data?.hasOnboardingInformation ??
+          false;
+
+        navigate(alreadyOnboarded ? "/feed" : "/onboarding", {
+          replace: true,
+        });
+      } else {
+        setStep("LANDING");
+      }
     };
-    checkAuth();
+
+    initSplash();
   }, [navigate]);
 
   return (

@@ -37,9 +37,10 @@ export default function Step5Result({
             currentStep={currentStep}
             totalSteps={totalSteps}
             centerTitle
+            overflowHidden
           >
             <div className="flex-1 flex items-center justify-center w-full animate-fade-in">
-              <OnboardingResultIcon className="w-full max-w-[260px] h-auto animate-bounce-custom" />
+              <OnboardingResultIcon className="w-full max-w-[260px] h-auto max-h-full object-contain animate-bounce-custom" />
             </div>
           </OnboardingLayout>
         </div>
