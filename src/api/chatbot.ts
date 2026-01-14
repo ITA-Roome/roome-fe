@@ -1,6 +1,13 @@
 import { apiClient } from "@/lib/apiClient";
 import { CommonResponse } from "@/types/auth";
-import type { ChatMessageRequest, ChatMessageResponse } from "@/types/chatbot";
+import type {
+  BoardItem,
+  BoardListRequest,
+  ChatMessageRequest,
+  ChatMessageResponse,
+  SaveChatRecommendationRequest,
+  PageResponse,
+} from "@/types/chatbot";
 
 export const ChatApi = {
   chatMessage: async (
@@ -10,6 +17,27 @@ export const ChatApi = {
       "/api/chat/message",
       payload,
     );
+    return data;
+  },
+
+  saveRecommendationToBoard: async (
+    payload: SaveChatRecommendationRequest,
+  ): Promise<CommonResponse<number>> => {
+    const { data } = await apiClient.post<CommonResponse<number>>(
+      "/api/boards",
+      payload,
+    );
+    return data;
+  },
+
+  getBoardList: async (
+    params: BoardListRequest,
+  ): Promise<CommonResponse<PageResponse<BoardItem>>> => {
+    const { data } = await apiClient.get<
+      CommonResponse<PageResponse<BoardItem>>
+    >("/api/boards", {
+      params,
+    });
     return data;
   },
 };

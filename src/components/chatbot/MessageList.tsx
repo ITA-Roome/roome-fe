@@ -7,12 +7,14 @@ type Props = {
   messages: Message[];
   className?: string;
   isLoading?: boolean;
+  sessionId?: string | null;
 };
 
 export default function MessageList({
   messages,
   className = "",
   isLoading = false,
+  sessionId,
 }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -43,12 +45,13 @@ export default function MessageList({
             key={i}
             content={msg.content}
             resultData={msg.resultData}
+            sessionId={sessionId}
           />
         ),
       )}
 
       {/* 로딩 중이면 봇 로딩 인디케이터 추가 */}
-      {isLoading && <BotMessage content="..." />}
+      {isLoading && <BotMessage content="..." sessionId={sessionId} />}
     </div>
   );
 }

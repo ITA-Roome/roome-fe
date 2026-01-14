@@ -19,13 +19,6 @@ export type Message = {
 
 const STORAGE_KEY = "chatMessages";
 
-/**
- * Render the chat page UI and manage the message list.
- *
- * Maintains local message state and, when input is sent, appends the user message followed by a placeholder bot reply.
- *
- * @returns The chat page JSX element containing the message list and input area
- */
 export default function ChatPage() {
   const userId = sessionStorage.getItem("userId") ?? "guest";
   const nickname = sessionStorage.getItem("nickname") ?? "guest";
@@ -177,6 +170,7 @@ export default function ChatPage() {
             messages={messages}
             className="h-full"
             isLoading={loading}
+            sessionId={sessionId}
           />
         </div>
 

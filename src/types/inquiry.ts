@@ -11,12 +11,11 @@ export type InquiryItem = {
   inquiryType: InquiryType | string;
   inquiryStatus: "OPEN" | "CLOSED" | string;
   inquiryContent: string;
-  inquiryCreatedAt: string; // ISO string
+  inquiryCreatedAt: string;
   answerContent: string | null;
   answerCreatedAt: string | null;
 };
 
-// 목록 조회 응답 페이징 타입
 export type InquiryListData = {
   content: InquiryItem[];
   page: number;
@@ -26,7 +25,6 @@ export type InquiryListData = {
   last: boolean;
 };
 
-// 목록 조회 응답 타입
 export type InquiryListResponse = {
   isSuccess: boolean;
   code: string;
@@ -37,12 +35,12 @@ export type InquiryListResponse = {
 
 export type InquiryUIItem = {
   id: number;
-  typeText: string; // abc*** 자리 -> 문의 유형 텍스트
-  dateText: string; // 26.01.09 형태
+  typeText: string;
+  dateText: string;
   status: "ANSWERED" | "PENDING";
   locked: boolean;
   content: string;
-  manager?: string; // 서버에 없으면 일단 생략/고정값
+  manager?: string;
   reply?: string;
 };
 
@@ -65,21 +63,21 @@ const inquiryTypeLabel = (t: string) => {
     case "PARTNERSHIP":
       return "제품 및 협업 문의";
     default:
-      return t; // 서버 값 그대로라도 보여주기
+      return t;
   }
 };
 
 export const mapInquiryToUI = (x: InquiryItem): InquiryUIItem => {
-  const answered = !!x.answerContent; // 답변 있으면 완료로 처리
+  const answered = !!x.answerContent;
 
   return {
     id: x.inquiryId,
     typeText: inquiryTypeLabel(x.inquiryType),
     dateText: formatYYMMDD(x.inquiryCreatedAt),
     status: answered ? "ANSWERED" : "PENDING",
-    locked: false, // ✅ 서버에 비공개 여부가 없어서 일단 false
+    locked: false,
     content: x.inquiryContent,
-    manager: answered ? "루미" : undefined, // 서버에 담당자 필드 생기면 매핑
+    manager: answered ? "루미" : undefined,
     reply: x.answerContent ?? undefined,
   };
 };

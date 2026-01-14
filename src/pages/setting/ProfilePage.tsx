@@ -52,7 +52,7 @@ export default function ProfilePage() {
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNickname(value);
-    setNicknameChecked(value === originalNickname); // 기존 닉네임이면 자동확인
+    setNicknameChecked(value === originalNickname);
     setNicknameMessage("");
   };
 
@@ -169,19 +169,15 @@ export default function ProfilePage() {
         <div>
           {/* 이미지 */}
           <section className="w-full flex justify-center mt-6">
-            {/* 바깥 래퍼: 버튼이 안 잘리게 */}
             <div className="relative w-[180px] h-[180px] mx-auto overflow-visible">
-              {/* 원형 클리핑은 여기서만 */}
               <div className="w-full h-full rounded-full overflow-hidden bg-[#D7C7B5]">
                 <img
                   src={previewImage ?? RoomeDefault}
                   alt="프로필 이미지 미리보기"
-                  className="w-full h-full object-contain" // 원본 안 잘리게면 contain
-                  // 꽉 채우고 싶으면 object-cover
+                  className="w-full h-full object-contain"
                 />
               </div>
 
-              {/* 버튼은 바깥 래퍼에 올려서 안 잘림 */}
               <button
                 type="button"
                 onClick={handleImageClick}
