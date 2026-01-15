@@ -197,7 +197,7 @@ export default function ReferenceUploadPage() {
             <label className="w-[90px] pt-[14px] font-body3 text-primary-700 shrink-0">
               사진 업로드
             </label>
-            <div className="flex-1 min-h-[140px] rounded-[8px] border border-primary-700 flex flex-col items-center justify-center bg-white overflow-hidden relative">
+            <div className="flex-1 min-h-[140px] rounded-[8px] border border-[#6D5A46] flex flex-col items-center justify-center bg-white overflow-hidden relative">
               {image ? (
                 <div className="w-full h-full relative group">
                   <img
