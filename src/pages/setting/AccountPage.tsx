@@ -15,7 +15,6 @@ export default function AccountPage() {
   const [userInfo, setUserInfo] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  // state 추가
   const [showConfirmStep1, setShowConfirmStep1] = useState(false);
   const [showConfirmStep2, setShowConfirmStep2] = useState(false);
   const [withdrawLoading, setWithdrawLoading] = useState(false);

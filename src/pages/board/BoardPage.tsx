@@ -2,12 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 // import type { UserLikeProduct } from "@/types/user";
 import { UserApi } from "@/api/user";
+import { ChatApi } from "@/api/chatbot";
 
 import PageContainer from "@/components/layout/PageContainer";
-
-import chat1 from "@/assets/icons/bed.svg";
-import chat2 from "@/assets/icons/desk.svg";
-import chat3 from "@/assets/icons/light.svg";
 
 interface BoardItem {
   title: string;
@@ -15,13 +12,6 @@ interface BoardItem {
   path: string;
 }
 
-/**
- * Display a board overview with three clickable 2x2 image-preview cards for Likes, Consultations, and References.
- *
- * Each card shows up to four preview images and navigates to its corresponding board route when clicked.
- *
- * @returns The JSX element containing the three image-preview cards.
- */
 export default function BoardPage() {
   const navigate = useNavigate();
 
@@ -77,22 +67,37 @@ export default function BoardPage() {
 
       // 내가 공유한 레퍼런스
       const myRefRes = await UserApi.fetchUserUploadedReferences();
-
       const myRefImages =
         myRefRes.isSuccess && myRefRes.data
           ? ((myRefRes.data?.userUploadedReferenceList ?? [])
               .map((r) => r.imageUrlList?.[0])
               .filter(Boolean) as string[])
           : [];
-
       setReferenceImages(myRefImages.slice(0, 4));
 
-      // 상담/레퍼런스는 API 준비되기 전까지 기존 더미 유지
-      setConsultImages([chat1, chat2, chat3, chat2]);
+      const chatRes = await ChatApi.getBoardList({
+        page: 0,
+        size: 20,
+        sort: ["createdAt,desc"],
+      });
+
+      const chatList = Array.isArray(chatRes.data?.content)
+        ? chatRes.data.content
+        : [];
+
+      const chatImages = chatRes.isSuccess
+        ? (chatList
+            .map(
+              (b) => b.products?.[0]?.imageUrl ?? b.references?.[0]?.imageUrl,
+            )
+            .filter(Boolean) as string[])
+        : [];
+      setConsultImages(chatImages.slice(0, 4));
     } catch (err) {
       console.error(err);
       setReferenceImages([]);
       setLikePreviewImages([]);
+      setConsultImages([]);
     }
   }, []);
 
@@ -138,8 +143,8 @@ export default function BoardPage() {
                       linear-gradient(var(--color-primary-700) 0 0),
                       linear-gradient(var(--color-primary-700) 0 0)
                     `,
-                    backgroundSize: "1px 100%, 100% 1px", // 세로줄 1px, 가로줄 1px
-                    backgroundPosition: "50% 0, 0 50%", // 세로 중앙, 가로 중앙
+                    backgroundSize: "1px 100%, 100% 1px",
+                    backgroundPosition: "50% 0, 0 50%",
                     backgroundRepeat: "no-repeat",
                   }}
                 >

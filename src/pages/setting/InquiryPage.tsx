@@ -13,7 +13,7 @@ export default function InquiryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ 문의 목록 조회 (API 붙이면 여기만 바꾸면 됨)
+  // 문의 목록 조회
   useEffect(() => {
     const fetchInquiries = async () => {
       try {

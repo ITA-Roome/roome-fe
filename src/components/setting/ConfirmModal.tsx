@@ -9,17 +9,16 @@ type ConfirmModalProps = {
   confirmText?: string;
   cancelText?: string;
 
-  onConfirm: (value?: string) => void; // ✅ input 있을 때 값 전달
+  onConfirm: (value?: string) => void;
   onCancel: () => void;
 
   closeOnBackdrop?: boolean;
 
-  // ✅ 입력창 옵션
   input?: {
-    label?: string; // "비밀번호를 입력해주세요"
+    label?: string;
     placeholder?: string;
     type?: "text" | "password";
-    required?: boolean; // true면 confirm 비활성 제어
+    required?: boolean;
     defaultValue?: string;
     autoFocus?: boolean;
   };
@@ -65,7 +64,6 @@ export default function ConfirmModal({
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    // autofocus
     if (input?.autoFocus) {
       setTimeout(() => inputRef.current?.focus(), 0);
     }
@@ -105,7 +103,7 @@ export default function ConfirmModal({
           {description}
         </p>
 
-        {/* ✅ input 영역 */}
+        {/* input 영역 */}
         {input && (
           <div className="mt-4">
             {input.label && (

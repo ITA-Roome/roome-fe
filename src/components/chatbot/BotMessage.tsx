@@ -1,3 +1,4 @@
+import { useState } from "react";
 import botAvatar from "@/assets/RoomeLogo/comment_icon.svg";
 import {
   ChatResultData,
@@ -6,11 +7,14 @@ import {
 } from "@/types/chatbot";
 import ProductCard from "@/components/chatbot/ProductCard";
 import MoodCard from "@/components/chatbot/MoodCard";
+import { ChatApi } from "@/api/chatbot";
 
 type Props = {
   content: string;
   avatarSrc?: string;
   resultData?: ChatResultData;
+  sessionId?: string | null;
+  onSaveSuccess?: () => void;
 };
 
 // 제품 추천인지 체크
@@ -23,8 +27,39 @@ const isMoodResult = (data?: ChatResultData): data is ChatMoodResult => {
   return !!data && ("title" in data || "imageUrlList" in data);
 };
 
-export default function BotMessage({ content, avatarSrc, resultData }: Props) {
+export default function BotMessage({
+  content,
+  avatarSrc,
+  resultData,
+  sessionId,
+  onSaveSuccess,
+}: Props) {
   const src = avatarSrc ?? botAvatar;
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!sessionId) {
+      alert("대화를 먼저 진행해 주세요.");
+      return;
+    }
+    if (isSaving) return;
+
+    try {
+      setIsSaving(true);
+      const res = await ChatApi.saveRecommendationToBoard({ sessionId });
+      if (!res.isSuccess) {
+        alert(res.message || "저장에 실패했습니다.");
+        return;
+      }
+      alert(res.message || "저장되었습니다!");
+      onSaveSuccess?.();
+    } catch (error) {
+      console.error("추천 저장 실패:", error);
+      alert("저장 중 오류가 발생했습니다.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="flex items-start gap-3 mr-auto max-w-[85%]">
@@ -47,6 +82,8 @@ export default function BotMessage({ content, avatarSrc, resultData }: Props) {
           <div className="flex justify-end">
             <button
               type="button"
+              onClick={handleSave}
+              disabled={isSaving || !sessionId}
               className="mt-2 px-4 py-2 rounded-2xl bg-primary-700 text-white text-sm"
             >
               저장하기
@@ -60,6 +97,8 @@ export default function BotMessage({ content, avatarSrc, resultData }: Props) {
           <div className="flex justify-end">
             <button
               type="button"
+              onClick={handleSave}
+              disabled={isSaving || !sessionId}
               className="mt-2 px-4 py-2 rounded-2xl bg-primary-700 text-white text-sm"
             >
               저장하기

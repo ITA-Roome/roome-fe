@@ -10,13 +10,13 @@ import {
 export type InquiryStatus = "ANSWERED" | "PENDING";
 
 type Props = {
-  label: string; // 기본: "문의 유형"
-  typeText?: string; // "abc***" 같은 유형/제목
-  dateText: string; // "26.01.09"
-  status: InquiryStatus; // 답변완료/응답대기중
-  locked?: boolean; // ✅ 자물쇠 표시 여부 (props)
+  label: string;
+  typeText?: string;
+  dateText: string;
+  status: InquiryStatus;
+  locked?: boolean;
   defaultOpen?: boolean;
-  children?: ReactNode; // 펼쳤을 때 들어갈 내용
+  children?: ReactNode;
 };
 
 export default function InquiryToggleItem({
