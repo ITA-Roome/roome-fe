@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/apiClient";
-import { CommonResponse } from "@/types/auth";
+import { CommonResponse } from "@/types/common";
 import type {
   BoardItem,
   BoardListRequest,
