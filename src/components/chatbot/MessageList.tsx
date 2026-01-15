@@ -8,6 +8,7 @@ type Props = {
   className?: string;
   isLoading?: boolean;
   sessionId?: string | null;
+  onSaveSuccess?: () => void;
 };
 
 export default function MessageList({
@@ -15,6 +16,7 @@ export default function MessageList({
   className = "",
   isLoading = false,
   sessionId,
+  onSaveSuccess,
 }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -46,12 +48,19 @@ export default function MessageList({
             content={msg.content}
             resultData={msg.resultData}
             sessionId={sessionId}
+            onSaveSuccess={onSaveSuccess}
           />
         ),
       )}
 
       {/* 로딩 중이면 봇 로딩 인디케이터 추가 */}
-      {isLoading && <BotMessage content="..." sessionId={sessionId} />}
+      {isLoading && (
+        <BotMessage
+          content="..."
+          sessionId={sessionId}
+          onSaveSuccess={onSaveSuccess}
+        />
+      )}
     </div>
   );
 }

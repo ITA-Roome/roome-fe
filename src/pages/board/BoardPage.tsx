@@ -86,7 +86,11 @@ export default function BoardPage() {
         : [];
 
       const chatImages = chatRes.isSuccess
-        ? (chatList.map((b) => b.imageUrls?.[0]).filter(Boolean) as string[])
+        ? (chatList
+            .map(
+              (b) => b.products?.[0]?.imageUrl ?? b.references?.[0]?.imageUrl,
+            )
+            .filter(Boolean) as string[])
         : [];
       setConsultImages(chatImages.slice(0, 4));
     } catch (err) {

@@ -14,6 +14,7 @@ type Props = {
   avatarSrc?: string;
   resultData?: ChatResultData;
   sessionId?: string | null;
+  onSaveSuccess?: () => void;
 };
 
 // 제품 추천인지 체크
@@ -31,6 +32,7 @@ export default function BotMessage({
   avatarSrc,
   resultData,
   sessionId,
+  onSaveSuccess,
 }: Props) {
   const src = avatarSrc ?? botAvatar;
   const [isSaving, setIsSaving] = useState(false);
@@ -50,6 +52,7 @@ export default function BotMessage({
         return;
       }
       alert(res.message || "저장되었습니다!");
+      onSaveSuccess?.();
     } catch (error) {
       console.error("추천 저장 실패:", error);
       alert("저장 중 오류가 발생했습니다.");

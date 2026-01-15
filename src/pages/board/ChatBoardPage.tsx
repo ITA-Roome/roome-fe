@@ -7,23 +7,27 @@ import MoodCard from "@/components/chatbot/MoodCard";
 import ProductCard from "@/components/chatbot/ProductCard";
 
 const isProductBoard = (item: BoardItem) =>
-  Array.isArray(item.productNames) && item.productNames.length > 0;
+  item.category === "PRODUCT" || (item.products ?? []).length > 0;
 
 const toMoodResult = (item: BoardItem): ChatMoodResult => ({
   title: item.title ?? "인테리어 추천",
-  referenceIdList: [],
-  imageUrlList: item.imageUrls ?? [],
+  referenceIdList: (item.references ?? []).map((ref) => ref.referenceId),
+  imageUrlList: (item.references ?? []).map((ref) => ref.imageUrl),
   moodDescription: item.description ?? "",
   moodKeywords: item.keywords ?? [],
   summary: item.description ?? "",
 });
 
 const toProducts = (item: BoardItem): ChatProduct[] =>
-  (item.productNames ?? []).map((name, index) => ({
-    productId: index + 1,
-    name,
-    price: 0,
-    imageUrl: item.imageUrls?.[index] ?? item.imageUrls?.[0] ?? "",
+  (item.products ?? []).map((product) => ({
+    productId: product.productId,
+    name: product.name,
+    price: product.price,
+    imageUrl: product.imageUrl,
+    reason: product.reason,
+    advantage: product.advantage,
+    mood: product.mood,
+    recommendedPlace: product.recommendedPlace,
   }));
 
 export default function ChatBoardPage() {

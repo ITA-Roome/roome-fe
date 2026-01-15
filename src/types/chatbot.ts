@@ -69,9 +69,21 @@ export type BoardItem = {
   title: string;
   description: string;
   keywords: string[];
-  imageUrls: string[];
-  productNames: string[];
-  category: "REFERENCE";
+  category: "PRODUCT" | "REFERENCE";
+  products: {
+    productId: number;
+    name: string;
+    price: number;
+    imageUrl: string;
+    reason?: string;
+    advantage?: string;
+    mood?: string;
+    recommendedPlace?: string;
+  }[];
+  references: {
+    referenceId: number;
+    imageUrl: string;
+  }[];
   createdAt: string;
 };
 
