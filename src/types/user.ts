@@ -64,7 +64,7 @@ export type UserProfile = {
   userId: number;
   profileImage: string;
   nickname: string;
-  signUpDate: string; // 서버에서 yyyy-mm-dd 로 내려오므로 string 유지
+  signUpDate: string;
   phoneNumber: string;
   email: string;
 };

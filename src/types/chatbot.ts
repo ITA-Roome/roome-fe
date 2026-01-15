@@ -52,3 +52,58 @@ export type ChatMessageResponse = {
   options?: string[];
   data?: ChatProductResult | ChatMoodResult;
 };
+
+export type SaveChatRecommendationRequest = {
+  sessionId: string;
+};
+
+export type BoardListRequest = {
+  page: number;
+  size: number;
+  sort?: string[];
+};
+
+export type BoardItem = {
+  boardId: number;
+  userId: number;
+  title: string;
+  description: string;
+  keywords: string[];
+  category: "PRODUCT" | "REFERENCE";
+  products: {
+    productId: number;
+    name: string;
+    price: number;
+    imageUrl: string;
+    reason?: string;
+    advantage?: string;
+    mood?: string;
+    recommendedPlace?: string;
+  }[];
+  references: {
+    referenceId: number;
+    imageUrl: string;
+  }[];
+  createdAt: string;
+};
+
+export type PageResponse<T> = {
+  content: T[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: { empty: boolean; sorted: boolean; unsorted: boolean };
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+  size: number;
+  number: number;
+  sort: { empty: boolean; sorted: boolean; unsorted: boolean };
+  numberOfElements: number;
+  first: boolean;
+  empty: boolean;
+};

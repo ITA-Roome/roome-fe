@@ -41,7 +41,6 @@ export default function SettingPage() {
         return;
       }
 
-      // 스토리지 전체 정리
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       sessionStorage.clear();

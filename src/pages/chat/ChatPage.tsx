@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import MessageList from "@/components/chatbot/MessageList";
 import ChatInput from "@/components/chatbot/ChatInput";
 import { ChatApi } from "@/api/chatbot";
@@ -18,21 +19,19 @@ export type Message = {
 };
 
 const STORAGE_KEY = "chatMessages";
+const SESSION_ID_KEY = "chatSessionId";
+const DEFAULT_OPTIONS = ["인테리어 추천", "제품 추천"];
 
-/**
- * Render the chat page UI and manage the message list.
- *
- * Maintains local message state and, when input is sent, appends the user message followed by a placeholder bot reply.
- *
- * @returns The chat page JSX element containing the message list and input area
- */
 export default function ChatPage() {
+  const navigate = useNavigate();
+
   const userId = sessionStorage.getItem("userId") ?? "guest";
   const nickname = sessionStorage.getItem("nickname") ?? "guest";
   const storageKey = `${STORAGE_KEY}:${userId}`;
+  const sessionKey = `${SESSION_ID_KEY}:${userId}`;
 
-  const defaultBotMessages = useMemo(
-    () => [
+  const defaultBotMessages = useMemo(() => {
+    return [
       {
         role: "bot" as const,
         content: `안녕 ${nickname}!\n나는 ${nickname}의 인테리어를 도와줄 ROOME라고 해!\n만나서 반가워 :)`,
@@ -41,9 +40,8 @@ export default function ChatPage() {
         role: "bot" as const,
         content: `${nickname}가 원하는 인테리어를 알려줘!\n[예시) 6평 원룸 꾸미기를 하고 싶은데, 어떤 제품들로 구성하면 좋을지 추천받고싶어! 화이트 톤을 이용한 깔끔한 인테리어로!]`,
       },
-    ],
-    [nickname],
-  );
+    ];
+  }, [nickname]);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -60,18 +58,22 @@ export default function ChatPage() {
       } else {
         setMessages(defaultBotMessages);
       }
+      const savedSessionId = sessionStorage.getItem(sessionKey);
+      if (savedSessionId) {
+        setSessionId(savedSessionId);
+      }
     } catch (err) {
       console.error("대화 복원 실패:", err);
       setMessages(defaultBotMessages);
     } finally {
       setIsHydrated(true);
     }
-  }, [storageKey, defaultBotMessages]);
+  }, [storageKey, defaultBotMessages, sessionKey]);
 
   useEffect(() => {
     // 대화가 복원된 뒤 옵션이 비어 있으면 기본 질문 두 개를 노출
     if (isHydrated && options.length === 0) {
-      setOptions(["인테리어 추천", "제품 추천"]);
+      setOptions(DEFAULT_OPTIONS);
     }
   }, [isHydrated, options.length]);
 
@@ -84,6 +86,19 @@ export default function ChatPage() {
       console.error("대화 저장 실패:", err);
     }
   }, [messages, isHydrated, storageKey]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    try {
+      if (sessionId) {
+        sessionStorage.setItem(sessionKey, sessionId);
+      } else {
+        sessionStorage.removeItem(sessionKey);
+      }
+    } catch (err) {
+      console.error("세션 저장 실패:", err);
+    }
+  }, [isHydrated, sessionId, sessionKey]);
 
   // 제품 추천인지 체크
   const isProductResult = (data: unknown): data is ChatProductResult => {
@@ -105,11 +120,17 @@ export default function ChatPage() {
   };
 
   const sendToBot = useCallback(
-    async (UserMessage: string, inputType: ChatInputType) => {
+    async (
+      UserMessage: string,
+      inputType: ChatInputType,
+      options?: { silentUser?: boolean },
+    ) => {
       const trimmed = UserMessage.trim();
       if (!trimmed) return;
 
-      setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
+      if (!options?.silentUser) {
+        setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
+      }
       setLoading(true);
 
       try {
@@ -168,6 +189,19 @@ export default function ChatPage() {
     void sendToBot(option, ChatInputType.BUTTON);
   };
 
+  const handleSaveSuccess = useCallback(() => {
+    try {
+      sessionStorage.removeItem(storageKey);
+      sessionStorage.removeItem(sessionKey);
+    } catch (err) {
+      console.error("대화 삭제 실패:", err);
+    }
+    setSessionId(null);
+    setMessages(defaultBotMessages);
+    setOptions(DEFAULT_OPTIONS);
+    navigate("/board/chat");
+  }, [defaultBotMessages, navigate, storageKey, sessionKey]);
+
   return (
     <PageContainer className="h-dvh">
       <div className="h-full flex flex-col overflow-hidden">
@@ -177,6 +211,8 @@ export default function ChatPage() {
             messages={messages}
             className="h-full"
             isLoading={loading}
+            sessionId={sessionId}
+            onSaveSuccess={handleSaveSuccess}
           />
         </div>
 

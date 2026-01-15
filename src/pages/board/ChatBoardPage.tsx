@@ -1,81 +1,103 @@
+import { useCallback, useEffect, useState } from "react";
 import InfiniteScrollGrid from "@/components/feed&shop/grid/InfiniteScrollGrid";
-import ConsultCard from "@/components/board/ConsultCard";
-
-import img1 from "@/assets/icons/bed.svg";
-import img2 from "@/assets/icons/desk.svg";
-import img3 from "@/assets/icons/light.svg";
 import PageContainer from "@/components/layout/PageContainer";
+import { ChatApi } from "@/api/chatbot";
+import type { BoardItem, ChatMoodResult, ChatProduct } from "@/types/chatbot";
+import MoodCard from "@/components/chatbot/MoodCard";
+import ProductCard from "@/components/chatbot/ProductCard";
 
-interface ConsultItem {
-  id: number;
-  title: string;
-  details: string[];
-  images: string[];
-}
+const isProductBoard = (item: BoardItem) =>
+  item.category === "PRODUCT" || (item.products ?? []).length > 0;
 
-/**
- * Renders the chat board page that displays consult items in an infinite-scroll grid.
- *
- * Uses a static list of dummy consult items and renders each item as a ConsultCard inside InfiniteScrollGrid.
- *
- * @returns The page's JSX element containing the consult list layout.
- */
+const toMoodResult = (item: BoardItem): ChatMoodResult => ({
+  title: item.title ?? "인테리어 추천",
+  referenceIdList: (item.references ?? []).map((ref) => ref.referenceId),
+  imageUrlList: (item.references ?? []).map((ref) => ref.imageUrl),
+  moodDescription: item.description ?? "",
+  moodKeywords: item.keywords ?? [],
+  summary: item.description ?? "",
+});
+
+const toProducts = (item: BoardItem): ChatProduct[] =>
+  (item.products ?? []).map((product) => ({
+    productId: product.productId,
+    name: product.name,
+    price: product.price,
+    imageUrl: product.imageUrl,
+    reason: product.reason,
+    advantage: product.advantage,
+    mood: product.mood,
+    recommendedPlace: product.recommendedPlace,
+  }));
+
 export default function ChatBoardPage() {
-  const dummyConsultItems: ConsultItem[] = [
-    {
-      id: 1,
-      title: "침실 인테리어 상담",
-      details: ["원목 느낌 원함", "침대 위치 조정 고민", "포근한 느낌 선호"],
-      images: [img1, img2, img3, img1, img2, img3],
-    },
-    {
-      id: 2,
-      title: "거실 전체 톤 매칭",
-      details: ["화이트톤 요청", "조명 교체 희망", "소파 색상 고민"],
-      images: [img2, img3, img1, img2, img1, img3],
-    },
-    {
-      id: 3,
-      title: "작은 방 공간 활용 상담",
-      details: ["책상 크기 고민", "수납공간 최적화", "조명 추천 요청"],
-      images: [img3, img1, img2, img3, img2, img1],
-    },
-    {
-      id: 4,
-      title: "조명 변경 상담",
-      details: [
-        "은은한 조명 원함",
-        "천장 간접조명 고민",
-        "전구 색온도 추천 요청",
-      ],
-      images: [img1, img1, img1, img1, img2, img3],
-    },
-    {
-      id: 5,
-      title: "원룸 전체 레이아웃 재배치",
-      details: ["침대 방향 고민", "책상 위치 변경", "동선 최적화 상담"],
-      images: [img3, img2, img2, img1, img1, img1],
-    },
-  ];
+  const [boards, setBoards] = useState<BoardItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchBoards = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await ChatApi.getBoardList({
+        page: 0,
+        size: 20,
+        sort: ["createdAt,desc"],
+      });
+
+      if (!res.isSuccess || !res.data) {
+        console.error("상담 보드 조회 실패", res.message);
+        setBoards([]);
+        return;
+      }
+
+      const list = Array.isArray(res.data.content) ? res.data.content : [];
+      setBoards(list);
+    } catch (error) {
+      console.error("상담 보드 조회 오류:", error);
+      setBoards([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchBoards();
+  }, [fetchBoards]);
 
   return (
     <PageContainer>
       <div className="min-h-screen space-y-6">
-        <InfiniteScrollGrid
-          items={dummyConsultItems}
-          keySelector={(it) => it.id}
-          renderItem={(it) => (
-            <ConsultCard
-              title={it.title}
-              details={it.details}
-              images={it.images}
-            />
-          )}
-          columns="grid-cols-1"
-          gap="gap-6"
-          hasNextPage={false}
-          loadMore={() => {}}
-        />
+        {loading && (
+          <p className="py-8 text-center text-primary-700">불러오는 중...</p>
+        )}
+
+        {!loading && boards.length === 0 && (
+          <p className="py-16 text-center text-primary-700">
+            저장된 상담이 없습니다!
+          </p>
+        )}
+
+        {boards.length > 0 && (
+          <InfiniteScrollGrid
+            items={boards}
+            keySelector={(it) => it.boardId}
+            renderItem={(it) =>
+              isProductBoard(it) ? (
+                <div className="space-y-2">
+                  <p className="font-semibold text-primary-700">{it.title}</p>
+                  {toProducts(it).map((p) => (
+                    <ProductCard key={p.productId} product={p} />
+                  ))}
+                </div>
+              ) : (
+                <MoodCard data={toMoodResult(it)} />
+              )
+            }
+            columns="grid-cols-1"
+            gap="gap-6"
+            hasNextPage={false}
+            loadMore={() => {}}
+          />
+        )}
       </div>
     </PageContainer>
   );
