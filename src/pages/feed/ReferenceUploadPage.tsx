@@ -133,7 +133,7 @@ export default function ReferenceUploadPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="제목을 입력해주세요"
-              className="flex-1 h-[52px] px-4 rounded-[8px] border border-[#6D5A46] font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] bg-white"
+              className="flex-1 min-w-0 appearance-none h-[52px] px-4 rounded-[8px] border border-[#6D5A46] font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] bg-white"
             />
           </div>
 
