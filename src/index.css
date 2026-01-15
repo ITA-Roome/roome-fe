@@ -22,7 +22,7 @@ body {
 
 @theme {
   --color-primary-800: #412a1d;
-  --color-primary-700: #5d3c28; /* primary color */
+  --color-primary-700: #5d3c28;
   --color-primary-600: #764e3a;
   --color-primary-400: #9f692d;
   --color-primary-200: #8d7569;
@@ -37,63 +37,37 @@ button {
   cursor: pointer;
 }
 
-/* 전체 배경 적용 */
 body {
   background-color: #ffffff;
 }
 
 @layer utilities {
   .font-heading1 {
-    font-size: 18px;
-    font-weight: 700; /* Bold */
-    line-height: 25px;
-    letter-spacing: 0.4px;
+    @apply text-[18px] font-bold leading-[25px] tracking-[0.4px];
   }
 
   .font-heading2 {
-    font-size: 14px;
-    font-weight: 400; /* Regular */
-    line-height: 25px;
-    letter-spacing: 0.4px;
+    @apply text-[14px] font-normal leading-[25px] tracking-[0.4px];
   }
 
   .font-body1 {
-    font-size: 16px;
-    font-weight: 400; /* Regular */
-    line-height: 25px;
-    letter-spacing: 0.4px;
+    @apply text-[16px] font-normal leading-[25px] tracking-[0.4px];
   }
 
-  /* Body Regular Highlight */
   .font-body2 {
-    font-size: 14px;
-    font-weight: 700; /* Bold */
-    line-height: 25px;
-    letter-spacing: 0.4px;
+    @apply text-[14px] font-bold leading-[25px] tracking-[0.4px];
   }
 
-  /* Body Regular Basic */
   .font-body3 {
-    font-size: 14px;
-    font-weight: 400; /* Regular */
-    line-height: 25px;
-    letter-spacing: 0.4px;
+    @apply text-[14px] font-normal leading-[25px] tracking-[0.4px];
   }
 
-  /* Caption Basic */
   .font-caption {
-    font-size: 10px;
-    font-weight: 400; /* Regular */
-    line-height: 14px;
-    letter-spacing: 0.4px;
+    @apply text-[10px] font-normal leading-[14px] tracking-[0.4px];
   }
 
-  /* Caption Highlight */
   .font-caption-strong {
-    font-size: 10px;
-    font-weight: 700; /* Bold */
-    line-height: 20px;
-    letter-spacing: 0.4px;
+    @apply text-[10px] font-bold leading-[20px] tracking-[0.4px];
   }
 
   @keyframes fade-in {
@@ -121,18 +95,15 @@ body {
     animation: bounce-custom 3s infinite ease-in-out;
   }
 
-  /* primary button */
-  .rounding-32 {
-    border-radius: 6px;
-  }
-
-  /* small button */
-  .rounding-16 {
-    border-radius: 4px;
-  }
-
-  /* 검색 패널 그림자 */
   .shadow {
     box-shadow: 2px 2px 12px -3px rgba(0, 0, 0, 0.2);
+  }
+
+  @media screen and (max-width: 768px) {
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
   }
 }
