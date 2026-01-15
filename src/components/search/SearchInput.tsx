@@ -65,11 +65,11 @@ export default function SearchInput({
         aria-haspopup="listbox"
         aria-owns="search-suggest-list"
       >
-        <SearchIcon className="w-4 h-4 text-primary-700" />
+        <SearchIcon className="w-4 h-4 text-primary-700 shrink-0" />
         <input
           ref={inputRef}
           value={v}
-          className="flex-1 outline-none text-primary-700 font-body3 bg-transparent"
+          className="flex-1 min-w-0 appearance-none outline-none text-primary-700 font-body3 bg-transparent"
           onFocus={() => setOpen(true)}
           onChange={(e) => {
             if (!isControlled) setInput(e.target.value);
