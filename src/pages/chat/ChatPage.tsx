@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MessageList from "@/components/chatbot/MessageList";
 import ChatInput from "@/components/chatbot/ChatInput";
 import { ChatApi } from "@/api/chatbot";
@@ -23,10 +23,12 @@ export type Message = {
 
 const STORAGE_KEY = "chatMessages";
 const SESSION_ID_KEY = "chatSessionId";
+const OPTIONS_KEY = "chatOptions";
 const DEFAULT_OPTIONS = ["인테리어 추천", "제품 추천"];
 
 export default function ChatPage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { data: profile } = useQuery({
     queryKey: USER_PROFILE,
@@ -38,6 +40,7 @@ export default function ChatPage() {
   const nickname = profile?.nickname ?? "guest";
   const storageKey = `${STORAGE_KEY}:${userId}`;
   const sessionKey = `${SESSION_ID_KEY}:${userId}`;
+  const optionsKey = `${OPTIONS_KEY}:${userId}`;
 
   const defaultBotMessages = useMemo(() => {
     return [
@@ -58,6 +61,16 @@ export default function ChatPage() {
   const [options, setOptions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const clearChatStorage = useCallback(() => {
+    try {
+      sessionStorage.removeItem(storageKey);
+      sessionStorage.removeItem(sessionKey);
+      sessionStorage.removeItem(optionsKey);
+    } catch (err) {
+      console.error("대화 삭제 실패:", err);
+    }
+  }, [optionsKey, sessionKey, storageKey]);
+
   // 1) 세션 저장소에서 복원. 없으면 기본 봇 인사.
   useEffect(() => {
     try {
@@ -71,20 +84,30 @@ export default function ChatPage() {
       if (savedSessionId) {
         setSessionId(savedSessionId);
       }
+      const savedOptions = sessionStorage.getItem(optionsKey);
+      if (savedOptions !== null) {
+        setOptions(JSON.parse(savedOptions));
+      } else {
+        setOptions(DEFAULT_OPTIONS);
+      }
     } catch (err) {
       console.error("대화 복원 실패:", err);
       setMessages(defaultBotMessages);
+      setOptions(DEFAULT_OPTIONS);
     } finally {
       setIsHydrated(true);
     }
-  }, [storageKey, defaultBotMessages, sessionKey]);
+  }, [storageKey, defaultBotMessages, sessionKey, optionsKey]);
 
   useEffect(() => {
-    // 대화가 복원된 뒤 옵션이 비어 있으면 기본 질문 두 개를 노출
-    if (isHydrated && options.length === 0) {
+    if (location.state?.resetChat) {
+      clearChatStorage();
+      setSessionId(null);
+      setMessages(defaultBotMessages);
       setOptions(DEFAULT_OPTIONS);
+      navigate(".", { replace: true, state: {} });
     }
-  }, [isHydrated, options.length]);
+  }, [clearChatStorage, defaultBotMessages, location.state, navigate]);
 
   // 2) 복원 후에만 저장 (Strict Mode 중복 실행 방지)
   useEffect(() => {
@@ -95,6 +118,15 @@ export default function ChatPage() {
       console.error("대화 저장 실패:", err);
     }
   }, [messages, isHydrated, storageKey]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    try {
+      sessionStorage.setItem(optionsKey, JSON.stringify(options));
+    } catch (err) {
+      console.error("옵션 저장 실패:", err);
+    }
+  }, [isHydrated, options, optionsKey]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -199,17 +231,12 @@ export default function ChatPage() {
   };
 
   const handleSaveSuccess = useCallback(() => {
-    try {
-      sessionStorage.removeItem(storageKey);
-      sessionStorage.removeItem(sessionKey);
-    } catch (err) {
-      console.error("대화 삭제 실패:", err);
-    }
+    clearChatStorage();
     setSessionId(null);
     setMessages(defaultBotMessages);
     setOptions(DEFAULT_OPTIONS);
     navigate("/board/chat");
-  }, [defaultBotMessages, navigate, storageKey, sessionKey]);
+  }, [clearChatStorage, defaultBotMessages, navigate]);
 
   return (
     <PageContainer className="h-dvh">

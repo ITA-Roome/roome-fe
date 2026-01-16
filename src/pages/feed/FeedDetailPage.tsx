@@ -124,7 +124,7 @@ export default function FeedDetailPage() {
         isTogglingScrap={isTogglingScrap}
         onToggleLike={() => toggleLike(reference.referenceId)}
         onToggleScrap={() => toggleScrap(reference.referenceId)}
-        onShare={() => navigate("/chat")}
+        onShare={() => navigate("/chat", { state: { resetChat: true } })}
       />
 
       <DetailProfile
