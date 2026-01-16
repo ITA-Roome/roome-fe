@@ -5,6 +5,9 @@ import axios from "axios";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 import type { UserProfile } from "@/types/user";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { USER_PROFILE } from "@/constants/queryKeys";
+import { REACT_QUERY_PERSIST_KEY } from "@/constants/key";
 
 import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
 import ConfirmModal from "@/components/setting/ConfirmModal";
@@ -12,6 +15,7 @@ import PageContainer from "@/components/layout/PageContainer";
 
 export default function AccountPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [userInfo, setUserInfo] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -20,41 +24,21 @@ export default function AccountPage() {
   const [withdrawLoading, setWithdrawLoading] = useState(false);
   const [pwdError, setPwdError] = useState<string | null>(null);
 
+  const { data: profile } = useQuery({
+    queryKey: USER_PROFILE,
+    queryFn: async () => (await UserApi.fetchUserProfile()).data,
+    enabled: false,
+  });
+
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchUserProfile = async () => {
-      try {
-        const response = await UserApi.fetchUserProfile();
-
-        if (!response.isSuccess || !response.data) {
-          throw new Error(
-            response.message || "회원정보를 불러오는 데 실패했어요.",
-          );
-        }
-
-        if (isMounted) {
-          setUserInfo(response.data);
-          setErrorMessage(null);
-        }
-      } catch (error) {
-        console.error(error);
-        if (isMounted) {
-          setErrorMessage("회원 정보를 불러오는 중 문제가 발생했어요.");
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchUserProfile();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    if (!profile) {
+      setIsLoading(false);
+      return;
+    }
+    setUserInfo(profile);
+    setErrorMessage(null);
+    setIsLoading(false);
+  }, [profile]);
 
   const formattedJoinDate = useMemo(() => {
     if (!userInfo?.signUpDate) return "-";
@@ -95,7 +79,9 @@ export default function AccountPage() {
       const withdrawRes = await AuthApi.withdraw();
       if (withdrawRes.isSuccess) {
         localStorage.clear();
+        localStorage.removeItem(REACT_QUERY_PERSIST_KEY);
         sessionStorage.clear();
+        queryClient.clear();
         alert("회원 탈퇴가 완료되었습니다.");
         navigate("/");
       } else {

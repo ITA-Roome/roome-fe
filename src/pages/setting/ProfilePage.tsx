@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { UserApi } from "@/api/user";
 import { AuthApi } from "@/api/auth";
 import { isAxiosError } from "axios";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { USER_PROFILE } from "@/constants/queryKeys";
 
 import ProfileChangeIcon from "@/assets/icons/imgChange.svg";
 import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
@@ -10,6 +12,7 @@ import PageContainer from "@/components/layout/PageContainer";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [originalNickname, setOriginalNickname] = useState("");
   const [originalImage, setOriginalImage] = useState<string | null>(null);
@@ -23,31 +26,19 @@ export default function ProfilePage() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  const { data: profile } = useQuery({
+    queryKey: USER_PROFILE,
+    queryFn: async () => (await UserApi.fetchUserProfile()).data,
+    enabled: false,
+  });
+
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await UserApi.fetchUserProfile();
-
-        if (!res.isSuccess) {
-          console.error("프로필 조회 실패: ", res.message);
-          return;
-        }
-
-        if (!res.data) return;
-
-        const profile = res.data;
-
-        setOriginalNickname(profile.nickname);
-        setOriginalImage(profile.profileImage);
-
-        setNickname(profile.nickname);
-        setPreviewImage(profile.profileImage);
-      } catch (error) {
-        console.error("프로필 로드 중 오류:", error);
-      }
-    }
-    fetchData();
-  }, []);
+    if (!profile) return;
+    setOriginalNickname(profile.nickname);
+    setOriginalImage(profile.profileImage);
+    setNickname(profile.nickname);
+    setPreviewImage(profile.profileImage);
+  }, [profile]);
 
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -140,6 +131,37 @@ export default function ProfilePage() {
       if (!res.isSuccess) {
         setSaveError(res.message || "프로필 저장에 실패했습니다.");
         return;
+      }
+
+      if (res.data) {
+        const nextProfileImage =
+          !res.data.profileImage ||
+          (previewImage && previewImage.startsWith("blob:"))
+            ? (profile?.profileImage ?? res.data.profileImage)
+            : res.data.profileImage;
+        queryClient.setQueryData(USER_PROFILE, {
+          ...res.data,
+          profileImage: nextProfileImage ?? res.data.profileImage,
+        });
+      } else if (profile) {
+        const nextProfileImage =
+          previewImage && previewImage.startsWith("blob:")
+            ? profile.profileImage
+            : (previewImage ?? profile.profileImage);
+        queryClient.setQueryData(USER_PROFILE, {
+          ...profile,
+          nickname,
+          profileImage: nextProfileImage,
+        });
+      }
+
+      try {
+        const refreshed = await UserApi.fetchUserProfile();
+        if (refreshed.data) {
+          queryClient.setQueryData(USER_PROFILE, refreshed.data);
+        }
+      } catch (profileError) {
+        console.error("프로필 캐시 갱신 실패:", profileError);
       }
 
       setOriginalNickname(nickname);

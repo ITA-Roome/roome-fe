@@ -3,9 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { setAuthToken } from "../../lib/apiClient";
 import { AuthApi } from "../../api/auth";
 import { UserApi } from "@/api/user";
+import { useQueryClient } from "@tanstack/react-query";
+import { USER_PROFILE } from "@/constants/queryKeys";
 
 export default function GoogleCallback() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const code = new URL(window.location.href).searchParams.get("code");
@@ -23,11 +26,18 @@ export default function GoogleCallback() {
           throw new Error(data.message || "구글 로그인 실패");
         }
 
-        const { accessToken, refreshToken, userInfo } = data.data;
+        const { accessToken, refreshToken } = data.data;
         setAuthToken(accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        sessionStorage.setItem("userId", String(userInfo.userId));
-        sessionStorage.setItem("nickname", userInfo.nickname);
+
+        try {
+          const profileRes = await UserApi.fetchUserProfile();
+          if (profileRes?.data) {
+            queryClient.setQueryData(USER_PROFILE, profileRes.data);
+          }
+        } catch (profileError) {
+          console.error("프로필 캐시 저장 실패:", profileError);
+        }
 
         const { data: onboardingData } =
           await UserApi.checkOnboardingExistence();
@@ -46,7 +56,7 @@ export default function GoogleCallback() {
     };
 
     void handleGoogleAuth();
-  }, [navigate]);
+  }, [navigate, queryClient]);
 
   return (
     <div className="flex justify-center items-center h-screen text-[#5D3C28]">
