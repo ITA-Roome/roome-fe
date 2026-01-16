@@ -7,7 +7,6 @@ import { AuthApi } from "@/api/auth";
 import type { UserProfile } from "@/types/user";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { USER_PROFILE } from "@/constants/queryKeys";
-import { REACT_QUERY_PERSIST_KEY } from "@/constants/key";
 
 import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
 import ConfirmModal from "@/components/setting/ConfirmModal";
@@ -79,7 +78,6 @@ export default function AccountPage() {
       const withdrawRes = await AuthApi.withdraw();
       if (withdrawRes.isSuccess) {
         localStorage.clear();
-        localStorage.removeItem(REACT_QUERY_PERSIST_KEY);
         sessionStorage.clear();
         queryClient.clear();
         alert("회원 탈퇴가 완료되었습니다.");

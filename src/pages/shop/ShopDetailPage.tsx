@@ -80,7 +80,7 @@ export default function ShopDetailPage() {
         isTogglingScrap={isTogglingScrap}
         onToggleLike={() => toggleLike(product.id)}
         onToggleScrap={() => toggleScrap(product.id)}
-        onShare={() => navigate("/chat")}
+        onShare={() => navigate("/chat", { state: { resetChat: true } })}
       />
 
       {product.shop && (
