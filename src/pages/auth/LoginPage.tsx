@@ -4,6 +4,8 @@ import axios from "axios";
 import { setAuthToken } from "../../lib/apiClient";
 import { AuthApi } from "@/api/auth";
 import { UserApi } from "@/api/user";
+import { useQueryClient } from "@tanstack/react-query";
+import { USER_PROFILE } from "@/constants/queryKeys";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -19,6 +21,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // 입력 초기화 함수
   const handleClear = (field: "email" | "password") => {
@@ -68,12 +71,18 @@ export default function LoginPage() {
         return;
       }
 
-      const { accessToken, refreshToken, userId, nickname } = payload.data;
+      const { accessToken, refreshToken } = payload.data;
 
       setAuthToken(accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      sessionStorage.setItem("userId", String(userId));
-      sessionStorage.setItem("nickname", String(nickname));
+      try {
+        const profileRes = await UserApi.fetchUserProfile();
+        if (profileRes?.data) {
+          queryClient.setQueryData(USER_PROFILE, profileRes.data);
+        }
+      } catch (profileError) {
+        console.error("프로필 캐시 저장 실패:", profileError);
+      }
 
       try {
         const { data } = await UserApi.checkOnboardingExistence();

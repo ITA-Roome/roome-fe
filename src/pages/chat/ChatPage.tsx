@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import MessageList from "@/components/chatbot/MessageList";
 import ChatInput from "@/components/chatbot/ChatInput";
 import { ChatApi } from "@/api/chatbot";
+import { UserApi } from "@/api/user";
 import {
   ChatInputType,
   ChatResponseType,
@@ -11,6 +12,8 @@ import {
   ChatMoodResult,
 } from "@/types/chatbot";
 import PageContainer from "@/components/layout/PageContainer";
+import { useQuery } from "@tanstack/react-query";
+import { USER_PROFILE } from "@/constants/queryKeys";
 
 export type Message = {
   role: "user" | "bot";
@@ -25,8 +28,14 @@ const DEFAULT_OPTIONS = ["인테리어 추천", "제품 추천"];
 export default function ChatPage() {
   const navigate = useNavigate();
 
-  const userId = sessionStorage.getItem("userId") ?? "guest";
-  const nickname = sessionStorage.getItem("nickname") ?? "guest";
+  const { data: profile } = useQuery({
+    queryKey: USER_PROFILE,
+    queryFn: async () => (await UserApi.fetchUserProfile()).data,
+    enabled: false,
+  });
+
+  const userId = profile?.userId ? String(profile.userId) : "guest";
+  const nickname = profile?.nickname ?? "guest";
   const storageKey = `${STORAGE_KEY}:${userId}`;
   const sessionKey = `${SESSION_ID_KEY}:${userId}`;
 
