@@ -5,9 +5,13 @@ import { AuthApi } from "@/api/auth";
 import RoomeDefault from "@/assets/RoomeLogo/comment_icon.svg";
 import ConfirmModal from "@/components/setting/ConfirmModal";
 import PageContainer from "@/components/layout/PageContainer";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { USER_PROFILE } from "@/constants/queryKeys";
+import { REACT_QUERY_PERSIST_KEY } from "@/constants/key";
 
 export default function SettingPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [nickname, setNickname] = useState<string>("");
@@ -15,20 +19,17 @@ export default function SettingPage() {
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const res = await UserApi.fetchUserProfile();
-        if (!res.isSuccess || !res.data) return;
+  const { data: profile } = useQuery({
+    queryKey: USER_PROFILE,
+    queryFn: async () => (await UserApi.fetchUserProfile()).data,
+    enabled: false,
+  });
 
-        setProfileImage(res.data.profileImage);
-        setNickname(res.data.nickname);
-      } catch (error) {
-        console.error("프로필 로드 실패:", error);
-      }
-    }
-    fetchProfile();
-  }, []);
+  useEffect(() => {
+    if (!profile) return;
+    setProfileImage(profile.profileImage ?? null);
+    setNickname(profile.nickname ?? "");
+  }, [profile]);
 
   const handleLogout = async () => {
     if (logoutLoading) return;
@@ -43,7 +44,9 @@ export default function SettingPage() {
 
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
+      localStorage.removeItem(REACT_QUERY_PERSIST_KEY);
       sessionStorage.clear();
+      queryClient.clear();
 
       navigate("/login", { replace: true });
     } catch (error) {

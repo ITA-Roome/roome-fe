@@ -30,3 +30,5 @@ export const commentKeys = {
   list: (type: string, commentableId: number) =>
     ["comments", "list", type, commentableId] as const,
 };
+
+export const USER_PROFILE = ["user", "profile"] as const;
