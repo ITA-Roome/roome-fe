@@ -102,7 +102,7 @@ export default function ProductRegistration({ onClose, onRegister }: Props) {
           </div>
 
           <div className="flex items-start gap-2">
-            <label className="w-[70px] pt-[14px] font-body3 text-primary-700 shrink-0">
+            <label className="w-[90px] pt-[14px] font-body3 text-primary-700 shrink-0">
               제품 명
             </label>
             <input
@@ -110,22 +110,22 @@ export default function ProductRegistration({ onClose, onRegister }: Props) {
               value={regName}
               onChange={(e) => setRegName(e.target.value)}
               placeholder="제품 명을 입력해주세요"
-              className="flex-1 h-[50px] px-4 rounded-[8px] border border-primary-700 font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] bg-white"
+              className="flex-1 min-w-0 appearance-none h-[50px] px-4 rounded-[8px] border border-primary-700 font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] bg-white"
             />
           </div>
           <div className="flex items-start gap-2">
-            <label className="w-[70px] pt-[14px] font-body3 text-primary-700 shrink-0">
+            <label className="w-[90px] pt-[14px] font-body3 text-primary-700 shrink-0">
               브랜드 명
             </label>
             <textarea
               value={regBrand}
               onChange={(e) => setRegBrand(e.target.value)}
               placeholder="브랜드 명을 입력해주세요"
-              className="flex-1 h-[140px] p-4 rounded-[8px] border border-primary-700 font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] resize-none bg-white"
+              className="flex-1 min-w-0 h-[140px] p-4 rounded-[8px] border border-primary-700 font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] resize-none bg-white"
             />
           </div>
           <div className="flex items-start gap-2">
-            <label className="w-[70px] pt-[14px] font-body3 text-primary-700 shrink-0">
+            <label className="w-[90px] pt-[14px] font-body3 text-primary-700 shrink-0">
               제품 태그
             </label>
             <input
@@ -133,11 +133,11 @@ export default function ProductRegistration({ onClose, onRegister }: Props) {
               value={regTags}
               onChange={(e) => setRegTags(e.target.value)}
               placeholder="태그를 입력해주세요"
-              className="flex-1 h-[50px] px-4 rounded-[8px] border border-primary-700 font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] bg-white"
+              className="flex-1 min-w-0 appearance-none h-[50px] px-4 rounded-[8px] border border-primary-700 font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] bg-white"
             />
           </div>
           <div className="flex items-start gap-2">
-            <label className="w-[70px] pt-[14px] font-body3 text-primary-700 shrink-0">
+            <label className="w-[90px] pt-[14px] font-body3 text-primary-700 shrink-0">
               제품 URL
             </label>
             <input
@@ -145,7 +145,7 @@ export default function ProductRegistration({ onClose, onRegister }: Props) {
               value={regUrl}
               onChange={(e) => setRegUrl(e.target.value)}
               placeholder="제품 URL을 입력해주세요"
-              className="flex-1 h-[50px] px-4 rounded-[8px] border border-primary-700 font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] bg-white"
+              className="flex-1 min-w-0 appearance-none h-[50px] px-4 rounded-[8px] border border-primary-700 font-body3 text-primary-700 placeholder:text-[#AFAFAF] outline-none focus:border-[#FFC800] bg-white"
             />
           </div>
           <div>
